@@ -13,7 +13,7 @@ A powerful Streamlit app for generating professional product ads using Bria AI's
 - 🎮 Intuitive UI controls
 - 💾 Easy image download
 
-## 🚀 Quick Start
+
 
 1. Clone the repository:
 ```bash

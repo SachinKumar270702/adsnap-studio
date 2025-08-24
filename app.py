@@ -11,7 +11,7 @@ from services import (
     generate_hd_image,
     erase_foreground
 )
-from PIL import Image
+from PIL import Image, ImageFilter
 import io
 import requests
 import json
@@ -88,7 +88,7 @@ def apply_image_filter(image, filter_type):
         elif filter_type == "High Contrast":
             return img.point(lambda x: x * 1.5)
         elif filter_type == "Blur":
-            return img.filter(Image.BLUR)
+            return img.filter(ImageFilter.BLUR)
         else:
             return img
     except Exception as e:
@@ -229,7 +229,7 @@ def main():
                         prompt=st.session_state.enhanced_prompt or prompt,
                         api_key=st.session_state.api_key,
                         num_results=num_images,
-                        aspect_ratio=aspect_ratio,  # Already in correct format (e.g. "1:1")
+                        aspect_ratio=aspect_ratio if aspect_ratio is not None else "1:1",  # Ensure aspect_ratio is always a string
                         sync=True,  # Wait for results
                         enhance_image=enhance_img,
                         medium="art" if style != "Realistic" else "photography",
@@ -239,7 +239,7 @@ def main():
                     
                     if result:
                         # Debug logging
-                        st.write("Debug - Raw API Response:", result)
+                        st.write( result["result"][0]['urls'][0])
                         
                         if isinstance(result, dict):
                             if "result_url" in result:
@@ -256,6 +256,8 @@ def main():
                                         break
                                     elif isinstance(item, list) and len(item) > 0:
                                         st.session_state.edited_image = item[0]
+                                        st.session_state.edited_image = item[1]
+                                        st.session_state.edited_image = item[2]
                                         st.success("✨ Image generated successfully!")
                                         break
                         else:
@@ -297,7 +299,11 @@ def main():
                             try:
                                 # First remove background if needed
                                 if force_rmbg:
-                                    from services.background_service import remove_background
+                                    try:
+                                        from services import remove_background
+                                    except ImportError:
+                                        st.error("Background removal service is not available. Please check your installation.")
+                                        return
                                     bg_result = remove_background(
                                         st.session_state.api_key,
                                         uploaded_file.getvalue(),
@@ -440,6 +446,8 @@ def main():
                         force_rmbg = st.checkbox("Force Background Removal", False)
                         content_moderation = st.checkbox("Enable Content Moderation", False)
                         
+                        fast_mode = True  # Default value to avoid unbound error
+                        optimize_desc = True  # Ensure optimize_desc is always defined
                         if shot_type == "Text Prompt":
                             fast_mode = st.checkbox("Fast Mode", True,
                                 help="Balance between speed and quality")
