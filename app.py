@@ -93,13 +93,13 @@ def initialize_session_state():
     if 'api_key' not in st.session_state:
         st.session_state.api_key = os.getenv('BRIA_API_KEY')
     if 'generated_images' not in st.session_state:
-        st.session_state.generated_images = []
+        st.session_state.generated_images = []  # List to store multiple generated images
     if 'current_image' not in st.session_state:
         st.session_state.current_image = None
     if 'pending_urls' not in st.session_state:
         st.session_state.pending_urls = []
     if 'edited_image' not in st.session_state:
-        st.session_state.edited_image = None
+        st.session_state.edited_image = None  # Single image (backward compatibility)
     if 'original_prompt' not in st.session_state:
         st.session_state.original_prompt = ""
     if 'enhanced_prompt' not in st.session_state:
@@ -284,27 +284,181 @@ def main():
                     )
                     
                     if result:
+                        # ALWAYS show the API response for debugging
+                        with st.expander("🔍 Debug: Click to see API Response"):
+                            st.json(result)
+                        
                         if isinstance(result, dict):
-                            if "result_url" in result:
-                                st.session_state.edited_image = result["result_url"]
-                                st.success("✨ Image generated successfully!")
+                            # Store multiple images in a list
+                            generated_images = []
+                            
+                            # Log what we're checking
+                            st.write(f"📋 Response has these keys: {list(result.keys())}")
+                            
+                            # Bria API returns results in 'result' array when sync=True
+                            # Format: {"result": [{"urls": ["url1"]}, {"urls": ["url2"]}]}
+                            if "result" in result:
+                                st.write(f"✅ Found 'result' key, type: {type(result['result'])}")
+                                
+                                if isinstance(result["result"], list):
+                                    st.write(f"✅ 'result' is a list with {len(result['result'])} items")
+                                    
+                                    for idx, item in enumerate(result["result"]):
+                                        st.write(f"  Item {idx}: type={type(item)}, keys={list(item.keys()) if isinstance(item, dict) else 'N/A'}")
+                                        
+                                        if isinstance(item, dict) and "urls" in item:
+                                            st.write(f"    ✅ Item {idx} has 'urls': {item['urls']}")
+                                            # Each result item has 'urls' array - take the first URL from each
+                                            if isinstance(item["urls"], list) and len(item["urls"]) > 0:
+                                                # Add the first URL from this result
+                                                generated_images.append(item["urls"][0])
+                                                st.write(f"    ✅ Added URL: {item['urls'][0][:50]}...")
+                                            elif isinstance(item["urls"], str):
+                                                generated_images.append(item["urls"])
+                                                st.write(f"    ✅ Added URL string: {item['urls'][:50]}...")
+                            
+                            # Fallback: check for other possible formats
+                            elif "result_url" in result:
+                                st.write("✅ Found 'result_url'")
+                                generated_images.append(result["result_url"])
                             elif "result_urls" in result:
-                                st.session_state.edited_image = result["result_urls"][0]
-                                st.success("✨ Image generated successfully!")
-                            elif "result" in result and isinstance(result["result"], list):
-                                for item in result["result"]:
-                                    if isinstance(item, dict) and "urls" in item:
-                                        st.session_state.edited_image = item["urls"][0]
-                                        st.success("✨ Image generated successfully!")
-                                        break
+                                st.write("✅ Found 'result_urls'")
+                                if isinstance(result["result_urls"], list):
+                                    generated_images = result["result_urls"]
+                                else:
+                                    generated_images.append(result["result_urls"])
+                            elif "url" in result:
+                                st.write("✅ Found 'url'")
+                                generated_images.append(result["url"])
+                            
+                            st.write(f"📊 Total images collected: {len(generated_images)}")
+                            
+                            if generated_images:
+                                st.session_state.generated_images = generated_images
+                                st.session_state.edited_image = None  # Clear single image
+                                st.write(f"💾 Saved to session state: {len(st.session_state.generated_images)} images")
+                                st.success(f"✨ {len(generated_images)} image(s) generated successfully!")
+                            else:
+                                st.error("❌ No images found in API response.")
                         else:
-                            st.error("No valid result format found in the API response.")
+                            st.error("❌ Invalid API response format.")
                             
                 except Exception as e:
                     st.error(f"Error generating images: {str(e)}")
         
-        # Display generated image if available
-        if st.session_state.get('edited_image'):
+        # Display generated images if available
+        if st.session_state.get('generated_images') and len(st.session_state.generated_images) > 0:
+            st.markdown("### 🖼️ Generated Images")
+            
+            # Display images in a collage based on count
+            num_imgs = len(st.session_state.generated_images)
+            
+            if num_imgs == 1:
+                # Single image - full width
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    st.image(st.session_state.generated_images[0], caption="Generated Image 1", use_column_width=True)
+                with col2:
+                    image_data = download_image(st.session_state.generated_images[0])
+                    if image_data:
+                        st.download_button(
+                            "⬇️ Download",
+                            image_data,
+                            "generated_image_1.png",
+                            "image/png",
+                            use_container_width=True
+                        )
+            
+            elif num_imgs == 2:
+                # Two images side by side
+                cols = st.columns(2)
+                for idx, img_url in enumerate(st.session_state.generated_images):
+                    with cols[idx]:
+                        st.image(img_url, caption=f"Generated Image {idx + 1}", use_column_width=True)
+                        image_data = download_image(img_url)
+                        if image_data:
+                            st.download_button(
+                                f"⬇️ Download {idx + 1}",
+                                image_data,
+                                f"generated_image_{idx + 1}.png",
+                                "image/png",
+                                use_container_width=True,
+                                key=f"download_{idx}"
+                            )
+            
+            elif num_imgs == 3:
+                # Three images - 2 on top, 1 on bottom
+                cols_top = st.columns(2)
+                for idx in range(2):
+                    with cols_top[idx]:
+                        st.image(st.session_state.generated_images[idx], caption=f"Generated Image {idx + 1}", use_column_width=True)
+                        image_data = download_image(st.session_state.generated_images[idx])
+                        if image_data:
+                            st.download_button(
+                                f"⬇️ Download {idx + 1}",
+                                image_data,
+                                f"generated_image_{idx + 1}.png",
+                                "image/png",
+                                use_container_width=True,
+                                key=f"download_{idx}"
+                            )
+                
+                # Bottom image centered
+                col_left, col_center, col_right = st.columns([1, 2, 1])
+                with col_center:
+                    st.image(st.session_state.generated_images[2], caption="Generated Image 3", use_column_width=True)
+                    image_data = download_image(st.session_state.generated_images[2])
+                    if image_data:
+                        st.download_button(
+                            "⬇️ Download 3",
+                            image_data,
+                            "generated_image_3.png",
+                            "image/png",
+                            use_container_width=True,
+                            key="download_2"
+                        )
+            
+            else:  # 4 images
+                # Four images in 2x2 grid
+                cols_top = st.columns(2)
+                for idx in range(2):
+                    with cols_top[idx]:
+                        st.image(st.session_state.generated_images[idx], caption=f"Generated Image {idx + 1}", use_column_width=True)
+                        image_data = download_image(st.session_state.generated_images[idx])
+                        if image_data:
+                            st.download_button(
+                                f"⬇️ Download {idx + 1}",
+                                image_data,
+                                f"generated_image_{idx + 1}.png",
+                                "image/png",
+                                use_container_width=True,
+                                key=f"download_{idx}"
+                            )
+                
+                cols_bottom = st.columns(2)
+                for idx in range(2, 4):
+                    with cols_bottom[idx - 2]:
+                        st.image(st.session_state.generated_images[idx], caption=f"Generated Image {idx + 1}", use_column_width=True)
+                        image_data = download_image(st.session_state.generated_images[idx])
+                        if image_data:
+                            st.download_button(
+                                f"⬇️ Download {idx + 1}",
+                                image_data,
+                                f"generated_image_{idx + 1}.png",
+                                "image/png",
+                                use_container_width=True,
+                                key=f"download_{idx}"
+                            )
+            
+            # Clear all images button
+            st.markdown("---")
+            if st.button("🗑️ Clear All Images", use_container_width=False):
+                st.session_state.generated_images = []
+                st.session_state.edited_image = None
+                st.rerun()
+        
+        # Fallback for old single image format (backward compatibility)
+        elif st.session_state.get('edited_image'):
             st.markdown("### 🖼️ Generated Image")
             col1, col2 = st.columns([3, 1])
             

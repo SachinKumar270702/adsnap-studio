@@ -66,7 +66,7 @@ https://YOUR_USERNAME-adsnap-studio-app.streamlit.app
 
 ---
 
-## 📚 Need More Help?
+## 📚 Need More Help? check here
 
 ### Quick Start (5 minutes)
 👉 **QUICKSTART_DEPLOY.md**
