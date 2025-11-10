@@ -284,60 +284,37 @@ def main():
                     )
                     
                     if result:
-                        # ALWAYS show the API response for debugging
-                        with st.expander("🔍 Debug: Click to see API Response"):
-                            st.json(result)
-                        
                         if isinstance(result, dict):
                             # Store multiple images in a list
                             generated_images = []
                             
-                            # Log what we're checking
-                            st.write(f"📋 Response has these keys: {list(result.keys())}")
-                            
                             # Bria API returns results in 'result' array when sync=True
                             # Format: {"result": [{"urls": ["url1"]}, {"urls": ["url2"]}]}
-                            if "result" in result:
-                                st.write(f"✅ Found 'result' key, type: {type(result['result'])}")
-                                
-                                if isinstance(result["result"], list):
-                                    st.write(f"✅ 'result' is a list with {len(result['result'])} items")
-                                    
-                                    for idx, item in enumerate(result["result"]):
-                                        st.write(f"  Item {idx}: type={type(item)}, keys={list(item.keys()) if isinstance(item, dict) else 'N/A'}")
-                                        
-                                        if isinstance(item, dict) and "urls" in item:
-                                            st.write(f"    ✅ Item {idx} has 'urls': {item['urls']}")
-                                            # Each result item has 'urls' array - take the first URL from each
-                                            if isinstance(item["urls"], list) and len(item["urls"]) > 0:
-                                                # Add the first URL from this result
-                                                generated_images.append(item["urls"][0])
-                                                st.write(f"    ✅ Added URL: {item['urls'][0][:50]}...")
-                                            elif isinstance(item["urls"], str):
-                                                generated_images.append(item["urls"])
-                                                st.write(f"    ✅ Added URL string: {item['urls'][:50]}...")
+                            if "result" in result and isinstance(result["result"], list):
+                                for item in result["result"]:
+                                    if isinstance(item, dict) and "urls" in item:
+                                        # Each result item has 'urls' array - take the first URL from each
+                                        if isinstance(item["urls"], list) and len(item["urls"]) > 0:
+                                            generated_images.append(item["urls"][0])
+                                        elif isinstance(item["urls"], str):
+                                            generated_images.append(item["urls"])
                             
                             # Fallback: check for other possible formats
                             elif "result_url" in result:
-                                st.write("✅ Found 'result_url'")
                                 generated_images.append(result["result_url"])
                             elif "result_urls" in result:
-                                st.write("✅ Found 'result_urls'")
                                 if isinstance(result["result_urls"], list):
                                     generated_images = result["result_urls"]
                                 else:
                                     generated_images.append(result["result_urls"])
                             elif "url" in result:
-                                st.write("✅ Found 'url'")
                                 generated_images.append(result["url"])
-                            
-                            st.write(f"📊 Total images collected: {len(generated_images)}")
                             
                             if generated_images:
                                 st.session_state.generated_images = generated_images
                                 st.session_state.edited_image = None  # Clear single image
-                                st.write(f"💾 Saved to session state: {len(st.session_state.generated_images)} images")
                                 st.success(f"✨ {len(generated_images)} image(s) generated successfully!")
+                                st.rerun()  # Force rerun to display images
                             else:
                                 st.error("❌ No images found in API response.")
                         else:
