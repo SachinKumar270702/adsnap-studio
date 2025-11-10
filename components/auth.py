@@ -103,14 +103,40 @@ class AuthManager:
 
 def init_session_state():
     """Initialize authentication session state."""
-    if 'authenticated' not in st.session_state:
-        st.session_state.authenticated = False
-    if 'username' not in st.session_state:
-        st.session_state.username = None
-    if 'user_info' not in st.session_state:
-        st.session_state.user_info = {}
     if 'auth_manager' not in st.session_state:
         st.session_state.auth_manager = AuthManager()
+    
+    # Check for persistent authentication
+    if 'authenticated' not in st.session_state:
+        # Try to restore authentication from query params (simple persistence)
+        query_params = st.query_params
+        if 'auth_token' in query_params and 'username' in query_params:
+            username = query_params['username']
+            auth_token = query_params['auth_token']
+            
+            # Simple token validation (in production, use proper JWT or similar)
+            expected_token = hashlib.sha256(f"{username}_adsnap_session".encode()).hexdigest()[:16]
+            
+            if auth_token == expected_token and (username in st.session_state.auth_manager.users or username == "demo_user"):
+                st.session_state.authenticated = True
+                st.session_state.username = username
+                
+                if username == "demo_user":
+                    st.session_state.user_info = {
+                        'full_name': 'Demo User',
+                        'email': 'demo@adsnap.studio',
+                        'created_at': datetime.now().isoformat()
+                    }
+                else:
+                    st.session_state.user_info = st.session_state.auth_manager.get_user_info(username)
+            else:
+                st.session_state.authenticated = False
+                st.session_state.username = None
+                st.session_state.user_info = {}
+        else:
+            st.session_state.authenticated = False
+            st.session_state.username = None
+            st.session_state.user_info = {}
     if 'db_manager' not in st.session_state:
         st.session_state.db_manager = get_database_manager()
     if 'activity_tracker' not in st.session_state:
@@ -121,6 +147,10 @@ def logout():
     st.session_state.authenticated = False
     st.session_state.username = None
     st.session_state.user_info = {}
+    
+    # Clear persistent authentication
+    st.query_params.clear()
+    
     st.rerun()
 
 def require_auth():
@@ -134,50 +164,248 @@ def show_login_page():
     """Display the login/signup page."""
     init_session_state()
     
-    # Custom CSS for better styling
+    # Custom CSS for better styling with animated background
     st.markdown("""
     <style>
-    .auth-container {
-        max-width: 400px;
-        margin: 0 auto;
-        padding: 2rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        color: white;
-        border: 2px solid rgba(255,255,255,0.2);
+    /* Hide Streamlit header, toolbar and menu */
+    header[data-testid="stHeader"] {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
     }
+    
+    .stApp > header {
+        display: none !important;
+    }
+    
+    div[data-testid="stToolbar"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    div[data-testid="stDecoration"] {
+        display: none !important;
+    }
+    
+    div[data-testid="stStatusWidget"] {
+        display: none !important;
+    }
+    
+    #MainMenu {
+        visibility: hidden !important;
+        display: none !important;
+    }
+    
+    footer {
+        visibility: hidden !important;
+        display: none !important;
+    }
+    
+    /* Remove top padding from main container */
+    .main .block-container {
+        padding-top: 2rem !important;
+    }
+    
+    /* Ensure full viewport height */
+    .stApp {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    
+    /* Animated gradient background */
+    .stApp {
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+    }
+    
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    /* Floating particles effect */
+    .stApp::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+        animation: float 20s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .auth-container {
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 2.5rem;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.3);
+        color: #333;
+        position: relative;
+        z-index: 1;
+        animation: slideUp 0.6s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
     .auth-title {
         text-align: center;
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-        color: #FFFFFF !important;
-        text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
-        background: none !important;
-        -webkit-text-fill-color: #FFFFFF !important;
-        text-decoration: none !important;
-        font-family: 'Arial', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         letter-spacing: 2px;
+        animation: titlePulse 2s ease-in-out infinite;
+        text-transform: uppercase;
     }
+    
+    @keyframes titlePulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+    }
+    
+    .subtitle-text {
+        text-align: center;
+        color: #667eea;
+        font-size: 1rem;
+        margin: 0;
+        font-weight: 500;
+        animation: fadeIn 1s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
     .stButton > button {
         width: 100%;
-        background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border: none;
         border-radius: 25px;
         padding: 0.75rem 1.5rem;
         font-weight: bold;
         transition: all 0.3s ease;
+        color: white;
+        font-size: 1rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
     }
+    
     .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
     }
+    
     .auth-tabs {
-        background: rgba(255,255,255,0.1);
-        border-radius: 10px;
-        padding: 1rem;
+        background: rgba(102, 126, 234, 0.05);
+        border-radius: 15px;
+        padding: 1.5rem;
         margin-bottom: 1rem;
+        border: 1px solid rgba(102, 126, 234, 0.1);
+    }
+    
+    /* Input field styling */
+    .stTextInput > div > div > input {
+        border-radius: 12px;
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+    }
+    
+    .stTextInput > div > div > input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    /* Tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+        background: transparent;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        color: #667eea;
+        font-weight: 600;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        background: rgba(102, 126, 234, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+    }
+    
+    /* Form styling */
+    .stForm {
+        background: transparent;
+    }
+    
+    /* Decorative elements */
+    .auth-container::before {
+        content: '✨';
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        font-size: 3rem;
+        animation: rotate 4s linear infinite;
+    }
+    
+    .auth-container::after {
+        content: '🎨';
+        position: absolute;
+        bottom: -20px;
+        left: -20px;
+        font-size: 3rem;
+        animation: bounce 2s ease-in-out infinite;
+    }
+    
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
     }
     </style>
     """, unsafe_allow_html=True)
@@ -188,12 +416,17 @@ def show_login_page():
     with col2:
         st.markdown('<div class="auth-container">', unsafe_allow_html=True)
         st.markdown('''
-        <div style="background: rgba(0,0,0,0.5); padding: 1.5rem; border-radius: 15px; 
-                    margin-bottom: 1rem; border: 3px solid #FFD700; 
-                    box-shadow: 0 0 20px rgba(255,215,0,0.3);">
-            <h1 class="auth-title">🎨 AdSnap Studio</h1>
-            <p style="text-align: center; color: #FFD700; font-size: 1.1rem; 
-                      margin: 0; font-weight: 500;">AI-Powered Image Generation & Editing</p>
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="font-size: 4rem; margin-bottom: 0.5rem; animation: bounce 2s ease-in-out infinite;">
+                🎨
+            </div>
+            <h1 class="auth-title">AdSnap Studio</h1>
+            <p class="subtitle-text">AI-Powered Image Generation & Editing</p>
+            <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; font-size: 1.5rem;">
+                <span style="animation: bounce 2s ease-in-out infinite; animation-delay: 0.1s;">✨</span>
+                <span style="animation: bounce 2s ease-in-out infinite; animation-delay: 0.2s;">🚀</span>
+                <span style="animation: bounce 2s ease-in-out infinite; animation-delay: 0.3s;">💫</span>
+            </div>
         </div>
         ''', unsafe_allow_html=True)
         
@@ -203,7 +436,12 @@ def show_login_page():
         with tab1:
             st.markdown('<div class="auth-tabs">', unsafe_allow_html=True)
             with st.form("login_form"):
-                st.subheader("Welcome Back!")
+                st.markdown("""
+                <div style="text-align: center; margin-bottom: 1rem;">
+                    <h3 style="color: #667eea; margin-bottom: 0.5rem;">👋 Welcome Back!</h3>
+                    <p style="color: #999; font-size: 0.9rem;">Ready to create something amazing?</p>
+                </div>
+                """, unsafe_allow_html=True)
                 username = st.text_input("Username", placeholder="Enter your username")
                 password = st.text_input("Password", type="password", placeholder="Enter your password")
                 
@@ -215,31 +453,23 @@ def show_login_page():
                 
                 if login_btn:
                     if username and password:
-                        # Try database authentication first
-                        password_hash = hashlib.sha256(password.encode()).hexdigest()
-                        success, message, user_info = st.session_state.db_manager.authenticate_user(username, password_hash)
-                        
+                        success, message = st.session_state.auth_manager.authenticate(username, password)
                         if success:
                             st.session_state.authenticated = True
                             st.session_state.username = username
-                            st.session_state.user_info = user_info
+                            st.session_state.user_info = st.session_state.auth_manager.get_user_info(username)
                             
-                            # Track login activity
-                            st.session_state.activity_tracker.track_login(user_info['id'])
+                            # Set persistent authentication using query params
+                            auth_token = hashlib.sha256(f"{username}_adsnap_session".encode()).hexdigest()[:16]
+                            st.query_params.update({
+                                'auth_token': auth_token,
+                                'username': username
+                            })
                             
                             st.success(f"Welcome back, {username}! 🎉")
                             st.rerun()
                         else:
-                            # Fallback to file-based authentication for existing users
-                            success, message = st.session_state.auth_manager.authenticate(username, password)
-                            if success:
-                                st.session_state.authenticated = True
-                                st.session_state.username = username
-                                st.session_state.user_info = st.session_state.auth_manager.get_user_info(username)
-                                st.success(f"Welcome back, {username}! 🎉")
-                                st.rerun()
-                            else:
-                                st.error(message)
+                            st.error(message)
                     else:
                         st.warning("Please fill in all fields")
                 
@@ -251,6 +481,14 @@ def show_login_page():
                         'email': 'demo@adsnap.studio',
                         'created_at': datetime.now().isoformat()
                     }
+                    
+                    # Set persistent authentication for demo mode
+                    auth_token = hashlib.sha256("demo_user_adsnap_session".encode()).hexdigest()[:16]
+                    st.query_params.update({
+                        'auth_token': auth_token,
+                        'username': 'demo_user'
+                    })
+                    
                     st.success("Welcome to Demo Mode! 🎭")
                     st.rerun()
             
@@ -259,7 +497,12 @@ def show_login_page():
         with tab2:
             st.markdown('<div class="auth-tabs">', unsafe_allow_html=True)
             with st.form("signup_form"):
-                st.subheader("Join AdSnap Studio!")
+                st.markdown("""
+                <div style="text-align: center; margin-bottom: 1rem;">
+                    <h3 style="color: #667eea; margin-bottom: 0.5rem;">🌟 Join AdSnap Studio!</h3>
+                    <p style="color: #999; font-size: 0.9rem;">Start your creative journey today</p>
+                </div>
+                """, unsafe_allow_html=True)
                 full_name = st.text_input("Full Name", placeholder="Your full name")
                 email = st.text_input("Email", placeholder="your.email@example.com")
                 new_username = st.text_input("Username", placeholder="Choose a username")
@@ -296,11 +539,18 @@ def show_login_page():
         st.markdown('</div>', unsafe_allow_html=True)
         
         # Footer
-        st.markdown("---")
-        st.markdown(
-            "<p style='text-align: center; color: #666;'>🎨 Generate & modify images with AI-powered tools</p>",
-            unsafe_allow_html=True
-        )
+        st.markdown("""
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid rgba(102, 126, 234, 0.1);">
+            <p style='text-align: center; color: #667eea; font-weight: 500; margin-bottom: 0.5rem;'>
+                ✨ Generate & modify images with AI-powered tools ✨
+            </p>
+            <div style="text-align: center; font-size: 0.9rem; color: #999;">
+                <span style="margin: 0 0.5rem;">🎨 Create</span>
+                <span style="margin: 0 0.5rem;">✂️ Edit</span>
+                <span style="margin: 0 0.5rem;">🚀 Transform</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 def show_user_profile():
     """Display user profile in sidebar."""

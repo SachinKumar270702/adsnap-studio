@@ -74,3 +74,77 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - [Bria AI](https://bria.ai) for their powerful image generation APIs
 - [Streamlit](https://streamlit.io) for the amazing web framework 
+
+## 🚀 D
+eployment
+
+### Streamlit Cloud (Recommended)
+
+1. **Push to GitHub**
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+2. **Deploy on Streamlit Cloud**
+   - Visit [share.streamlit.io](https://share.streamlit.io/)
+   - Click "New app"
+   - Select your repository
+   - Set main file: `app.py`
+   - Add secrets in dashboard:
+     ```toml
+     BRIA_API_KEY = "your_api_key_here"
+     ```
+   - Click "Deploy"
+
+3. **Your app will be live!** 🎉
+
+For more deployment options (Docker, Heroku, AWS), see [DEPLOYMENT.md](DEPLOYMENT.md)
+
+---
+
+## 📦 Files Created for Deployment
+
+- ✅ `requirements.txt` - Python dependencies
+- ✅ `.streamlit/config.toml` - Streamlit configuration
+- ✅ `Dockerfile` - Docker containerization
+- ✅ `Procfile` - Heroku deployment
+- ✅ `packages.txt` - System dependencies
+- ✅ `.gitignore` - Git ignore rules
+- ✅ `DEPLOYMENT.md` - Detailed deployment guide
+
+---
+
+## 🎨 New Features
+
+### Authentication System
+- Secure login/signup
+- Demo mode for testing
+- Persistent sessions
+- User profiles
+
+### Interactive Dashboard
+- Real-time statistics
+- Activity tracking
+- Quick action buttons
+- Daily tips
+
+### Beautiful UI
+- Animated gradient backgrounds
+- Glass morphism design
+- Smooth transitions
+- Mobile responsive
+
+---
+
+## 🔒 Security Notes
+
+- Never commit `.env` or `secrets.toml` files
+- Use environment variables for API keys
+- Enable HTTPS in production
+- Regular security updates
+
+---
+
+**Ready to deploy? Follow the steps above! 🚀**

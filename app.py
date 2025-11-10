@@ -41,6 +41,42 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Hide Streamlit default elements
+hide_streamlit_style = """
+<style>
+    header[data-testid="stHeader"] {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+    }
+    
+    div[data-testid="stToolbar"] {
+        display: none !important;
+    }
+    
+    div[data-testid="stDecoration"] {
+        display: none !important;
+    }
+    
+    div[data-testid="stStatusWidget"] {
+        display: none !important;
+    }
+    
+    #MainMenu {
+        visibility: hidden !important;
+    }
+    
+    footer {
+        visibility: hidden !important;
+    }
+    
+    .main .block-container {
+        padding-top: 1rem !important;
+    }
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # Load environment variables
 print("Loading environment variables...")
 load_dotenv(verbose=True)
@@ -128,11 +164,23 @@ def main():
     
     # Handle quick actions from dashboard - use session state for navigation
     if 'current_page' not in st.session_state:
-        st.session_state.current_page = 0
+        # Try to restore current page from query params
+        query_params = st.query_params
+        if 'page' in query_params:
+            try:
+                st.session_state.current_page = int(query_params['page'])
+            except (ValueError, TypeError):
+                st.session_state.current_page = 0
+        else:
+            st.session_state.current_page = 0
     
     # Check if a quick action was triggered
     if st.session_state.get('active_tab') is not None:
         st.session_state.current_page = st.session_state.active_tab
+        # Update query params to persist current page
+        current_params = dict(st.query_params)
+        current_params['page'] = str(st.session_state.active_tab)
+        st.query_params.update(current_params)
         st.session_state.active_tab = None  # Reset after use
     
     # Create navigation buttons
@@ -144,6 +192,10 @@ def main():
             button_type = "primary" if i == st.session_state.current_page else "secondary"
             if st.button(tab_name, key=f"nav_{i}", use_container_width=True, type=button_type):
                 st.session_state.current_page = i
+                # Update query params to persist current page
+                current_params = dict(st.query_params)
+                current_params['page'] = str(i)
+                st.query_params.update(current_params)
                 st.rerun()
     
     st.markdown("---")  # Separator line
