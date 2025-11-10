@@ -593,86 +593,167 @@ def main():
         st.markdown("### 🎨 Generative Fill")
         st.markdown("Fill in missing parts of images with AI-powered content generation")
         
-        uploaded_file = enhanced_file_uploader(
-            "Upload Image for Generative Fill",
-            ["png", "jpg", "jpeg"],
-            "Upload an image to fill missing areas with AI",
-            "generative_fill_upload"
-        )
+        col1, col2 = st.columns(2)
         
-        if uploaded_file:
-            col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("#### 📤 Upload Files")
+            uploaded_file = st.file_uploader(
+                "Upload Original Image",
+                type=["png", "jpg", "jpeg"],
+                key="generative_fill_image"
+            )
             
-            with col1:
-                st.image(uploaded_file, caption="Original Image", use_column_width=True)
-                
-                # Canvas for mask drawing
-                st.markdown("**Draw the area to fill:**")
-                canvas_result = st_canvas(
-                    fill_color="rgba(255, 255, 255, 0.3)",
-                    stroke_width=20,
-                    stroke_color="white",
-                    background_color="black",
-                    background_image=Image.open(uploaded_file),
-                    update_streamlit=True,
-                    height=400,
-                    drawing_mode="freedraw",
-                    key="generative_fill_canvas",
-                )
-                
-                prompt = st.text_area("Describe what should fill the selected area", 
-                                    placeholder="e.g., 'blue sky with clouds', 'green grass', 'modern furniture'")
-                
-                if st.button("🎨 Generate Fill", type="primary") and prompt:
-                    show_generation_status("Generating fill content...", True)
-                    st.success("✨ Generative fill completed!")
+            mask_file = st.file_uploader(
+                "Upload Mask Image (white = fill area, black = keep)",
+                type=["png", "jpg", "jpeg"],
+                key="generative_fill_mask",
+                help="Create a mask where white areas will be filled with AI-generated content"
+            )
+        
+        with col2:
+            st.markdown("#### ⚙️ Settings")
+            prompt = st.text_area(
+                "Describe what should fill the masked area", 
+                placeholder="e.g., 'blue sky with clouds', 'green grass', 'modern furniture'",
+                height=100
+            )
             
-            with col2:
-                st.markdown("**Preview:**")
-                if canvas_result.image_data is not None:
-                    st.image(canvas_result.image_data, caption="Mask Preview", use_column_width=True)
+            sync_mode = st.checkbox("Wait for result (sync mode)", value=True)
+        
+        if uploaded_file and mask_file:
+            st.markdown("---")
+            st.markdown("### 🖼️ Preview")
+            
+            col_a, col_b, col_c = st.columns(3)
+            
+            with col_a:
+                img = Image.open(uploaded_file)
+                st.image(img, caption="Original Image", use_column_width=True)
+            
+            with col_b:
+                mask = Image.open(mask_file)
+                st.image(mask, caption="Mask", use_column_width=True)
+            
+            with col_c:
+                if st.session_state.get('generative_fill_result'):
+                    st.image(st.session_state.generative_fill_result, caption="Result", use_column_width=True)
+                    
+                    # Download button
+                    image_data = download_image(st.session_state.generative_fill_result)
+                    if image_data:
+                        st.download_button(
+                            "⬇️ Download Result",
+                            image_data,
+                            "generative_fill_result.png",
+                            "image/png",
+                            use_container_width=True
+                        )
+                else:
+                    st.info("Result will appear here")
+            
+            st.markdown("---")
+            
+            if st.button("🎨 Generate Fill", type="primary", use_container_width=True):
+                if not prompt:
+                    st.warning("Please enter a prompt describing what to fill")
+                elif not st.session_state.api_key:
+                    st.error("Please enter your API key in the sidebar")
+                else:
+                    with st.spinner("🎨 Generating fill content..."):
+                        try:
+                            result = generative_fill(
+                                api_key=st.session_state.api_key,
+                                image_data=uploaded_file.getvalue(),
+                                mask_data=mask_file.getvalue(),
+                                prompt=prompt,
+                                sync=sync_mode
+                            )
+                            
+                            if result and "result_url" in result:
+                                st.session_state.generative_fill_result = result["result_url"]
+                                st.success("✨ Generative fill completed!")
+                                st.rerun()
+                            else:
+                                st.error("No result URL in API response")
+                        except Exception as e:
+                            st.error(f"Error: {str(e)}")
+        elif uploaded_file:
+            st.info("👆 Please upload a mask image to continue")
+        else:
+            st.info("👆 Please upload both an image and a mask to get started")
     
     elif st.session_state.current_page == 4:  # Erase Elements
         st.markdown("### ✂️ Erase Elements")
-        st.markdown("Remove unwanted objects from your images with precision")
+        st.markdown("Automatically remove foreground objects from your images")
         
-        uploaded_file = enhanced_file_uploader(
-            "Upload Image for Object Removal",
-            ["png", "jpg", "jpeg"],
-            "Upload an image to remove unwanted elements",
-            "erase_upload"
-        )
+        st.info("💡 This feature automatically detects and removes foreground objects, generating the background behind them.")
+        
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            uploaded_file = st.file_uploader(
+                "Upload Image",
+                type=["png", "jpg", "jpeg"],
+                key="erase_image"
+            )
+        
+        with col2:
+            st.markdown("#### ⚙️ Settings")
+            content_mod = st.checkbox("Enable content moderation", value=True, key="erase_content_mod")
         
         if uploaded_file:
-            col1, col2 = st.columns(2)
+            st.markdown("---")
+            st.markdown("### 🖼️ Preview")
             
-            with col1:
-                st.image(uploaded_file, caption="Original Image", use_column_width=True)
-                
-                # Canvas for selection
-                st.markdown("**Select objects to remove:**")
-                canvas_result = st_canvas(
-                    fill_color="rgba(255, 0, 0, 0.3)",
-                    stroke_width=15,
-                    stroke_color="red",
-                    background_color="transparent",
-                    background_image=Image.open(uploaded_file),
-                    update_streamlit=True,
-                    height=400,
-                    drawing_mode="freedraw",
-                    key="erase_canvas",
-                )
-                
-                erase_mode = st.selectbox("Erase Mode", ["Automatic", "Precise", "Smart Fill"])
-                
-                if st.button("🗑️ Remove Objects", type="primary"):
-                    show_generation_status("Removing selected objects...", True)
-                    st.success("✨ Objects removed successfully!")
+            col_a, col_b = st.columns(2)
             
-            with col2:
-                st.markdown("**Selection Preview:**")
-                if canvas_result.image_data is not None:
-                    st.image(canvas_result.image_data, caption="Selection Mask", use_column_width=True)
+            with col_a:
+                img = Image.open(uploaded_file)
+                st.image(img, caption="Original Image", use_column_width=True)
+            
+            with col_b:
+                if st.session_state.get('erase_result'):
+                    st.image(st.session_state.erase_result, caption="Foreground Removed", use_column_width=True)
+                    
+                    # Download button
+                    image_data = download_image(st.session_state.erase_result)
+                    if image_data:
+                        st.download_button(
+                            "⬇️ Download Result",
+                            image_data,
+                            "erase_result.png",
+                            "image/png",
+                            use_container_width=True
+                        )
+                else:
+                    st.info("Result will appear here after processing")
+            
+            st.markdown("---")
+            
+            if st.button("🗑️ Remove Foreground Objects", type="primary", use_container_width=True):
+                if not st.session_state.api_key:
+                    st.error("Please enter your API key in the sidebar")
+                else:
+                    with st.spinner("🗑️ Removing foreground objects..."):
+                        try:
+                            result = erase_foreground(
+                                api_key=st.session_state.api_key,
+                                image_data=uploaded_file.getvalue(),
+                                content_moderation=content_mod
+                            )
+                            
+                            if result and "result_url" in result:
+                                st.session_state.erase_result = result["result_url"]
+                                st.success("✨ Foreground objects removed successfully!")
+                                st.rerun()
+                            else:
+                                st.error("No result URL in API response")
+                                with st.expander("Debug: API Response"):
+                                    st.json(result)
+                        except Exception as e:
+                            st.error(f"Error: {str(e)}")
+        else:
+            st.info("👆 Please upload an image to get started")
 
 if __name__ == "__main__":
     main()
