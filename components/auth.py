@@ -171,6 +171,17 @@ def show_login_page():
     """Display the login/signup page."""
     init_session_state()
     
+    # Check if there's a reset token in URL
+    query_params = st.query_params
+    if 'reset_token' in query_params:
+        show_password_reset_form(query_params['reset_token'])
+        return
+    
+    # Check if showing password reset page
+    if st.session_state.get('show_password_reset', False):
+        show_password_reset_page()
+        return
+    
     # Custom CSS for better styling with animated background
     st.markdown("""
     <style>
@@ -458,6 +469,9 @@ def show_login_page():
                 with col_b:
                     demo_btn = st.form_submit_button("🎭 Demo Mode", use_container_width=True)
                 
+                # Forgot password link
+                forgot_password_btn = st.form_submit_button("🔑 Forgot Password?", use_container_width=True)
+                
                 if login_btn:
                     if username and password:
                         result = st.session_state.auth_manager.authenticate(username, password)
@@ -505,6 +519,10 @@ def show_login_page():
                     })
                     
                     st.success("Welcome to Demo Mode! 🎭")
+                    st.rerun()
+                
+                if forgot_password_btn:
+                    st.session_state.show_password_reset = True
                     st.rerun()
             
             st.markdown('</div>', unsafe_allow_html=True)
@@ -645,3 +663,133 @@ def show_profile_modal():
             if st.form_submit_button("❌ Cancel"):
                 st.session_state.show_profile_modal = False
                 st.rerun()
+
+def show
+_password_reset_page():
+    """Display password reset request page."""
+    from components.email_service import EmailService
+    
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="font-size: 4rem; margin-bottom: 0.5rem;">🔐</div>
+        <h1 style="color: #667eea;">Reset Your Password</h1>
+        <p style="color: #888;">Enter your email to receive a password reset link</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        with st.form("password_reset_form"):
+            email = st.text_input("Email Address", placeholder="your.email@example.com")
+            
+            col_a, col_b = st.columns(2)
+            with col_a:
+                submit_btn = st.form_submit_button("📧 Send Reset Link", use_container_width=True, type="primary")
+            with col_b:
+                back_btn = st.form_submit_button("← Back to Login", use_container_width=True)
+            
+            if submit_btn:
+                if email:
+                    # Check if email exists
+                    auth_manager = st.session_state.auth_manager
+                    user_found = False
+                    
+                    for username, user_data in auth_manager.users.items():
+                        if user_data.get('email') == email:
+                            user_found = True
+                            break
+                    
+                    if user_found:
+                        # Generate reset token
+                        email_service = EmailService()
+                        token = email_service.generate_reset_token(email)
+                        
+                        # Create reset link
+                        base_url = st.query_params.get('base_url', 'http://localhost:8501')
+                        reset_link = f"{base_url}/?reset_token={token}"
+                        
+                        # Send email
+                        success, message = email_service.send_password_reset_email(email, reset_link)
+                        
+                        if success:
+                            st.success("✅ Password reset link sent! Check your email.")
+                            st.info("📧 The link will expire in 1 hour.")
+                        else:
+                            st.error(f"❌ {message}")
+                            st.info("💡 Note: Email service requires SMTP configuration in environment variables.")
+                    else:
+                        # Don't reveal if email exists for security
+                        st.success("✅ If that email exists, a reset link has been sent!")
+                else:
+                    st.warning("Please enter your email address")
+            
+            if back_btn:
+                st.session_state.show_password_reset = False
+                st.rerun()
+
+def show_password_reset_form(reset_token):
+    """Display form to set new password after clicking reset link."""
+    from components.email_service import EmailService
+    
+    email_service = EmailService()
+    valid, email, message = email_service.verify_reset_token(reset_token)
+    
+    if not valid:
+        st.error(f"❌ {message}")
+        st.info("Please request a new password reset link.")
+        if st.button("← Back to Login"):
+            st.query_params.clear()
+            st.rerun()
+        return
+    
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="font-size: 4rem; margin-bottom: 0.5rem;">🔑</div>
+        <h1 style="color: #667eea;">Set New Password</h1>
+        <p style="color: #888;">Create a strong password for your account</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        with st.form("new_password_form"):
+            st.info(f"📧 Resetting password for: {email}")
+            
+            new_password = st.text_input("New Password", type="password", placeholder="Enter new password")
+            confirm_password = st.text_input("Confirm Password", type="password", placeholder="Confirm new password")
+            
+            submit_btn = st.form_submit_button("🔐 Reset Password", use_container_width=True, type="primary")
+            
+            if submit_btn:
+                if new_password and confirm_password:
+                    if new_password != confirm_password:
+                        st.error("❌ Passwords don't match!")
+                    elif len(new_password) < 6:
+                        st.error("❌ Password must be at least 6 characters long")
+                    else:
+                        # Find user by email and update password
+                        auth_manager = st.session_state.auth_manager
+                        
+                        for username, user_data in auth_manager.users.items():
+                            if user_data.get('email') == email:
+                                # Update password
+                                auth_manager.users[username]['password'] = auth_manager.hash_password(new_password)
+                                auth_manager.save_users()
+                                
+                                # Mark token as used
+                                email_service.mark_token_used(reset_token)
+                                
+                                st.success("✅ Password reset successfully!")
+                                st.balloons()
+                                st.info("You can now login with your new password.")
+                                
+                                # Clear reset token from URL
+                                st.query_params.clear()
+                                
+                                if st.button("🚀 Go to Login"):
+                                    st.rerun()
+                                break
+                else:
+                    st.warning("Please fill in all fields")
