@@ -136,10 +136,6 @@ def init_session_state():
             st.session_state.authenticated = False
             st.session_state.username = None
             st.session_state.user_info = {}
-    if 'db_manager' not in st.session_state:
-        st.session_state.db_manager = get_database_manager()
-    if 'activity_tracker' not in st.session_state:
-        st.session_state.activity_tracker = get_activity_tracker()
 
 def logout():
     """Logout user and clear session."""

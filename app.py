@@ -287,23 +287,6 @@ def main():
                         if isinstance(result, dict):
                             if "result_url" in result:
                                 st.session_state.edited_image = result["result_url"]
-                                
-                                # Save to database
-                                if st.session_state.get('user_info', {}).get('id'):
-                                    db_manager = st.session_state.db_manager
-                                    db_manager.save_generated_image(
-                                        st.session_state.user_info['id'],
-                                        result["result_url"],
-                                        "generated",
-                                        prompt,
-                                        {
-                                            "num_images": num_images,
-                                            "aspect_ratio": aspect_ratio,
-                                            "style": style,
-                                            "enhance_image": enhance_img
-                                        }
-                                    )
-                                
                                 st.success("✨ Image generated successfully!")
                             elif "result_urls" in result:
                                 st.session_state.edited_image = result["result_urls"][0]
