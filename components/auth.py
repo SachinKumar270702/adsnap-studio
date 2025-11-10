@@ -513,12 +513,9 @@ def show_login_page():
                         elif len(new_password) < 6:
                             st.error("Password must be at least 6 characters long")
                         else:
-                            # Create user in database
-                            password_hash = hashlib.sha256(new_password.encode()).hexdigest()
-                            user_uuid = str(uuid.uuid4())
-                            
-                            success, message = st.session_state.db_manager.create_user(
-                                new_username, email, password_hash, full_name, user_uuid
+                            # Create user using AuthManager
+                            success, message = st.session_state.auth_manager.create_user(
+                                new_username, email, new_password, full_name
                             )
                             
                             if success:
