@@ -449,7 +449,9 @@ def show_welcome_dashboard():
             "Start Creating",
             "feature_generate"
         ):
-            st.session_state.active_tab = 0
+            st.session_state.active_tab = 1  # Generate Image tab
+            st.session_state.has_used_app = True
+            st.rerun()
     
     with col2:
         if show_feature_card(
@@ -459,7 +461,9 @@ def show_welcome_dashboard():
             "Try Now",
             "feature_lifestyle"
         ):
-            st.session_state.active_tab = 1
+            st.session_state.active_tab = 2  # Lifestyle Shot tab
+            st.session_state.has_used_app = True
+            st.rerun()
     
     with col3:
         if show_feature_card(
@@ -469,7 +473,9 @@ def show_welcome_dashboard():
             "Explore",
             "feature_editing"
         ):
-            st.session_state.active_tab = 2
+            st.session_state.active_tab = 3  # Generative Fill tab
+            st.session_state.has_used_app = True
+            st.rerun()
     
     # Quick start guide
     st.markdown("### 🚀 Quick Start Guide")
