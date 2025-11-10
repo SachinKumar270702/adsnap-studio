@@ -4,7 +4,6 @@ import json
 import os
 from datetime import datetime, timedelta
 import uuid
-from components.database import get_database_manager, get_activity_tracker
 
 class AuthManager:
     def __init__(self, users_file="data/users.json"):
