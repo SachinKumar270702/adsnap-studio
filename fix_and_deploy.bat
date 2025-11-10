@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo   Fixing and Redeploying AdSnap Studio
+echo   Final Fix - AdSnap Studio Deployment
 echo ========================================
 echo.
 
@@ -9,7 +9,7 @@ git add .
 
 echo.
 echo Committing fixes...
-git commit -m "Fix deployment: remove unused dependencies and database imports"
+git commit -m "Fix: Use Python 3.11 and update package versions for compatibility"
 
 echo.
 echo Pushing to GitHub...
@@ -18,6 +18,12 @@ git push origin main
 echo.
 echo ========================================
 echo Done! Streamlit Cloud will auto-redeploy
+echo.
+echo This fix includes:
+echo - Python 3.11 (instead of 3.13)
+echo - Updated numpy to 1.26+ (compatible)
+echo - Updated Pillow to 10.3+ (compatible)
+echo - Flexible version constraints
 echo.
 echo Check your app at:
 echo https://sachinkumar270702-adsnap-studio-ayyxuecxj8c3put2ojgrqj.streamlit.app
