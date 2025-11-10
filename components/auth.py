@@ -664,8 +664,7 @@ def show_profile_modal():
                 st.session_state.show_profile_modal = False
                 st.rerun()
 
-def show
-_password_reset_page():
+def show_password_reset_page():
     """Display password reset request page."""
     from components.email_service import EmailService
     
