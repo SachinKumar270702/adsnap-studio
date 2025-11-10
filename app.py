@@ -684,76 +684,204 @@ def main():
     
     elif st.session_state.current_page == 4:  # Erase Elements
         st.markdown("### ✂️ Erase Elements")
-        st.markdown("Automatically remove foreground objects from your images")
+        st.markdown("Mark areas to erase with arrows, then remove them with AI")
         
-        st.info("💡 This feature automatically detects and removes foreground objects, generating the background behind them.")
+        # Method selection
+        erase_method = st.radio(
+            "Choose erase method:",
+            ["🤖 Automatic (AI detects foreground)", "✏️ Manual (Draw mask to erase)"],
+            horizontal=True
+        )
         
-        col1, col2 = st.columns([2, 1])
+        if erase_method == "🤖 Automatic (AI detects foreground)":
+            st.info("💡 This feature automatically detects and removes foreground objects, generating the background behind them.")
+            
+            col1, col2 = st.columns([2, 1])
+            
+            with col1:
+                uploaded_file = st.file_uploader(
+                    "Upload Image",
+                    type=["png", "jpg", "jpeg"],
+                    key="erase_image_auto"
+                )
+            
+            with col2:
+                st.markdown("#### ⚙️ Settings")
+                content_mod = st.checkbox("Enable content moderation", value=True, key="erase_content_mod")
+            
+            if uploaded_file:
+                st.markdown("---")
+                st.markdown("### 🖼️ Preview")
+                
+                col_a, col_b = st.columns(2)
+                
+                with col_a:
+                    img = Image.open(uploaded_file)
+                    st.image(img, caption="Original Image", use_column_width=True)
+                
+                with col_b:
+                    if st.session_state.get('erase_result'):
+                        st.image(st.session_state.erase_result, caption="Foreground Removed", use_column_width=True)
+                        
+                        # Download button
+                        image_data = download_image(st.session_state.erase_result)
+                        if image_data:
+                            st.download_button(
+                                "⬇️ Download Result",
+                                image_data,
+                                "erase_result.png",
+                                "image/png",
+                                use_container_width=True
+                            )
+                    else:
+                        st.info("Result will appear here after processing")
+                
+                st.markdown("---")
+                
+                if st.button("🗑️ Remove Foreground Objects", type="primary", use_container_width=True):
+                    if not st.session_state.api_key:
+                        st.error("Please enter your API key in the sidebar")
+                    else:
+                        with st.spinner("🗑️ Removing foreground objects..."):
+                            try:
+                                result = erase_foreground(
+                                    api_key=st.session_state.api_key,
+                                    image_data=uploaded_file.getvalue(),
+                                    content_moderation=content_mod
+                                )
+                                
+                                if result and "result_url" in result:
+                                    st.session_state.erase_result = result["result_url"]
+                                    st.success("✨ Foreground objects removed successfully!")
+                                    st.rerun()
+                                else:
+                                    st.error("No result URL in API response")
+                                    with st.expander("Debug: API Response"):
+                                        st.json(result)
+                            except Exception as e:
+                                st.error(f"Error: {str(e)}")
+            else:
+                st.info("👆 Please upload an image to get started")
         
-        with col1:
+        else:  # Manual mask drawing
+            st.info("💡 Draw on the image to mark areas you want to erase. White areas will be removed.")
+            
             uploaded_file = st.file_uploader(
                 "Upload Image",
                 type=["png", "jpg", "jpeg"],
-                key="erase_image"
+                key="erase_image_manual"
             )
-        
-        with col2:
-            st.markdown("#### ⚙️ Settings")
-            content_mod = st.checkbox("Enable content moderation", value=True, key="erase_content_mod")
-        
-        if uploaded_file:
-            st.markdown("---")
-            st.markdown("### 🖼️ Preview")
             
-            col_a, col_b = st.columns(2)
-            
-            with col_a:
+            if uploaded_file:
+                # Initialize drawing state
+                if 'drawing_mask' not in st.session_state:
+                    st.session_state.drawing_mask = None
+                
                 img = Image.open(uploaded_file)
-                st.image(img, caption="Original Image", use_column_width=True)
-            
-            with col_b:
-                if st.session_state.get('erase_result'):
-                    st.image(st.session_state.erase_result, caption="Foreground Removed", use_column_width=True)
+                
+                st.markdown("---")
+                st.markdown("### ✏️ Draw Mask")
+                
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.markdown("**Original Image**")
+                    st.image(img, use_column_width=True)
                     
-                    # Download button
-                    image_data = download_image(st.session_state.erase_result)
-                    if image_data:
-                        st.download_button(
-                            "⬇️ Download Result",
-                            image_data,
-                            "erase_result.png",
-                            "image/png",
-                            use_container_width=True
-                        )
-                else:
-                    st.info("Result will appear here after processing")
-            
-            st.markdown("---")
-            
-            if st.button("🗑️ Remove Foreground Objects", type="primary", use_container_width=True):
-                if not st.session_state.api_key:
-                    st.error("Please enter your API key in the sidebar")
-                else:
-                    with st.spinner("🗑️ Removing foreground objects..."):
-                        try:
-                            result = erase_foreground(
-                                api_key=st.session_state.api_key,
-                                image_data=uploaded_file.getvalue(),
-                                content_moderation=content_mod
-                            )
+                    st.markdown("**Drawing Tools**")
+                    brush_size = st.slider("Brush Size", 5, 100, 30, key="brush_size")
+                    
+                    col_a, col_b, col_c = st.columns(3)
+                    with col_a:
+                        if st.button("🖌️ Draw Mode", use_container_width=True):
+                            st.session_state.draw_mode = "draw"
+                    with col_b:
+                        if st.button("🧹 Erase Mode", use_container_width=True):
+                            st.session_state.draw_mode = "erase"
+                    with col_c:
+                        if st.button("🗑️ Clear All", use_container_width=True):
+                            st.session_state.drawing_mask = None
+                            st.rerun()
+                    
+                    # Simple drawing interface using HTML/JS
+                    st.markdown("""
+                    <div style="background: #f0f0f0; padding: 20px; border-radius: 10px; text-align: center;">
+                        <p>⚠️ <strong>Drawing Interface</strong></p>
+                        <p>Use an external tool to create a mask:</p>
+                        <ol style="text-align: left; display: inline-block;">
+                            <li>Download the image above</li>
+                            <li>Open in Paint/Photoshop/GIMP</li>
+                            <li>Draw white areas where you want to erase</li>
+                            <li>Save as PNG and upload below</li>
+                        </ol>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    mask_file = st.file_uploader(
+                        "Upload Mask (white = erase, black = keep)",
+                        type=["png", "jpg", "jpeg"],
+                        key="manual_mask_upload"
+                    )
+                
+                with col2:
+                    if mask_file:
+                        st.markdown("**Mask Preview**")
+                        mask = Image.open(mask_file)
+                        st.image(mask, use_column_width=True)
+                        
+                        if st.session_state.get('erase_manual_result'):
+                            st.markdown("**Result**")
+                            st.image(st.session_state.erase_manual_result, use_column_width=True)
                             
-                            if result and "result_url" in result:
-                                st.session_state.erase_result = result["result_url"]
-                                st.success("✨ Foreground objects removed successfully!")
-                                st.rerun()
-                            else:
-                                st.error("No result URL in API response")
-                                with st.expander("Debug: API Response"):
-                                    st.json(result)
-                        except Exception as e:
-                            st.error(f"Error: {str(e)}")
-        else:
-            st.info("👆 Please upload an image to get started")
+                            # Download button
+                            image_data = download_image(st.session_state.erase_manual_result)
+                            if image_data:
+                                st.download_button(
+                                    "⬇️ Download Result",
+                                    image_data,
+                                    "erase_manual_result.png",
+                                    "image/png",
+                                    use_container_width=True
+                                )
+                    else:
+                        st.info("Upload a mask to see preview")
+                
+                if mask_file:
+                    st.markdown("---")
+                    
+                    prompt = st.text_input(
+                        "What should fill the erased area? (optional)",
+                        placeholder="e.g., 'grass', 'sky', 'wall'",
+                        key="erase_fill_prompt"
+                    )
+                    
+                    if st.button("🗑️ Erase & Fill", type="primary", use_container_width=True):
+                        if not st.session_state.api_key:
+                            st.error("Please enter your API key in the sidebar")
+                        else:
+                            with st.spinner("🗑️ Erasing and filling..."):
+                                try:
+                                    # Use generative fill to erase and fill
+                                    result = generative_fill(
+                                        api_key=st.session_state.api_key,
+                                        image_data=uploaded_file.getvalue(),
+                                        mask_data=mask_file.getvalue(),
+                                        prompt=prompt if prompt else "natural background",
+                                        sync=True
+                                    )
+                                    
+                                    if result and "result_url" in result:
+                                        st.session_state.erase_manual_result = result["result_url"]
+                                        st.success("✨ Area erased and filled successfully!")
+                                        st.rerun()
+                                    else:
+                                        st.error("No result URL in API response")
+                                        with st.expander("Debug: API Response"):
+                                            st.json(result)
+                                except Exception as e:
+                                    st.error(f"Error: {str(e)}")
+            else:
+                st.info("👆 Please upload an image to get started")
 
 if __name__ == "__main__":
     main()
