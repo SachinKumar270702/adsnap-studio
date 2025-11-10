@@ -57,22 +57,34 @@ class AuthManager:
         self.save_users()
         return True, "Account created successfully"
     
-    def authenticate(self, username, password):
-        """Authenticate user credentials."""
-        if username not in self.users:
-            return False, "Invalid username or password"
+    def authenticate(self, username_or_email, password):
+        """Authenticate user credentials using username or email."""
+        # First try to find user by username
+        found_username = None
         
-        user = self.users[username]
+        if username_or_email in self.users:
+            found_username = username_or_email
+        else:
+            # Try to find by email
+            for uname, user_data in self.users.items():
+                if user_data.get('email') == username_or_email:
+                    found_username = uname
+                    break
+        
+        if not found_username:
+            return False, "Invalid username/email or password"
+        
+        user = self.users[found_username]
         if not user.get('is_active', True):
             return False, "Account is deactivated"
         
         if user['password'] == self.hash_password(password):
             # Update last login
-            self.users[username]['last_login'] = datetime.now().isoformat()
+            self.users[found_username]['last_login'] = datetime.now().isoformat()
             self.save_users()
-            return True, "Login successful"
+            return True, "Login successful", found_username
         
-        return False, "Invalid username or password"
+        return False, "Invalid username/email or password"
     
     def get_user_info(self, username):
         """Get user information."""
@@ -437,7 +449,7 @@ def show_login_page():
                     <p style="color: #999; font-size: 0.9rem;">Ready to create something amazing?</p>
                 </div>
                 """, unsafe_allow_html=True)
-                username = st.text_input("Username", placeholder="Enter your username")
+                username = st.text_input("Username or Email", placeholder="Enter your username or email")
                 password = st.text_input("Password", type="password", placeholder="Enter your password")
                 
                 col_a, col_b = st.columns(2)
@@ -448,20 +460,28 @@ def show_login_page():
                 
                 if login_btn:
                     if username and password:
-                        success, message = st.session_state.auth_manager.authenticate(username, password)
+                        result = st.session_state.auth_manager.authenticate(username, password)
+                        
+                        # Handle both old (2 values) and new (3 values) return format
+                        if len(result) == 3:
+                            success, message, actual_username = result
+                        else:
+                            success, message = result
+                            actual_username = username
+                        
                         if success:
                             st.session_state.authenticated = True
-                            st.session_state.username = username
-                            st.session_state.user_info = st.session_state.auth_manager.get_user_info(username)
+                            st.session_state.username = actual_username
+                            st.session_state.user_info = st.session_state.auth_manager.get_user_info(actual_username)
                             
                             # Set persistent authentication using query params
-                            auth_token = hashlib.sha256(f"{username}_adsnap_session".encode()).hexdigest()[:16]
+                            auth_token = hashlib.sha256(f"{actual_username}_adsnap_session".encode()).hexdigest()[:16]
                             st.query_params.update({
                                 'auth_token': auth_token,
-                                'username': username
+                                'username': actual_username
                             })
                             
-                            st.success(f"Welcome back, {username}! 🎉")
+                            st.success(f"Welcome back, {actual_username}! 🎉")
                             st.rerun()
                         else:
                             st.error(message)
