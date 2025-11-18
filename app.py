@@ -156,7 +156,8 @@ def main():
     # Main navigation
     tab_names = [
         "🏠 Dashboard",
-        "🎨 Generate Image", 
+        "🎨 Generate Image",
+        "✨ Image Editor",
         "🖼️ Lifestyle Shot",
         "🎨 Generative Fill",
         "🎨 Erase Elements"
@@ -459,8 +460,254 @@ def main():
                     st.session_state.edited_image = None
                     st.rerun()
     
-    elif st.session_state.current_page == 2:  # Product Photography
-        st.markdown("### 📸 Product Photography")
+    elif st.session_state.current_page == 2:  # Image Editor - All-in-One
+        st.markdown("### ✨ Image Editor")
+        st.markdown("Upload an image and apply any editing feature")
+        
+        # Upload image
+        uploaded_file = st.file_uploader(
+            "📤 Upload Image to Edit",
+            type=["png", "jpg", "jpeg"],
+            key="unified_editor_upload"
+        )
+        
+        if uploaded_file:
+            # Store uploaded image in session state
+            if 'editor_image' not in st.session_state or st.session_state.get('editor_image_name') != uploaded_file.name:
+                st.session_state.editor_image = uploaded_file.getvalue()
+                st.session_state.editor_image_name = uploaded_file.name
+                st.session_state.editor_result = None
+            
+            # Display original image
+            st.markdown("---")
+            col_img, col_tools = st.columns([2, 1])
+            
+            with col_img:
+                st.markdown("#### 🖼️ Your Image")
+                img = Image.open(io.BytesIO(st.session_state.editor_image))
+                st.image(img, use_column_width=True)
+                
+                # Show result if available
+                if st.session_state.get('editor_result'):
+                    st.markdown("#### ✨ Result")
+                    st.image(st.session_state.editor_result, use_column_width=True)
+                    
+                    # Download result
+                    result_data = download_image(st.session_state.editor_result)
+                    if result_data:
+                        st.download_button(
+                            "⬇️ Download Result",
+                            result_data,
+                            "edited_image.png",
+                            "image/png",
+                            use_container_width=True
+                        )
+            
+            with col_tools:
+                st.markdown("#### 🛠️ Editing Tools")
+                
+                edit_feature = st.selectbox(
+                    "Choose Feature",
+                    [
+                        "🎯 Create Packshot",
+                        "🌟 Add Shadow",
+                        "🎨 Generative Fill",
+                        "🗑️ Erase Foreground",
+                        "✂️ Remove Background"
+                    ]
+                )
+                
+                st.markdown("---")
+                
+                # Feature-specific options
+                if edit_feature == "🎯 Create Packshot":
+                    st.markdown("**Packshot Settings**")
+                    bg_color = st.color_picker("Background Color", "#FFFFFF")
+                    force_rmbg = st.checkbox("Force Background Removal", False)
+                    
+                    if st.button("🎯 Create Packshot", type="primary", use_container_width=True):
+                        if not st.session_state.api_key:
+                            st.error("Please enter your API key")
+                        else:
+                            with st.spinner("Creating packshot..."):
+                                try:
+                                    result = create_packshot(
+                                        st.session_state.api_key,
+                                        st.session_state.editor_image,
+                                        background_color=bg_color,
+                                        force_rmbg=force_rmbg
+                                    )
+                                    if result and "result_url" in result:
+                                        st.session_state.editor_result = result["result_url"]
+                                        st.success("✨ Packshot created!")
+                                        st.rerun()
+                                except Exception as e:
+                                    st.error(f"Error: {str(e)}")
+                
+                elif edit_feature == "🌟 Add Shadow":
+                    st.markdown("**Shadow Settings**")
+                    shadow_type = st.selectbox("Shadow Type", ["Natural", "Drop"])
+                    shadow_intensity = st.slider("Intensity", 0, 100, 60)
+                    bg_color = st.color_picker("Background Color", "#FFFFFF", key="shadow_bg")
+                    
+                    if st.button("🌟 Add Shadow", type="primary", use_container_width=True):
+                        if not st.session_state.api_key:
+                            st.error("Please enter your API key")
+                        else:
+                            with st.spinner("Adding shadow..."):
+                                try:
+                                    result = add_shadow(
+                                        api_key=st.session_state.api_key,
+                                        image_data=st.session_state.editor_image,
+                                        shadow_type=shadow_type.lower(),
+                                        background_color=bg_color,
+                                        shadow_intensity=shadow_intensity
+                                    )
+                                    if result and "result_url" in result:
+                                        st.session_state.editor_result = result["result_url"]
+                                        st.success("✨ Shadow added!")
+                                        st.rerun()
+                                except Exception as e:
+                                    st.error(f"Error: {str(e)}")
+                
+                elif edit_feature == "🎨 Generative Fill":
+                    st.markdown("**Generative Fill**")
+                    st.info("Upload a mask image below")
+                    
+                    mask_file = st.file_uploader(
+                        "Mask (white = fill)",
+                        type=["png", "jpg", "jpeg"],
+                        key="editor_mask"
+                    )
+                    
+                    fill_prompt = st.text_area(
+                        "Describe fill content",
+                        placeholder="e.g., 'blue sky', 'grass'",
+                        height=80
+                    )
+                    
+                    if mask_file and st.button("🎨 Generate Fill", type="primary", use_container_width=True):
+                        if not st.session_state.api_key:
+                            st.error("Please enter your API key")
+                        elif not fill_prompt:
+                            st.warning("Please enter a prompt")
+                        else:
+                            with st.spinner("Generating fill..."):
+                                try:
+                                    result = generative_fill(
+                                        api_key=st.session_state.api_key,
+                                        image_data=st.session_state.editor_image,
+                                        mask_data=mask_file.getvalue(),
+                                        prompt=fill_prompt,
+                                        sync=True
+                                    )
+                                    if result and "result_url" in result:
+                                        st.session_state.editor_result = result["result_url"]
+                                        st.success("✨ Fill generated!")
+                                        st.rerun()
+                                except Exception as e:
+                                    st.error(f"Error: {str(e)}")
+                
+                elif edit_feature == "🗑️ Erase Foreground":
+                    st.markdown("**Erase Foreground**")
+                    st.info("Automatically removes foreground objects")
+                    
+                    if st.button("🗑️ Erase Foreground", type="primary", use_container_width=True):
+                        if not st.session_state.api_key:
+                            st.error("Please enter your API key")
+                        else:
+                            with st.spinner("Erasing foreground..."):
+                                try:
+                                    result = erase_foreground(
+                                        api_key=st.session_state.api_key,
+                                        image_data=st.session_state.editor_image
+                                    )
+                                    if result and "result_url" in result:
+                                        st.session_state.editor_result = result["result_url"]
+                                        st.success("✨ Foreground erased!")
+                                        st.rerun()
+                                except Exception as e:
+                                    st.error(f"Error: {str(e)}")
+                
+                elif edit_feature == "✂️ Remove Background":
+                    st.markdown("**Remove Background**")
+                    st.info("Creates transparent background")
+                    
+                    if st.button("✂️ Remove Background", type="primary", use_container_width=True):
+                        st.info("This feature uses the packshot API with transparent background")
+                        if not st.session_state.api_key:
+                            st.error("Please enter your API key")
+                        else:
+                            with st.spinner("Removing background..."):
+                                try:
+                                    result = create_packshot(
+                                        st.session_state.api_key,
+                                        st.session_state.editor_image,
+                                        background_color="transparent",
+                                        force_rmbg=True
+                                    )
+                                    if result and "result_url" in result:
+                                        st.session_state.editor_result = result["result_url"]
+                                        st.success("✨ Background removed!")
+                                        st.rerun()
+                                except Exception as e:
+                                    st.error(f"Error: {str(e)}")
+                
+                # Clear result button
+                if st.session_state.get('editor_result'):
+                    st.markdown("---")
+                    if st.button("🔄 Clear Result", use_container_width=True):
+                        st.session_state.editor_result = None
+                        st.rerun()
+        
+        else:
+            st.info("👆 Upload an image to start editing")
+            
+            # Show feature preview cards
+            st.markdown("### Available Features")
+            cols = st.columns(3)
+            
+            with cols[0]:
+                st.markdown("""
+                **🎯 Create Packshot**
+                - Professional product photos
+                - Custom backgrounds
+                - Auto background removal
+                """)
+            
+            with cols[1]:
+                st.markdown("""
+                **🌟 Add Shadow**
+                - Natural shadows
+                - Drop shadows
+                - Adjustable intensity
+                """)
+            
+            with cols[2]:
+                st.markdown("""
+                **🎨 Generative Fill**
+                - Fill masked areas
+                - AI-powered content
+                - Custom prompts
+                """)
+            
+            cols2 = st.columns(2)
+            with cols2[0]:
+                st.markdown("""
+                **🗑️ Erase Foreground**
+                - Auto object removal
+                - Background generation
+                """)
+            
+            with cols2[1]:
+                st.markdown("""
+                **✂️ Remove Background**
+                - Transparent background
+                - Clean cutouts
+                """)
+    
+    elif st.session_state.current_page == 3:  # Lifestyle Shot
+        st.markdown("### 📸 Lifestyle Shot")
         st.markdown("Transform your product images into professional lifestyle shots")
         
         uploaded_file = enhanced_file_uploader(
@@ -589,7 +836,7 @@ def main():
                             "image/png"
                         )
     
-    elif st.session_state.current_page == 3:  # Generative Fill
+    elif st.session_state.current_page == 4:  # Generative Fill
         st.markdown("### 🎨 Generative Fill")
         st.markdown("Fill in missing parts of images with AI-powered content generation")
         
@@ -682,7 +929,7 @@ def main():
         else:
             st.info("👆 Please upload both an image and a mask to get started")
     
-    elif st.session_state.current_page == 4:  # Erase Elements
+    elif st.session_state.current_page == 5:  # Erase Elements
         st.markdown("### ✂️ Erase Elements")
         st.markdown("Mark areas to erase with arrows, then remove them with AI")
         
