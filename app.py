@@ -838,199 +838,124 @@ def main():
     
     elif st.session_state.current_page == 4:  # Generative Fill
         st.markdown("### 🎨 Generative Fill")
-        st.markdown("Draw on your image to mark areas, then fill them with AI-generated content")
+        st.markdown("Upload an image, create a mask, and fill areas with AI-generated content")
         
         # Upload image
         uploaded_file = st.file_uploader(
-            "📤 Upload Image",
+            "📤 Upload Image to Edit",
             type=["png", "jpg", "jpeg"],
             key="generative_fill_image"
         )
         
         if uploaded_file:
-            # Convert image to base64 for display in HTML
-            img = Image.open(uploaded_file)
-            img_byte_arr = io.BytesIO()
-            img.save(img_byte_arr, format='PNG')
-            img_byte_arr = img_byte_arr.getvalue()
-            img_base64 = base64.b64encode(img_byte_arr).decode()
-            
-            # Get image dimensions
-            img_width, img_height = img.size
-            display_width = min(800, img_width)
-            display_height = int(img_height * (display_width / img_width))
+            # Store image in session state
+            if 'gf_uploaded_image' not in st.session_state or st.session_state.get('gf_image_name') != uploaded_file.name:
+                st.session_state.gf_uploaded_image = uploaded_file.getvalue()
+                st.session_state.gf_image_name = uploaded_file.name
+                st.session_state.generative_fill_result = None
+            # Open and display the image
+            img = Image.open(io.BytesIO(st.session_state.gf_uploaded_image))
             
             st.markdown("---")
             
-            col1, col2 = st.columns([3, 1])
+            # Three-column layout
+            col1, col2, col3 = st.columns([2, 2, 1])
             
             with col1:
-                st.markdown("#### 🖼️ Draw Mask on Image")
-                st.info("💡 Click and drag to draw white areas where you want to add/change content. Use the tools below to draw or erase.")
+                st.markdown("#### 🖼️ Original Image")
+                st.image(img, use_column_width=True)
                 
-                # Drawing tools
-                tool_cols = st.columns(5)
-                with tool_cols[0]:
-                    brush_size = st.slider("Brush Size", 5, 50, 20, key="gf_brush")
-                with tool_cols[1]:
-                    if st.button("🖌️ Draw", use_container_width=True, key="gf_draw"):
-                        st.session_state.gf_draw_mode = "draw"
-                with tool_cols[2]:
-                    if st.button("🧹 Erase", use_container_width=True, key="gf_erase"):
-                        st.session_state.gf_draw_mode = "erase"
-                with tool_cols[3]:
-                    if st.button("🗑️ Clear", use_container_width=True, key="gf_clear"):
-                        st.session_state.gf_mask_data = None
-                        st.rerun()
-                with tool_cols[4]:
-                    if st.button("💾 Save Mask", use_container_width=True, key="gf_save"):
-                        st.session_state.gf_mask_saved = True
-                
-                # Interactive canvas using HTML/JS
-                canvas_html = f"""
-                <div style="border: 2px solid #667eea; border-radius: 10px; overflow: hidden; background: #000;">
-                    <canvas id="maskCanvas" width="{display_width}" height="{display_height}" 
-                            style="cursor: crosshair; display: block; background-image: url('data:image/png;base64,{img_base64}'); background-size: contain; background-repeat: no-repeat;">
-                    </canvas>
-                </div>
-                <script>
-                    const canvas = document.getElementById('maskCanvas');
-                    const ctx = canvas.getContext('2d');
-                    let isDrawing = false;
-                    let brushSize = {brush_size};
-                    
-                    // Set up canvas
-                    ctx.globalCompositeOperation = 'source-over';
-                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-                    ctx.lineWidth = brushSize;
-                    ctx.lineCap = 'round';
-                    ctx.lineJoin = 'round';
-                    
-                    // Drawing functions
-                    function startDrawing(e) {{
-                        isDrawing = true;
-                        const rect = canvas.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        ctx.beginPath();
-                        ctx.moveTo(x, y);
-                    }}
-                    
-                    function draw(e) {{
-                        if (!isDrawing) return;
-                        const rect = canvas.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        ctx.lineTo(x, y);
-                        ctx.stroke();
-                    }}
-                    
-                    function stopDrawing() {{
-                        isDrawing = false;
-                        ctx.beginPath();
-                    }}
-                    
-                    // Event listeners
-                    canvas.addEventListener('mousedown', startDrawing);
-                    canvas.addEventListener('mousemove', draw);
-                    canvas.addEventListener('mouseup', stopDrawing);
-                    canvas.addEventListener('mouseout', stopDrawing);
-                    
-                    // Touch support for mobile
-                    canvas.addEventListener('touchstart', (e) => {{
-                        e.preventDefault();
-                        const touch = e.touches[0];
-                        const mouseEvent = new MouseEvent('mousedown', {{
-                            clientX: touch.clientX,
-                            clientY: touch.clientY
-                        }});
-                        canvas.dispatchEvent(mouseEvent);
-                    }});
-                    
-                    canvas.addEventListener('touchmove', (e) => {{
-                        e.preventDefault();
-                        const touch = e.touches[0];
-                        const mouseEvent = new MouseEvent('mousemove', {{
-                            clientX: touch.clientX,
-                            clientY: touch.clientY
-                        }});
-                        canvas.dispatchEvent(mouseEvent);
-                    }});
-                    
-                    canvas.addEventListener('touchend', (e) => {{
-                        e.preventDefault();
-                        const mouseEvent = new MouseEvent('mouseup', {{}});
-                        canvas.dispatchEvent(mouseEvent);
-                    }});
-                </script>
-                """
-                
-                st.components.v1.html(canvas_html, height=display_height + 20)
-                
-                st.markdown("---")
-                st.markdown("**Alternative: Upload Pre-made Mask**")
-                mask_file = st.file_uploader(
-                    "Or upload a mask image (white = fill area, black = keep)",
-                    type=["png", "jpg", "jpeg"],
-                    key="generative_fill_mask_upload",
-                    help="If you prefer, upload a mask created in an external tool"
+                # Download button for creating mask externally
+                st.download_button(
+                    "⬇️ Download Image (to create mask)",
+                    st.session_state.gf_uploaded_image,
+                    f"original_{st.session_state.gf_image_name}",
+                    "image/png",
+                    help="Download to create a mask in Paint/Photoshop"
                 )
             
             with col2:
+                st.markdown("#### 🎭 Upload Mask")
+                st.info("💡 Create a mask where **white areas** = fill with AI, **black areas** = keep original")
+                
+                mask_file = st.file_uploader(
+                    "Upload Mask Image",
+                    type=["png", "jpg", "jpeg"],
+                    key="generative_fill_mask_upload",
+                    help="White = areas to fill, Black = areas to keep"
+                )
+                
+                if mask_file:
+                    mask_img = Image.open(mask_file)
+                    st.image(mask_img, caption="Your Mask", use_column_width=True)
+                else:
+                    st.markdown("""
+                    **How to create a mask:**
+                    1. Download the image above
+                    2. Open in Paint/Photoshop/GIMP
+                    3. Paint WHITE where you want AI to fill
+                    4. Keep BLACK where you want original
+                    5. Save and upload here
+                    """)
+            
+            with col3:
                 st.markdown("#### ⚙️ Settings")
                 
                 prompt = st.text_area(
-                    "What to generate",
-                    placeholder="e.g., 'blue sky with clouds', 'green grass', 'modern furniture', 'ocean waves'",
-                    height=120,
+                    "What to fill",
+                    placeholder="e.g., 'blue sky', 'grass', 'ocean'",
+                    height=100,
                     key="gf_prompt"
                 )
                 
-                st.markdown("**Options**")
                 sync_mode = st.checkbox("Wait for result", value=True, key="gf_sync")
-                num_results = st.slider("Variations", 1, 4, 1, key="gf_num")
                 
                 st.markdown("---")
+            
+            # Show result below
+            if st.session_state.get('generative_fill_result'):
+                st.markdown("---")
+                st.markdown("### ✨ Result")
                 
-                # Show result if available
-                if st.session_state.get('generative_fill_result'):
-                    st.markdown("#### ✨ Result")
-                    st.image(st.session_state.generative_fill_result, use_column_width=True)
-                    
+                result_cols = st.columns([2, 2, 1])
+                with result_cols[0]:
+                    st.image(img, caption="Original", use_column_width=True)
+                with result_cols[1]:
+                    st.image(st.session_state.generative_fill_result, caption="Generated", use_column_width=True)
+                with result_cols[2]:
                     # Download button
                     result_data = download_image(st.session_state.generative_fill_result)
                     if result_data:
                         st.download_button(
-                            "⬇️ Download",
+                            "⬇️ Download Result",
                             result_data,
                             "generative_fill_result.png",
                             "image/png",
                             use_container_width=True
                         )
                     
-                    if st.button("🔄 Clear Result", use_container_width=True):
+                    if st.button("🔄 New Edit", use_container_width=True):
                         st.session_state.generative_fill_result = None
                         st.rerun()
             
-            # Generate button at the bottom
+            # Generate button
             st.markdown("---")
             
             if mask_file:
-                # Use uploaded mask
-                if st.button("🎨 Generate Fill", type="primary", use_container_width=True, key="gf_generate_uploaded"):
+                if st.button("🎨 Generate Fill", type="primary", use_container_width=True, key="gf_generate"):
                     if not prompt:
-                        st.warning("Please enter a prompt describing what to fill")
+                        st.warning("⚠️ Please enter a prompt describing what to fill")
                     elif not st.session_state.api_key:
-                        st.error("Please enter your API key in the sidebar")
+                        st.error("❌ Please enter your API key in the sidebar")
                     else:
                         with st.spinner("🎨 Generating fill content..."):
                             try:
                                 result = generative_fill(
                                     api_key=st.session_state.api_key,
-                                    image_data=uploaded_file.getvalue(),
+                                    image_data=st.session_state.gf_uploaded_image,
                                     mask_data=mask_file.getvalue(),
                                     prompt=prompt,
-                                    num_results=num_results,
+                                    num_results=1,
                                     sync=sync_mode
                                 )
                                 
@@ -1044,14 +969,13 @@ def main():
                                         st.success("✨ Generative fill completed!")
                                         st.rerun()
                                 else:
-                                    st.error("No result URL in API response")
-                                    with st.expander("Debug: API Response"):
+                                    st.error("❌ No result URL in API response")
+                                    with st.expander("🔍 Debug: API Response"):
                                         st.json(result)
                             except Exception as e:
-                                st.error(f"Error: {str(e)}")
+                                st.error(f"❌ Error: {str(e)}")
             else:
-                st.info("💡 **How to use:**\n1. Draw white areas on the image above (areas to fill)\n2. Enter a prompt describing what to generate\n3. Click 'Generate Fill' (or upload a pre-made mask)")
-                st.warning("⚠️ Note: The drawing canvas is for visualization. For best results, create a mask in an external tool (Paint, Photoshop, etc.) and upload it using the 'Upload Pre-made Mask' option above.")
+                st.info("👆 **Step 1:** Upload a mask image above to continue\n\n**Step 2:** Enter a prompt\n\n**Step 3:** Click 'Generate Fill'")
         
         else:
             st.info("👆 Upload an image to start")
