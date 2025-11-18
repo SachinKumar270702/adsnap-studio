@@ -875,28 +875,107 @@ def main():
                 )
             
             with col2:
-                st.markdown("#### 🎭 Upload Mask")
-                st.info("💡 Create a mask where **white areas** = fill with AI, **black areas** = keep original")
+                st.markdown("#### 🎭 Create Mask")
                 
-                mask_file = st.file_uploader(
-                    "Upload Mask Image",
-                    type=["png", "jpg", "jpeg"],
-                    key="generative_fill_mask_upload",
-                    help="White = areas to fill, Black = areas to keep"
+                # Mask creation method
+                mask_method = st.radio(
+                    "Choose method:",
+                    ["✏️ Draw on Page", "📤 Upload Mask"],
+                    horizontal=True,
+                    key="gf_mask_method"
                 )
                 
-                if mask_file:
-                    mask_img = Image.open(mask_file)
-                    st.image(mask_img, caption="Your Mask", use_column_width=True)
-                else:
-                    st.markdown("""
-                    **How to create a mask:**
-                    1. Download the image above
-                    2. Open in Paint/Photoshop/GIMP
-                    3. Paint WHITE where you want AI to fill
-                    4. Keep BLACK where you want original
-                    5. Save and upload here
-                    """)
+                if mask_method == "✏️ Draw on Page":
+                    st.info("💡 Click 'Start Drawing' then draw white areas where you want AI to fill")
+                    
+                    # Initialize mask in session state
+                    if 'gf_mask_image' not in st.session_state:
+                        # Create blank mask (black background)
+                        st.session_state.gf_mask_image = Image.new('RGB', img.size, 'black')
+                    
+                    # Drawing tools
+                    tool_col1, tool_col2 = st.columns(2)
+                    with tool_col1:
+                        brush_size = st.slider("Brush Size", 10, 100, 30, key="gf_brush_size")
+                    with tool_col2:
+                        draw_color = st.selectbox("Draw", ["White (Fill)", "Black (Keep)"], key="gf_color")
+                    
+                    # Action buttons
+                    btn_col1, btn_col2, btn_col3 = st.columns(3)
+                    with btn_col1:
+                        if st.button("🖌️ Draw Mode", use_container_width=True, key="gf_draw_btn"):
+                            st.session_state.gf_drawing_active = True
+                    with btn_col2:
+                        if st.button("🗑️ Clear Mask", use_container_width=True, key="gf_clear_btn"):
+                            st.session_state.gf_mask_image = Image.new('RGB', img.size, 'black')
+                            st.rerun()
+                    with btn_col3:
+                        if st.button("✅ Done", use_container_width=True, key="gf_done_btn"):
+                            st.session_state.gf_drawing_active = False
+                    
+                    # Show current mask
+                    st.markdown("**Current Mask:**")
+                    
+                    # Create a visual overlay
+                    overlay = img.copy()
+                    overlay.paste(st.session_state.gf_mask_image, (0, 0), st.session_state.gf_mask_image.convert('RGBA'))
+                    st.image(overlay, use_column_width=True, caption="Image with Mask Overlay")
+                    
+                    # Simple drawing interface using click coordinates
+                    st.markdown("---")
+                    st.markdown("**Drawing Instructions:**")
+                    
+                    # Use text input for coordinates (simple approach)
+                    with st.expander("🖱️ Click Drawing Tool (Experimental)"):
+                        st.warning("⚠️ For best results, use the 'Upload Mask' option with a mask created in Paint/Photoshop")
+                        
+                        col_x, col_y = st.columns(2)
+                        with col_x:
+                            click_x = st.number_input("X Position", 0, img.width, 0, key="gf_x")
+                        with col_y:
+                            click_y = st.number_input("Y Position", 0, img.height, 0, key="gf_y")
+                        
+                        if st.button("Add Brush Stroke", key="gf_add_stroke"):
+                            from PIL import ImageDraw
+                            draw = ImageDraw.Draw(st.session_state.gf_mask_image)
+                            color = 'white' if "White" in draw_color else 'black'
+                            # Draw circle at position
+                            draw.ellipse(
+                                [click_x - brush_size//2, click_y - brush_size//2,
+                                 click_x + brush_size//2, click_y + brush_size//2],
+                                fill=color
+                            )
+                            st.rerun()
+                    
+                    # Convert mask to file for API
+                    mask_buffer = io.BytesIO()
+                    st.session_state.gf_mask_image.save(mask_buffer, format='PNG')
+                    mask_file = mask_buffer.getvalue()
+                    
+                else:  # Upload Mask
+                    st.info("💡 Upload a mask: **white areas** = fill with AI, **black areas** = keep original")
+                    
+                    mask_file_upload = st.file_uploader(
+                        "Upload Mask Image",
+                        type=["png", "jpg", "jpeg"],
+                        key="generative_fill_mask_upload",
+                        help="White = areas to fill, Black = areas to keep"
+                    )
+                    
+                    if mask_file_upload:
+                        mask_img = Image.open(mask_file_upload)
+                        st.image(mask_img, caption="Your Mask", use_column_width=True)
+                        mask_file = mask_file_upload.getvalue()
+                    else:
+                        st.markdown("""
+                        **How to create a mask:**
+                        1. Download the image from left
+                        2. Open in Paint/Photoshop/GIMP
+                        3. Paint WHITE where you want AI to fill
+                        4. Keep BLACK where you want original
+                        5. Save and upload here
+                        """)
+                        mask_file = None
             
             with col3:
                 st.markdown("#### ⚙️ Settings")
@@ -941,7 +1020,20 @@ def main():
             # Generate button
             st.markdown("---")
             
-            if mask_file:
+            # Check if we have a mask (either drawn or uploaded)
+            has_mask = False
+            mask_data = None
+            
+            if mask_method == "✏️ Draw on Page":
+                if 'gf_mask_image' in st.session_state:
+                    has_mask = True
+                    mask_data = mask_file
+            else:  # Upload method
+                if mask_file is not None:
+                    has_mask = True
+                    mask_data = mask_file
+            
+            if has_mask and mask_data:
                 if st.button("🎨 Generate Fill", type="primary", use_container_width=True, key="gf_generate"):
                     if not prompt:
                         st.warning("⚠️ Please enter a prompt describing what to fill")
@@ -953,7 +1045,7 @@ def main():
                                 result = generative_fill(
                                     api_key=st.session_state.api_key,
                                     image_data=st.session_state.gf_uploaded_image,
-                                    mask_data=mask_file.getvalue(),
+                                    mask_data=mask_data,
                                     prompt=prompt,
                                     num_results=1,
                                     sync=sync_mode
@@ -975,7 +1067,10 @@ def main():
                             except Exception as e:
                                 st.error(f"❌ Error: {str(e)}")
             else:
-                st.info("👆 **Step 1:** Upload a mask image above to continue\n\n**Step 2:** Enter a prompt\n\n**Step 3:** Click 'Generate Fill'")
+                if mask_method == "✏️ Draw on Page":
+                    st.info("👆 **Step 1:** Draw white areas on the mask\n\n**Step 2:** Enter a prompt\n\n**Step 3:** Click 'Generate Fill'")
+                else:
+                    st.info("👆 **Step 1:** Upload a mask image above\n\n**Step 2:** Enter a prompt\n\n**Step 3:** Click 'Generate Fill'")
         
         else:
             st.info("👆 Upload an image to start")
