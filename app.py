@@ -886,104 +886,101 @@ def main():
                 )
                 
                 if mask_method == "✏️ Draw on Page":
-                    st.info("💡 Use the tools below to create a mask. White = fill with AI, Black = keep original")
+                    st.info("💡 Click on the image below to draw. Each click adds a brush stroke at that position.")
                     
                     # Initialize mask in session state
                     if 'gf_mask_image' not in st.session_state or st.session_state.get('gf_current_image') != st.session_state.gf_image_name:
                         # Create blank mask (black background)
                         st.session_state.gf_mask_image = Image.new('L', img.size, 0)  # Grayscale, black
                         st.session_state.gf_current_image = st.session_state.gf_image_name
-                        st.session_state.gf_strokes = []
-                    
-                    # Drawing tools
-                    st.markdown("**🎨 Drawing Tools**")
-                    tool_cols = st.columns(3)
-                    with tool_cols[0]:
-                        brush_size = st.slider("Brush Size", 20, 200, 80, step=20, key="gf_brush_size")
-                    with tool_cols[1]:
-                        draw_mode = st.radio("Mode", ["⚪ Fill (White)", "⚫ Keep (Black)"], key="gf_draw_mode", horizontal=True)
-                    with tool_cols[2]:
-                        st.write("")  # Spacing
-                        if st.button("🗑️ Clear All", use_container_width=True, key="gf_clear_all"):
-                            st.session_state.gf_mask_image = Image.new('L', img.size, 0)
-                            st.session_state.gf_strokes = []
-                            st.rerun()
-                    
-                    st.markdown("---")
-                    
-                    # Region selection for painting
-                    st.markdown("**🖌️ Paint Regions**")
-                    st.info("Select a region to paint. The entire region will be filled with your chosen color.")
-                    
-                    region_cols = st.columns(4)
-                    
-                    # Divide image into clickable regions
-                    regions = [
-                        ("Top Left", 0, 0, img.width//2, img.height//2),
-                        ("Top Right", img.width//2, 0, img.width, img.height//2),
-                        ("Bottom Left", 0, img.height//2, img.width//2, img.height),
-                        ("Bottom Right", img.width//2, img.height//2, img.width, img.height),
-                    ]
                     
                     from PIL import ImageDraw
                     
-                    for idx, (name, x1, y1, x2, y2) in enumerate(regions):
-                        with region_cols[idx]:
-                            if st.button(f"Paint {name}", key=f"gf_region_{idx}", use_container_width=True):
-                                draw = ImageDraw.Draw(st.session_state.gf_mask_image)
-                                color = 255 if "White" in draw_mode else 0
-                                draw.rectangle([x1, y1, x2, y2], fill=color)
-                                st.rerun()
-                    
-                    # Fine control - paint specific areas
-                    with st.expander("🎯 Fine Control - Paint Specific Area"):
-                        st.markdown("Enter coordinates to paint a specific rectangular area:")
-                        coord_cols = st.columns(4)
-                        with coord_cols[0]:
-                            paint_x1 = st.number_input("X1", 0, img.width, 0, key="gf_x1")
-                        with coord_cols[1]:
-                            paint_y1 = st.number_input("Y1", 0, img.height, 0, key="gf_y1")
-                        with coord_cols[2]:
-                            paint_x2 = st.number_input("X2", 0, img.width, img.width//4, key="gf_x2")
-                        with coord_cols[3]:
-                            paint_y2 = st.number_input("Y2", 0, img.height, img.height//4, key="gf_y2")
-                        
-                        if st.button("🖌️ Paint This Area", key="gf_paint_area"):
-                            draw = ImageDraw.Draw(st.session_state.gf_mask_image)
-                            color = 255 if "White" in draw_mode else 0
-                            draw.rectangle([paint_x1, paint_y1, paint_x2, paint_y2], fill=color)
-                            st.rerun()
-                    
-                    # Quick presets
-                    st.markdown("**⚡ Quick Presets**")
-                    preset_cols = st.columns(3)
-                    with preset_cols[0]:
-                        if st.button("Fill All White", key="gf_all_white", use_container_width=True):
-                            st.session_state.gf_mask_image = Image.new('L', img.size, 255)
-                            st.rerun()
-                    with preset_cols[1]:
-                        if st.button("Fill All Black", key="gf_all_black", use_container_width=True):
+                    # Drawing tools
+                    st.markdown("**🎨 Drawing Tools**")
+                    tool_cols = st.columns(4)
+                    with tool_cols[0]:
+                        brush_size = st.slider("Brush Size", 10, 150, 50, step=10, key="gf_brush_size")
+                    with tool_cols[1]:
+                        draw_color = st.radio("Draw", ["⚪ White (Fill)", "⚫ Black (Keep)"], key="gf_draw_color", horizontal=True)
+                    with tool_cols[2]:
+                        if st.button("🗑️ Clear Mask", use_container_width=True, key="gf_clear_mask"):
                             st.session_state.gf_mask_image = Image.new('L', img.size, 0)
                             st.rerun()
-                    with preset_cols[2]:
-                        if st.button("Fill Center", key="gf_center", use_container_width=True):
-                            draw = ImageDraw.Draw(st.session_state.gf_mask_image)
-                            margin = min(img.width, img.height) // 4
-                            draw.rectangle([margin, margin, img.width-margin, img.height-margin], fill=255)
+                    with tool_cols[3]:
+                        if st.button("⚡ Fill All", use_container_width=True, key="gf_fill_all"):
+                            color = 255 if "White" in draw_color else 0
+                            st.session_state.gf_mask_image = Image.new('L', img.size, color)
                             st.rerun()
                     
                     st.markdown("---")
+                    st.markdown("**🖱️ Click on Image to Draw**")
                     
-                    # Show current mask
-                    st.markdown("**👁️ Mask Preview**")
+                    # Try to use streamlit-image-coordinates for click-based drawing
+                    try:
+                        from streamlit_image_coordinates import streamlit_image_coordinates
+                        
+                        # Create composite image showing mask overlay
+                        mask_rgb = st.session_state.gf_mask_image.convert('RGB')
+                        # Create semi-transparent overlay
+                        overlay = Image.new('RGBA', img.size, (255, 255, 255, 0))
+                        mask_overlay = Image.new('RGBA', img.size, (255, 255, 255, 128))
+                        
+                        # Apply mask as overlay
+                        for x in range(img.width):
+                            for y in range(img.height):
+                                if st.session_state.gf_mask_image.getpixel((x, y)) > 128:
+                                    overlay.putpixel((x, y), (255, 255, 255, 128))
+                        
+                        # Composite image
+                        display_img = img.convert('RGBA')
+                        display_img = Image.alpha_composite(display_img, overlay)
+                        
+                        # Get click coordinates
+                        value = streamlit_image_coordinates(display_img, key="gf_image_click")
+                        
+                        if value is not None and value.get("x") is not None:
+                            # Draw on mask at clicked position
+                            draw = ImageDraw.Draw(st.session_state.gf_mask_image)
+                            color = 255 if "White" in draw_color else 0
+                            x, y = value["x"], value["y"]
+                            
+                            # Draw circle (brush stroke)
+                            draw.ellipse(
+                                [x - brush_size//2, y - brush_size//2,
+                                 x + brush_size//2, y + brush_size//2],
+                                fill=color
+                            )
+                            st.rerun()
                     
-                    # Create overlay showing mask
-                    mask_rgb = st.session_state.gf_mask_image.convert('RGB')
-                    # Blend with original image
-                    blended = Image.blend(img.convert('RGB'), mask_rgb, alpha=0.5)
-                    st.image(blended, caption="Image with Mask Overlay (White = Fill, Black = Keep)", use_column_width=True)
+                    except ImportError:
+                        # Fallback if streamlit-image-coordinates not available
+                        st.warning("⚠️ Interactive drawing requires 'streamlit-image-coordinates' package. Using alternative method.")
+                        
+                        # Show image with current mask overlay
+                        mask_rgb = st.session_state.gf_mask_image.convert('RGB')
+                        blended = Image.blend(img.convert('RGB'), mask_rgb, alpha=0.4)
+                        st.image(blended, caption="Current Mask (White = Fill, Black = Keep)", use_column_width=True)
+                        
+                        # Manual coordinate input
+                        st.markdown("**Manual Drawing:**")
+                        coord_cols = st.columns(3)
+                        with coord_cols[0]:
+                            click_x = st.number_input("X Position", 0, img.width-1, img.width//2, key="gf_manual_x")
+                        with coord_cols[1]:
+                            click_y = st.number_input("Y Position", 0, img.height-1, img.height//2, key="gf_manual_y")
+                        with coord_cols[2]:
+                            if st.button("🖌️ Draw Here", key="gf_manual_draw", use_container_width=True):
+                                draw = ImageDraw.Draw(st.session_state.gf_mask_image)
+                                color = 255 if "White" in draw_color else 0
+                                draw.ellipse(
+                                    [click_x - brush_size//2, click_y - brush_size//2,
+                                     click_x + brush_size//2, click_y + brush_size//2],
+                                    fill=color
+                                )
+                                st.rerun()
                     
-                    # Also show pure mask
+                    # Show pure mask
                     with st.expander("🔍 View Pure Mask"):
                         st.image(st.session_state.gf_mask_image, caption="Pure Mask", use_column_width=True)
                     
