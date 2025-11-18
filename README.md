@@ -4,14 +4,39 @@ A powerful Streamlit app for generating professional product ads using Bria AI's
 
 ## 🌟 Features
 
-- 🖼️ Generate HD product images from text prompts
-- 🎯 Remove backgrounds with custom colors
-- 🌅 Add realistic shadows
-- 🏠 Create lifestyle shots with text or reference images
-- ✨ AI-powered prompt enhancement
-- 📝 Optional CTA text overlay
-- 🎮 Intuitive UI controls
-- 💾 Easy image download
+### 🎨 Image Generation
+- Generate 1-4 HD images simultaneously from text prompts
+- Multiple aspect ratios (1:1, 16:9, 9:16, 4:3, 3:4)
+- Style options (Realistic, Artistic, Cartoon, Sketch, etc.)
+- AI-powered prompt enhancement
+- Smart collage display for multiple images
+
+### ✨ Unified Image Editor
+- Upload once, apply any editing feature
+- Create professional packshots
+- Add natural or drop shadows
+- Generative fill for masked areas
+- Automatic foreground removal
+- Background removal with transparency
+
+### 🖼️ Product Photography
+- Professional lifestyle shots
+- Custom background colors
+- Shadow effects with adjustable intensity
+- Force background removal option
+
+### 🔐 Authentication & User Management
+- Secure login/signup system
+- Password reset via email (Gmail SMTP)
+- Demo mode for quick testing
+- Persistent sessions across page refreshes
+- User profile management
+
+### 📊 Dashboard & Analytics
+- Interactive dashboard with quick actions
+- Activity tracking and usage statistics
+- Feature tour for new users
+- Real-time metrics
 
 
 
@@ -26,9 +51,16 @@ cd adsnap-studio
 pip install -r requirements.txt
 ```
 
-3. Create a `.env` file in the root directory:
+3. Create a `.env` file in the root directory (copy from `.env.example`):
 ```bash
-BRIA_API_KEY=your_api_key_here
+# Bria AI API
+BRIA_API_KEY=your_bria_api_key_here
+
+# Email Configuration (optional, for password reset)
+SENDER_EMAIL=your_email@gmail.com
+SENDER_PASSWORD=your_gmail_app_password
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
 ```
 
 4. Run the app:
@@ -38,15 +70,31 @@ streamlit run app.py
 
 ## 💡 Usage
 
-1. Enter a product description or upload an image
-2. Configure generation options in the sidebar:
-   - Enhance prompt with AI
-   - Remove background
-   - Add shadows
-   - Generate lifestyle shots
-3. Adjust advanced settings like background color and shadow intensity
-4. Click "Generate Ad" to create your images
-5. Download the results
+### Quick Start
+1. **Login** - Use demo mode or create an account
+2. **Choose a feature** from the navigation tabs:
+   - 🎨 **Generate Image** - Create images from text prompts
+   - ✨ **Image Editor** - Upload and edit images with all tools
+   - 🖼️ **Lifestyle Shot** - Professional product photography
+   - 🎨 **Generative Fill** - Fill masked areas with AI
+   - 🎨 **Erase Elements** - Remove objects automatically
+
+### Generate Multiple Images
+1. Go to "Generate Image" tab
+2. Enter your prompt (or enhance it with AI)
+3. Select number of images (1-4)
+4. Choose aspect ratio and style
+5. Click "Generate Images"
+6. View results in smart collage layout
+7. Download individual images
+
+### Edit Images
+1. Go to "Image Editor" tab
+2. Upload your image
+3. Select editing feature from dropdown
+4. Adjust settings
+5. Click the action button
+6. Download result
 
 ## 🔧 Configuration
 
