@@ -171,18 +171,34 @@ def main():
         box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
     }
     
-    /* Primary Buttons */
+    /* Primary Buttons - Enhanced Blue Theme */
     .stButton > button[kind="primary"] {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: white !important;
-        font-weight: 700 !important;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
-        border: none !important;
+        font-weight: 800 !important;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5) !important;
+        border: 2px solid rgba(255,255,255,0.3) !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    .stButton > button[kind="primary"]::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent) !important;
+        transition: left 0.5s !important;
     }
     .stButton > button[kind="primary"]:hover {
         background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
-        transform: translateY(-3px) !important;
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6) !important;
+        transform: translateY(-3px) scale(1.02) !important;
+        box-shadow: 0 10px 35px rgba(102, 126, 234, 0.7) !important;
+        border-color: white !important;
+    }
+    .stButton > button[kind="primary"]:hover::before {
+        left: 100% !important;
     }
     
     /* Feature Cards */
