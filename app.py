@@ -265,14 +265,28 @@ def main():
         font-weight: 600 !important;
     }
     
-    /* Markdown Headers - Blue Theme */
+    /* Markdown Headers - Enhanced Gradient Theme */
     h1, h2, h3, h4 {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        background: linear-gradient(135deg, #667eea 0%, #ffd700 50%, #764ba2 100%) !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
         font-weight: 800 !important;
-        letter-spacing: -0.5px !important;
+        letter-spacing: 0.5px !important;
+        filter: drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3)) !important;
+    }
+    
+    /* Enhanced text colors */
+    p, span, div {
+        color: #2d3748;
+    }
+    
+    /* Feature card text enhancement */
+    .feature-card h3 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
     }
     
     /* Spacing */
@@ -379,27 +393,37 @@ def main():
     }
     .main-title {
         margin: 0;
-        color: white;
         font-size: 3.5rem;
         font-weight: 900;
-        letter-spacing: 4px;
-        text-shadow: 4px 4px 8px rgba(0,0,0,0.4);
+        letter-spacing: 5px;
         font-family: 'Segoe UI', 'Arial Black', sans-serif;
         line-height: 1;
-        background: linear-gradient(to bottom, #ffffff 0%, #e0e7ff 100%);
+        background: linear-gradient(135deg, #ffffff 0%, #ffd700 50%, #ffffff 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6)) drop-shadow(3px 3px 6px rgba(0,0,0,0.4));
+        animation: shimmer 3s ease-in-out infinite;
+        background-size: 200% auto;
     }
+    
+    @keyframes shimmer {
+        0%, 100% { background-position: 0% center; }
+        50% { background-position: 100% center; }
+    }
+    
     .subtitle {
         margin: 12px 0 0 0;
-        color: rgba(255,255,255,0.95);
+        background: linear-gradient(90deg, #ffd700 0%, #ffffff 50%, #ffd700 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         font-size: 1.05rem;
-        font-weight: 600;
-        letter-spacing: 3px;
+        font-weight: 700;
+        letter-spacing: 4px;
         text-transform: uppercase;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
     }
     
     /* Mobile Responsive Header */
@@ -554,11 +578,14 @@ def main():
     }
     
     .mobile-menu-title {
-        color: white;
+        background: linear-gradient(135deg, #ffd700 0%, #ffffff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         font-size: 1.3rem;
         font-weight: 900;
-        letter-spacing: 1px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        letter-spacing: 2px;
+        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
     }
     
     .mobile-menu-items {
@@ -570,44 +597,69 @@ def main():
         align-items: center;
         gap: 15px;
         padding: 18px 25px;
-        color: white;
+        color: rgba(255,255,255,0.95);
         text-decoration: none;
         transition: all 0.3s ease;
         border-left: 4px solid transparent;
+        position: relative;
+    }
+    
+    .mobile-menu-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, rgba(255,215,0,0.2) 0%, transparent 100%);
+        transition: width 0.3s ease;
     }
     
     .mobile-menu-item:hover {
-        background: rgba(255,255,255,0.1);
-        border-left-color: white;
+        background: rgba(255,255,255,0.15);
+        border-left-color: #ffd700;
+        color: #ffd700;
+    }
+    
+    .mobile-menu-item:hover::before {
+        width: 100%;
     }
     
     .mobile-menu-item.active {
-        background: rgba(255,255,255,0.2);
-        border-left-color: white;
-        font-weight: 700;
+        background: linear-gradient(90deg, rgba(255,215,0,0.25) 0%, rgba(255,255,255,0.15) 100%);
+        border-left-color: #ffd700;
+        color: #ffd700;
+        font-weight: 800;
+        text-shadow: 0 0 10px rgba(255,215,0,0.5);
     }
     
     .mobile-menu-item-icon {
         font-size: 1.8rem;
         line-height: 1;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
     }
     
     .mobile-menu-item-label {
         font-size: 1rem;
         font-weight: 600;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
     }
     
     .mobile-menu-footer {
         padding: 20px;
-        border-top: 2px solid rgba(255,255,255,0.2);
+        border-top: 2px solid rgba(255,215,0,0.3);
         margin-top: auto;
     }
     
     .mobile-menu-footer-text {
-        color: rgba(255,255,255,0.8);
+        background: linear-gradient(90deg, #ffd700 0%, #ffffff 50%, #ffd700 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         font-size: 0.85rem;
         text-align: center;
+        font-weight: 600;
+        letter-spacing: 0.5px;
     }
     
     @media only screen and (max-width: 768px) {
