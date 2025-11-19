@@ -225,11 +225,21 @@ def main():
         padding: 12px 16px !important;
         font-size: 0.95rem !important;
         transition: all 0.3s ease !important;
+        color: #2d3748 !important;
+        background-color: white !important;
     }
+    
+    .stTextInput > div > div > input::placeholder,
+    .stTextArea > div > div > textarea::placeholder {
+        color: #a0aec0 !important;
+        opacity: 1 !important;
+    }
+    
     .stTextInput > div > div > input:focus,
     .stTextArea > div > div > textarea:focus {
         border-color: #667eea !important;
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+        color: #1a202c !important;
     }
     
     /* File Uploader */
@@ -276,9 +286,15 @@ def main():
         filter: drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3)) !important;
     }
     
-    /* Enhanced text colors */
-    p, span, div {
-        color: #2d3748;
+    /* Enhanced text colors for content */
+    .stMarkdown p {
+        color: #2d3748 !important;
+    }
+    
+    /* Ensure labels are visible */
+    label {
+        color: #2d3748 !important;
+        font-weight: 600 !important;
     }
     
     /* Feature card text enhancement */

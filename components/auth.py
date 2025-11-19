@@ -401,14 +401,21 @@ def show_login_page():
         border: 2px solid rgba(102, 126, 234, 0.2);
         padding: 0.85rem 1rem;
         transition: all 0.3s ease;
-        background: rgba(102, 126, 234, 0.02);
+        background: white;
         font-size: 0.95rem;
+        color: #2d3748 !important;
+    }
+    
+    .stTextInput > div > div > input::placeholder {
+        color: #a0aec0 !important;
+        opacity: 1 !important;
     }
     
     .stTextInput > div > div > input:focus {
         border-color: #667eea;
         box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
         background: white;
+        color: #1a202c !important;
     }
     
     /* Tab styling */
