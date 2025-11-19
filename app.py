@@ -302,48 +302,49 @@ def main():
         """, unsafe_allow_html=True)
     
     # Navigation menu items
-    menu_columns = [col_menu1, col_menu2, col_menu3, col_menu4, col_menu5, col_menu6]
-    menu_items = [
-        ("Dashboard", 0),
-        ("Generate", 1),
-        ("Editor", 2),
-        ("Lifestyle", 3),
-        ("Fill", 4),
-        ("Erase", 5)
-    ]
-    
-    for idx, (col, (name, page)) in enumerate(zip(menu_columns, menu_items)):
-        with col:
-            is_active = st.session_state.get('current_page', 0) == page
-            
-            if is_active:
-                # Active state - Highlighted
-                st.markdown(f"""
-                <div style="text-align: center; margin-top: -65px; margin-bottom: -60px; pointer-events: none;">
-                    <div style="background: linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.25) 100%); 
-                                padding: 14px 24px; border-radius: 14px; 
-                                box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3);
-                                border: 2px solid rgba(255,255,255,0.4);
-                                border-bottom: 4px solid white;
-                                backdrop-filter: blur(10px);">
-                        <span style="color: white; font-weight: 800; font-size: 0.95rem; 
-                                     text-shadow: 1px 1px 2px rgba(0,0,0,0.2); letter-spacing: 0.5px;">
-                            {name}
-                        </span>
+    with col_menu:
+        menu_cols = st.columns(6)
+        menu_items = [
+            ("Dashboard", 0),
+            ("Generate", 1),
+            ("Editor", 2),
+            ("Lifestyle", 3),
+            ("Fill", 4),
+            ("Erase", 5)
+        ]
+        
+        for idx, (col, (name, page)) in enumerate(zip(menu_cols, menu_items)):
+            with col:
+                is_active = st.session_state.get('current_page', 0) == page
+                
+                if is_active:
+                    # Active state - Highlighted
+                    st.markdown(f"""
+                    <div style="text-align: center; margin-top: -50px; margin-bottom: -55px; pointer-events: none;">
+                        <div style="background: linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.25) 100%); 
+                                    padding: 14px 24px; border-radius: 14px; 
+                                    box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3);
+                                    border: 2px solid rgba(255,255,255,0.4);
+                                    border-bottom: 4px solid white;
+                                    backdrop-filter: blur(10px);">
+                            <span style="color: white; font-weight: 800; font-size: 0.95rem; 
+                                         text-shadow: 1px 1px 2px rgba(0,0,0,0.2); letter-spacing: 0.5px;">
+                                {name}
+                            </span>
+                        </div>
                     </div>
-                </div>
-                """, unsafe_allow_html=True)
-                if st.button("​", key=f"menu_{idx}", use_container_width=True):
-                    st.session_state.current_page = page
-                    st.query_params.update({'page': str(page)})
-                    st.rerun()
-            else:
-                # Inactive state - Elegant hover
-                st.markdown(f"<div style='margin-top: -65px;'></div>", unsafe_allow_html=True)
-                if st.button(name, key=f"menu_{idx}", use_container_width=True):
-                    st.session_state.current_page = page
-                    st.query_params.update({'page': str(page)})
-                    st.rerun()
+                    """, unsafe_allow_html=True)
+                    if st.button("​", key=f"menu_{idx}", use_container_width=True):
+                        st.session_state.current_page = page
+                        st.query_params.update({'page': str(page)})
+                        st.rerun()
+                else:
+                    # Inactive state - Elegant hover
+                    st.markdown(f"<div style='margin-top: -50px;'></div>", unsafe_allow_html=True)
+                    if st.button(name, key=f"menu_{idx}", use_container_width=True):
+                        st.session_state.current_page = page
+                        st.query_params.update({'page': str(page)})
+                        st.rerun()
     
     with col_profile:
         # Profile section
