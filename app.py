@@ -143,17 +143,132 @@ def main():
             st.rerun()
         return
     
-    # Main app header
-    show_animated_header("AdSnap Studio", "AI-Powered Image Generation & Editing Studio")
+    # Top Menu Bar
+    menu_col1, menu_col2, menu_col3 = st.columns([2, 6, 2])
     
-    # Sidebar for API key
+    with menu_col1:
+        st.markdown("""
+        <div style="padding: 10px 0;">
+            <h2 style="margin: 0; color: #667eea; font-size: 1.8rem;">🎨 AdSnap Studio</h2>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with menu_col2:
+        # Feature menu
+        menu_items = st.columns(6)
+        menu_options = [
+            ("🏠", "Dashboard", 0),
+            ("🎨", "Generate", 1),
+            ("✨", "Editor", 2),
+            ("🖼️", "Lifestyle", 3),
+            ("🎨", "Fill", 4),
+            ("✂️", "Erase", 5)
+        ]
+        
+        for idx, (col, (icon, name, page)) in enumerate(zip(menu_items, menu_options)):
+            with col:
+                is_active = st.session_state.get('current_page', 0) == page
+                button_style = "primary" if is_active else "secondary"
+                if st.button(f"{icon} {name}", key=f"menu_{idx}", use_container_width=True, type=button_style):
+                    st.session_state.current_page = page
+                    st.query_params.update({'page': str(page)})
+                    st.rerun()
+    
+    with menu_col3:
+        # Profile menu
+        profile_col1, profile_col2 = st.columns([3, 1])
+        
+        with profile_col1:
+            user_info = st.session_state.get('user_info', {})
+            username = st.session_state.get('username', 'User')
+            display_name = user_info.get('full_name', username)
+            
+            # Truncate long names
+            if len(display_name) > 15:
+                display_name = display_name[:12] + "..."
+            
+            st.markdown(f"""
+            <div style="padding: 10px; text-align: right;">
+                <p style="margin: 0; color: #888; font-size: 0.8rem;">Welcome</p>
+                <p style="margin: 0; color: #667eea; font-weight: bold; font-size: 1rem;">👤 {display_name}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with profile_col2:
+            # Profile dropdown
+            if st.button("⚙️", key="profile_menu_btn", use_container_width=True):
+                st.session_state.show_profile_menu = not st.session_state.get('show_profile_menu', False)
+    
+    # Profile dropdown menu
+    if st.session_state.get('show_profile_menu', False):
+        with st.container():
+            st.markdown("""
+            <style>
+            .profile-dropdown {
+                position: absolute;
+                right: 20px;
+                top: 80px;
+                background: white;
+                border: 2px solid #667eea;
+                border-radius: 10px;
+                padding: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                min-width: 200px;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
+            profile_menu_col = st.columns([8, 2])[0]
+            with profile_menu_col:
+                st.markdown('<div class="profile-dropdown">', unsafe_allow_html=True)
+                
+                user_info = st.session_state.get('user_info', {})
+                st.markdown(f"**👤 {user_info.get('full_name', st.session_state.get('username', 'User'))}**")
+                st.markdown(f"📧 {user_info.get('email', 'N/A')}")
+                
+                if user_info.get('last_login'):
+                    from datetime import datetime
+                    last_login = datetime.fromisoformat(user_info['last_login'])
+                    st.markdown(f"🕒 Last: {last_login.strftime('%m/%d %H:%M')}")
+                
+                st.markdown("---")
+                
+                col_a, col_b = st.columns(2)
+                with col_a:
+                    if st.button("👤 Profile", key="profile_btn_menu", use_container_width=True):
+                        st.session_state.show_profile_modal = True
+                        st.session_state.show_profile_menu = False
+                        st.rerun()
+                with col_b:
+                    if st.button("🚪 Logout", key="logout_btn_menu", use_container_width=True):
+                        logout()
+                
+                st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
+    # Sidebar for API key and additional settings
     with st.sidebar:
-        st.header("Settings")
-        api_key = st.text_input("Enter your API key:", value=st.session_state.api_key if st.session_state.api_key else "", type="password")
+        st.header("⚙️ Settings")
+        api_key = st.text_input("API Key:", value=st.session_state.api_key if st.session_state.api_key else "", type="password")
         if api_key:
             st.session_state.api_key = api_key
+        
+        st.markdown("---")
+        st.markdown("### 📊 Quick Stats")
+        if st.session_state.get('user_info'):
+            st.metric("Account Type", "Premium" if st.session_state.get('username') != 'demo_user' else "Demo")
+            st.metric("Images Generated", st.session_state.get('images_generated', 0))
+        
+        st.markdown("---")
+        st.markdown("### 🔗 Quick Links")
+        st.markdown("- [📖 Documentation](https://github.com)")
+        st.markdown("- [💡 Tutorials](https://github.com)")
+        st.markdown("- [🐛 Report Bug](https://github.com)")
+        st.markdown("- [⭐ Rate Us](https://github.com)")
 
-    # Main navigation
+    # Main navigation (hidden, controlled by menu bar)
     tab_names = [
         "🏠 Dashboard",
         "🎨 Generate Image",
@@ -183,23 +298,6 @@ def main():
         current_params['page'] = str(st.session_state.active_tab)
         st.query_params.update(current_params)
         st.session_state.active_tab = None  # Reset after use
-    
-    # Create navigation buttons
-    nav_cols = st.columns(len(tab_names))
-    
-    for i, (col, tab_name) in enumerate(zip(nav_cols, tab_names)):
-        with col:
-            # Highlight active button
-            button_type = "primary" if i == st.session_state.current_page else "secondary"
-            if st.button(tab_name, key=f"nav_{i}", use_container_width=True, type=button_type):
-                st.session_state.current_page = i
-                # Update query params to persist current page
-                current_params = dict(st.query_params)
-                current_params['page'] = str(i)
-                st.query_params.update(current_params)
-                st.rerun()
-    
-    st.markdown("---")  # Separator line
     
     # Display content based on selected page
     if st.session_state.current_page == 0:  # Dashboard
