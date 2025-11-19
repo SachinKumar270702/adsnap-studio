@@ -23,7 +23,7 @@ import numpy as np
 from services.erase_foreground import erase_foreground
 
 # Import our custom components
-from components.auth import init_session_state, require_auth, show_login_page, show_user_profile
+from components.auth import init_session_state, require_auth, show_login_page, show_user_profile, logout
 from components.interactive_ui import (
     add_custom_css, show_animated_header, show_feature_card, 
     show_progress_bar, show_metric_cards, show_loading_spinner,
