@@ -182,7 +182,7 @@ def show_login_page():
         show_password_reset_page()
         return
     
-    # Custom CSS for better styling with animated background
+    # Custom CSS for professional login page with theme-based background
     st.markdown("""
     <style>
     /* Hide Streamlit header, toolbar and menu */
@@ -219,22 +219,29 @@ def show_login_page():
         display: none !important;
     }
     
-    /* Remove top padding from main container */
+    /* Remove ALL padding and margins */
     .main .block-container {
-        padding-top: 2rem !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
     }
     
-    /* Ensure full viewport height */
-    .stApp {
-        margin-top: 0 !important;
-        padding-top: 0 !important;
+    .main {
+        padding: 0 !important;
+        margin: 0 !important;
     }
     
-    /* Animated gradient background */
+    /* Full viewport background with theme gradient */
     .stApp {
-        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        margin: 0 !important;
+        padding: 0 !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
         background-size: 400% 400%;
         animation: gradientShift 15s ease infinite;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     @keyframes gradientShift {
@@ -252,221 +259,258 @@ def show_login_page():
         width: 100%;
         height: 100%;
         background-image: 
-            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 60% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
         animation: float 20s ease-in-out infinite;
         pointer-events: none;
         z-index: 0;
     }
     
     @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
+        0%, 100% { transform: translateY(0px) scale(1); }
+        50% { transform: translateY(-30px) scale(1.05); }
     }
     
+    /* Login container with glass morphism */
     .auth-container {
-        max-width: 450px;
+        max-width: 480px;
         margin: 0 auto;
-        padding: 2.5rem;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border-radius: 25px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.3);
+        padding: 3rem 2.5rem;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(30px);
+        border-radius: 30px;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.35), 
+                    0 0 0 1px rgba(255,255,255,0.5),
+                    inset 0 1px 0 rgba(255,255,255,0.8);
         color: #333;
         position: relative;
         z-index: 1;
-        animation: slideUp 0.6s ease-out;
+        animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
     @keyframes slideUp {
         from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(50px) scale(0.95);
         }
         to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
+    }
+    
+    /* Logo section at top of card */
+    .auth-logo {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+    }
+    
+    .auth-logo-icon {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        margin-bottom: 1rem;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); }
+        50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6); }
     }
     
     .auth-title {
         text-align: center;
-        font-size: 3.5rem;
+        font-size: 2.5rem;
         font-weight: 900;
-        margin-bottom: 0.5rem;
+        margin: 0;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         letter-spacing: 2px;
-        animation: titlePulse 2s ease-in-out infinite;
         text-transform: uppercase;
-    }
-    
-    @keyframes titlePulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.02); }
     }
     
     .subtitle-text {
         text-align: center;
-        color: #667eea;
-        font-size: 1rem;
-        margin: 0;
+        color: #888;
+        font-size: 0.95rem;
+        margin: 0.5rem 0 0 0;
         font-weight: 500;
-        animation: fadeIn 1s ease-in;
+        letter-spacing: 0.5px;
     }
     
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
+    /* Button styling */
     .stButton > button {
         width: 100%;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border: none;
-        border-radius: 25px;
-        padding: 0.75rem 1.5rem;
-        font-weight: bold;
-        transition: all 0.3s ease;
+        border-radius: 15px;
+        padding: 0.85rem 1.5rem;
+        font-weight: 700;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         color: white;
         font-size: 1rem;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        letter-spacing: 0.5px;
     }
     
     .stButton > button:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
         background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
     }
     
-    .auth-tabs {
-        background: rgba(102, 126, 234, 0.05);
-        border-radius: 15px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        border: 1px solid rgba(102, 126, 234, 0.1);
+    .stButton > button:active {
+        transform: translateY(-1px);
     }
     
     /* Input field styling */
     .stTextInput > div > div > input {
         border-radius: 12px;
         border: 2px solid rgba(102, 126, 234, 0.2);
-        padding: 0.75rem;
+        padding: 0.85rem 1rem;
         transition: all 0.3s ease;
+        background: rgba(102, 126, 234, 0.02);
+        font-size: 0.95rem;
     }
     
     .stTextInput > div > div > input:focus {
         border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        background: white;
     }
     
     /* Tab styling */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
+        gap: 12px;
         background: transparent;
+        border-bottom: none;
+        margin-bottom: 1.5rem;
     }
     
     .stTabs [data-baseweb="tab"] {
-        background: rgba(102, 126, 234, 0.1);
+        background: rgba(102, 126, 234, 0.08);
         border-radius: 12px;
-        padding: 0.75rem 1.5rem;
+        padding: 0.85rem 1.8rem;
         color: #667eea;
-        font-weight: 600;
+        font-weight: 700;
         border: 2px solid transparent;
         transition: all 0.3s ease;
+        font-size: 0.95rem;
     }
     
     .stTabs [data-baseweb="tab"]:hover {
-        background: rgba(102, 126, 234, 0.2);
+        background: rgba(102, 126, 234, 0.15);
         transform: translateY(-2px);
     }
     
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        border-color: #667eea;
+        border-color: transparent;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
     }
     
     /* Form styling */
     .stForm {
         background: transparent;
+        border: none;
+        padding: 0;
     }
     
-    /* Decorative elements */
-    .auth-container::before {
-        content: '✨';
-        position: absolute;
-        top: -20px;
-        right: -20px;
-        font-size: 3rem;
-        animation: rotate 4s linear infinite;
+    /* Welcome message styling */
+    .welcome-message {
+        text-align: center;
+        margin-bottom: 1.5rem;
     }
     
-    .auth-container::after {
-        content: '🎨';
-        position: absolute;
-        bottom: -20px;
-        left: -20px;
-        font-size: 3rem;
-        animation: bounce 2s ease-in-out infinite;
+    .welcome-message h3 {
+        color: #667eea;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
     }
     
-    @keyframes rotate {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+    .welcome-message p {
+        color: #999;
+        font-size: 0.95rem;
     }
     
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+    /* Footer styling */
+    .auth-footer {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid rgba(102, 126, 234, 0.1);
+        text-align: center;
+    }
+    
+    .auth-footer p {
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        font-size: 0.95rem;
+    }
+    
+    .auth-footer-icons {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        font-size: 0.9rem;
+        color: #999;
+    }
+    
+    .auth-footer-icons span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    /* Remove default streamlit spacing */
+    .element-container {
+        margin: 0 !important;
+    }
+    
+    /* Alert styling */
+    .stAlert {
+        border-radius: 12px;
+        border: none;
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
     }
     </style>
     """, unsafe_allow_html=True)
     
-    # White bar at the top with AdSnap Studio text
-    st.markdown('''
-    <div style="background: white; padding: 20px 40px; margin: -80px -100px 40px -100px; 
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 0 0 20px 20px;
-                display: flex; align-items: center; justify-content: center; gap: 15px;">
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                    padding: 12px; border-radius: 16px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
-            <span style="font-size: 2rem;">🎨</span>
-        </div>
-        <div>
-            <h1 style="margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-                       font-size: 2rem; font-weight: 900; letter-spacing: 1px;">
-                ADSNAP STUDIO
-            </h1>
-            <p style="margin: 0; color: #888; font-size: 0.9rem; font-weight: 500; letter-spacing: 0.5px;">
-                AI-Powered Image Generation & Editing
-            </p>
-        </div>
-        <div style="display: flex; gap: 8px; font-size: 1.5rem;">
-            <span style="animation: bounce 2s ease-in-out infinite;">✨</span>
-            <span style="animation: bounce 2s ease-in-out infinite; animation-delay: 0.2s;">💫</span>
-        </div>
-    </div>
-    ''', unsafe_allow_html=True)
-    
-    # Center the content
-    col1, col2, col3 = st.columns([1, 2, 1])
+    # Center the content with proper spacing
+    st.markdown('<div style="padding: 2rem 1rem;">', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2.5, 1])
     
     with col2:
         st.markdown('<div class="auth-container">', unsafe_allow_html=True)
+        
+        # Logo and title section
         st.markdown('''
-        <div style="text-align: center; margin-bottom: 2rem;">
-            <h2 style="color: #667eea; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">
-                Welcome Back! 👋
-            </h2>
-            <p style="color: #888; font-size: 1rem;">
-                Sign in to continue creating amazing content
-            </p>
+        <div class="auth-logo">
+            <div class="auth-logo-icon">
+                <span style="font-size: 3rem;">🎨</span>
+            </div>
+            <h1 class="auth-title">ADSNAP STUDIO</h1>
+            <p class="subtitle-text">AI-Powered Image Generation & Editing</p>
+        </div>
+        ''', unsafe_allow_html=True)
+        
+        # Welcome message
+        st.markdown('''
+        <div class="welcome-message">
+            <h3>Welcome Back! 👋</h3>
+            <p>Sign in to continue creating amazing content</p>
         </div>
         ''', unsafe_allow_html=True)
         
@@ -474,14 +518,7 @@ def show_login_page():
         tab1, tab2 = st.tabs(["🔑 Login", "📝 Sign Up"])
         
         with tab1:
-            st.markdown('<div class="auth-tabs">', unsafe_allow_html=True)
             with st.form("login_form"):
-                st.markdown("""
-                <div style="text-align: center; margin-bottom: 1rem;">
-                    <h3 style="color: #667eea; margin-bottom: 0.5rem;">👋 Welcome Back!</h3>
-                    <p style="color: #999; font-size: 0.9rem;">Ready to create something amazing?</p>
-                </div>
-                """, unsafe_allow_html=True)
                 username = st.text_input("Username or Email", placeholder="Enter your username or email")
                 password = st.text_input("Password", type="password", placeholder="Enter your password")
                 
@@ -551,18 +588,9 @@ def show_login_page():
                 if forgot_password_btn:
                     st.session_state.show_password_reset = True
                     st.rerun()
-            
-            st.markdown('</div>', unsafe_allow_html=True)
         
         with tab2:
-            st.markdown('<div class="auth-tabs">', unsafe_allow_html=True)
             with st.form("signup_form"):
-                st.markdown("""
-                <div style="text-align: center; margin-bottom: 1rem;">
-                    <h3 style="color: #667eea; margin-bottom: 0.5rem;">🌟 Join AdSnap Studio!</h3>
-                    <p style="color: #999; font-size: 0.9rem;">Start your creative journey today</p>
-                </div>
-                """, unsafe_allow_html=True)
                 full_name = st.text_input("Full Name", placeholder="Your full name")
                 email = st.text_input("Email", placeholder="your.email@example.com")
                 new_username = st.text_input("Username", placeholder="Choose a username")
@@ -590,24 +618,22 @@ def show_login_page():
                                 st.error(message)
                     else:
                         st.warning("Please fill in all fields")
-            
-            st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.markdown('</div>', unsafe_allow_html=True)
         
         # Footer
         st.markdown("""
-        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid rgba(102, 126, 234, 0.1);">
-            <p style='text-align: center; color: #667eea; font-weight: 500; margin-bottom: 0.5rem;'>
-                ✨ Generate & modify images with AI-powered tools ✨
-            </p>
-            <div style="text-align: center; font-size: 0.9rem; color: #999;">
-                <span style="margin: 0 0.5rem;">🎨 Create</span>
-                <span style="margin: 0 0.5rem;">✂️ Edit</span>
-                <span style="margin: 0 0.5rem;">🚀 Transform</span>
+        <div class="auth-footer">
+            <p>✨ Generate & modify images with AI-powered tools ✨</p>
+            <div class="auth-footer-icons">
+                <span>🎨 Create</span>
+                <span>✂️ Edit</span>
+                <span>🚀 Transform</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def show_user_profile():
     """Display user profile in sidebar."""

@@ -265,10 +265,13 @@ def main():
         font-weight: 600 !important;
     }
     
-    /* Markdown Headers */
+    /* Markdown Headers - Blue Theme */
     h1, h2, h3, h4 {
-        color: #2d3748 !important;
-        font-weight: 700 !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        font-weight: 800 !important;
         letter-spacing: -0.5px !important;
     }
     
@@ -280,18 +283,103 @@ def main():
     </style>
     """, unsafe_allow_html=True)
     
-    # Modern Clean Navigation Bar (Mubasic-style)
+    # Centered Header with Logo and Features
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                padding: 20px 50px; margin: -80px -100px 30px -100px; 
-                box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+    <div style="text-align: center; padding: 50px 0 20px 0; margin: -80px -100px 0 -100px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <!-- Logo and Title -->
+        <div style="display: inline-flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px;">
+            <div style="background: white; padding: 18px; border-radius: 20px; 
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                <span style="font-size: 3rem;">🎨</span>
+            </div>
+            <div>
+                <h1 style="margin: 0; color: white; font-size: 3rem; font-weight: 900; 
+                           letter-spacing: 2px; text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+                           font-family: 'Segoe UI', sans-serif; line-height: 1;">
+                    ADSNAP STUDIO
+                </h1>
+                <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.95); font-size: 1rem; 
+                          font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">
+                    AI-Powered Image Generation & Editing
+                </p>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # Create navigation layout - cleaner spacing
-    col_logo, col_spacer1, col_menu, col_spacer2, col_profile = st.columns([2, 0.5, 6, 0.5, 2])
+    # Feature Navigation Buttons - Centered Row
+    st.markdown("<div style='margin: 30px 0 40px 0;'>", unsafe_allow_html=True)
     
-    with col_logo:
+    nav_cols = st.columns([0.5, 1, 1, 1, 1, 1, 1, 0.5])
+    
+    # Skip first spacer column
+    menu_items = [
+        ("🏠 Dashboard", 0),
+        ("🎨 Generate", 1),
+        ("✨ Editor", 2),
+        ("🖼️ Lifestyle", 3),
+        ("🎨 Fill", 4),
+        ("✂️ Erase", 5)
+    ]
+    
+    for idx, (name, page) in enumerate(menu_items):
+        with nav_cols[idx + 1]:  # Skip first spacer
+            is_active = st.session_state.get('current_page', 0) == page
+            
+            if is_active:
+                if st.button(name, key=f"nav_{idx}", use_container_width=True, type="primary"):
+                    st.session_state.current_page = page
+                    st.query_params.update({'page': str(page)})
+                    st.rerun()
+            else:
+                if st.button(name, key=f"nav_{idx}", use_container_width=True):
+                    st.session_state.current_page = page
+                    st.query_params.update({'page': str(page)})
+                    st.rerun()
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Auth buttons in top-right corner (floating)
+    st.markdown("""
+    <div style="position: fixed; top: 20px; right: 30px; z-index: 1000; display: flex; gap: 10px;">
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Create a container for auth buttons
+    # Auth buttons in top-right (floating)
+    auth_container = st.container()
+    with auth_container:
+        col_spacer, col_auth = st.columns([8, 2])
+        with col_auth:
+            user_info = st.session_state.get('user_info', {})
+            username = st.session_state.get('username', 'User')
+            is_demo = username == 'demo_user'
+            
+            if is_demo:
+                auth_cols = st.columns(2)
+                with auth_cols[0]:
+                    if st.button("🔑", key="float_login", help="Login", use_container_width=True):
+                        logout()
+                with auth_cols[1]:
+                    if st.button("✨", key="float_signup", help="Sign Up", use_container_width=True, type="primary"):
+                        logout()
+            else:
+                if st.button(f"👤 {username[:8]}", key="float_profile", use_container_width=True):
+                    st.session_state.show_profile_menu = not st.session_state.get('show_profile_menu', False)
+    
+    st.markdown("---")
+    
+    # Old navigation code removed - using new centered layout above
+    if False:  # Disabled old code
+        pass
+    
+    # Placeholder to prevent errors
+    col_logo = None
+    col_menu = None
+    col_profile = None
+    
+    if col_logo:
         # Elegant Logo with Text
         st.markdown("""
         <div style="display: flex; align-items: center; gap: 12px; margin-top: -55px;">
