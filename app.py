@@ -1593,15 +1593,24 @@ def main():
                     with tool_cols[2]:
                         drawing_mode = st.selectbox("Mode", ["freedraw", "line", "rect", "circle"], key="gf_drawing_mode")
                     
+                    # Resize image if too large for canvas
+                    max_size = 800
+                    canvas_img = img.copy()
+                    if canvas_img.width > max_size or canvas_img.height > max_size:
+                        canvas_img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+                    
+                    # Convert to numpy array for canvas
+                    img_array = np.array(canvas_img)
+                    
                     # Canvas for drawing
                     canvas_result = st_canvas(
                         fill_color="rgba(0, 0, 0, 0)",
                         stroke_width=stroke_width,
                         stroke_color=stroke_color,
-                        background_image=img,
+                        background_image=Image.fromarray(img_array),
                         update_streamlit=True,
-                        height=img.height,
-                        width=img.width,
+                        height=canvas_img.height,
+                        width=canvas_img.width,
                         drawing_mode=drawing_mode,
                         key="gf_canvas"
                     )
@@ -1613,11 +1622,17 @@ def main():
                         # Convert to grayscale mask (white = fill, black = keep)
                         mask_img = Image.fromarray(mask_data.astype('uint8'), 'RGBA')
                         mask_gray = mask_img.convert('L')
+                        
+                        # Resize mask back to original image size if needed
+                        if canvas_img.size != img.size:
+                            mask_gray = mask_gray.resize(img.size, Image.Resampling.LANCZOS)
+                        
                         st.session_state.gf_mask_image = mask_gray
                     
                     # Show pure mask
-                    with st.expander("🔍 View Pure Mask"):
-                        st.image(st.session_state.gf_mask_image, caption="Pure Mask", use_column_width=True)
+                    if 'gf_mask_image' in st.session_state:
+                        with st.expander("🔍 View Pure Mask"):
+                            st.image(st.session_state.gf_mask_image, caption="Pure Mask", use_column_width=True)
                     
                     # Convert mask to file for API
                     mask_buffer = io.BytesIO()
@@ -1887,15 +1902,24 @@ def main():
                     with tool_cols[2]:
                         drawing_mode = st.selectbox("Mode", ["freedraw", "line", "rect", "circle"], key="erase_drawing_mode")
                     
+                    # Resize image if too large for canvas
+                    max_size = 800
+                    canvas_img = img.copy()
+                    if canvas_img.width > max_size or canvas_img.height > max_size:
+                        canvas_img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+                    
+                    # Convert to numpy array for canvas
+                    img_array = np.array(canvas_img)
+                    
                     # Canvas for drawing
                     canvas_result = st_canvas(
                         fill_color="rgba(0, 0, 0, 0)",
                         stroke_width=stroke_width,
                         stroke_color=stroke_color,
-                        background_image=img,
+                        background_image=Image.fromarray(img_array),
                         update_streamlit=True,
-                        height=img.height,
-                        width=img.width,
+                        height=canvas_img.height,
+                        width=canvas_img.width,
                         drawing_mode=drawing_mode,
                         key="erase_canvas"
                     )
@@ -1907,6 +1931,11 @@ def main():
                         # Convert to grayscale mask (white = erase, black = keep)
                         mask_img = Image.fromarray(mask_data.astype('uint8'), 'RGBA')
                         mask_gray = mask_img.convert('L')
+                        
+                        # Resize mask back to original image size if needed
+                        if canvas_img.size != img.size:
+                            mask_gray = mask_gray.resize(img.size, Image.Resampling.LANCZOS)
+                        
                         st.session_state.erase_mask_image = mask_gray
                     
                     with st.expander("🔍 View Pure Mask"):
