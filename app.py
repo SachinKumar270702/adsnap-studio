@@ -334,21 +334,34 @@ def main():
                 is_active = st.session_state.get('current_page', 0) == page
                 
                 if is_active:
-                    # Active state - Highlighted
+                    # Active state - Blue Theme Highlighted
                     st.markdown(f"""
                     <div style="text-align: center; margin-top: -50px; margin-bottom: -55px; pointer-events: none;">
-                        <div style="background: linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.25) 100%); 
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                                     padding: 14px 24px; border-radius: 14px; 
-                                    box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3);
-                                    border: 2px solid rgba(255,255,255,0.4);
+                                    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6), 
+                                                inset 0 1px 0 rgba(255,255,255,0.4),
+                                                0 0 20px rgba(102, 126, 234, 0.5);
+                                    border: 2px solid rgba(255,255,255,0.6);
                                     border-bottom: 4px solid white;
-                                    backdrop-filter: blur(10px);">
-                            <span style="color: white; font-weight: 800; font-size: 0.95rem; 
-                                         text-shadow: 1px 1px 2px rgba(0,0,0,0.2); letter-spacing: 0.5px;">
+                                    backdrop-filter: blur(10px);
+                                    animation: pulse 2s ease-in-out infinite;">
+                            <span style="color: white; font-weight: 900; font-size: 0.95rem; 
+                                         text-shadow: 2px 2px 4px rgba(0,0,0,0.3); letter-spacing: 0.5px;">
                                 {name}
                             </span>
                         </div>
                     </div>
+                    <style>
+                    @keyframes pulse {{
+                        0%, 100% {{ box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6), 
+                                                 inset 0 1px 0 rgba(255,255,255,0.4),
+                                                 0 0 20px rgba(102, 126, 234, 0.5); }}
+                        50% {{ box-shadow: 0 8px 25px rgba(102, 126, 234, 0.8), 
+                                            inset 0 1px 0 rgba(255,255,255,0.4),
+                                            0 0 30px rgba(102, 126, 234, 0.7); }}
+                    }}
+                    </style>
                     """, unsafe_allow_html=True)
                     if st.button("​", key=f"menu_{idx}", use_container_width=True):
                         st.session_state.current_page = page
