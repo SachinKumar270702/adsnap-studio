@@ -1703,19 +1703,37 @@ def main():
                                     sync=sync_mode
                                 )
                                 
-                                if result and "result_url" in result:
-                                    st.session_state.generative_fill_result = result["result_url"]
+                                # Try multiple response formats
+                                result_url = None
+                                
+                                if result:
+                                    # Format 1: Direct result_url
+                                    if "result_url" in result:
+                                        result_url = result["result_url"]
+                                    # Format 2: result array with urls
+                                    elif "result" in result and isinstance(result["result"], list) and len(result["result"]) > 0:
+                                        if "urls" in result["result"][0]:
+                                            result_url = result["result"][0]["urls"][0]
+                                        elif "url" in result["result"][0]:
+                                            result_url = result["result"][0]["url"]
+                                    # Format 3: Direct url field
+                                    elif "url" in result:
+                                        result_url = result["url"]
+                                    # Format 4: urls array
+                                    elif "urls" in result and isinstance(result["urls"], list) and len(result["urls"]) > 0:
+                                        result_url = result["urls"][0]
+                                
+                                if result_url:
+                                    st.session_state.generative_fill_result = result_url
                                     st.success("✨ Generative fill completed!")
                                     st.rerun()
-                                elif result and "result" in result and isinstance(result["result"], list):
-                                    if len(result["result"]) > 0 and "urls" in result["result"][0]:
-                                        st.session_state.generative_fill_result = result["result"][0]["urls"][0]
-                                        st.success("✨ Generative fill completed!")
-                                        st.rerun()
                                 else:
-                                    st.error("❌ No result URL in API response")
-                                    with st.expander("🔍 Debug: API Response"):
+                                    st.error("❌ No result URL found in API response")
+                                    st.info("💡 The API returned a response but in an unexpected format. Check the debug info below.")
+                                    with st.expander("🔍 Debug: Full API Response"):
                                         st.json(result)
+                                        st.markdown("**Expected formats:**")
+                                        st.code('{"result_url": "..."} or {"result": [{"urls": ["..."]}]} or {"url": "..."}')
                             except Exception as e:
                                 st.error(f"❌ Error: {str(e)}")
             else:
@@ -1805,13 +1823,29 @@ def main():
                                     content_moderation=content_mod
                                 )
                                 
-                                if result and "result_url" in result:
-                                    st.session_state.erase_result = result["result_url"]
+                                # Try multiple response formats
+                                result_url = None
+                                
+                                if result:
+                                    if "result_url" in result:
+                                        result_url = result["result_url"]
+                                    elif "result" in result and isinstance(result["result"], list) and len(result["result"]) > 0:
+                                        if "urls" in result["result"][0]:
+                                            result_url = result["result"][0]["urls"][0]
+                                        elif "url" in result["result"][0]:
+                                            result_url = result["result"][0]["url"]
+                                    elif "url" in result:
+                                        result_url = result["url"]
+                                    elif "urls" in result and isinstance(result["urls"], list) and len(result["urls"]) > 0:
+                                        result_url = result["urls"][0]
+                                
+                                if result_url:
+                                    st.session_state.erase_result = result_url
                                     st.success("✨ Foreground objects removed successfully!")
                                     st.rerun()
                                 else:
-                                    st.error("No result URL in API response")
-                                    with st.expander("Debug: API Response"):
+                                    st.error("❌ No result URL found in API response")
+                                    with st.expander("🔍 Debug: Full API Response"):
                                         st.json(result)
                             except Exception as e:
                                 st.error(f"Error: {str(e)}")
