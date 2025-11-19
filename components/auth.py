@@ -185,63 +185,75 @@ def show_login_page():
     # Custom CSS for professional login page with theme-based background
     st.markdown("""
     <style>
-    /* Hide Streamlit header, toolbar and menu */
-    header[data-testid="stHeader"] {
+    /* AGGRESSIVE removal of ALL Streamlit default elements and spacing */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%) !important;
+        background-size: 400% 400% !important;
+        animation: gradientShift 15s ease infinite !important;
+    }
+    
+    /* Hide ALL Streamlit chrome */
+    header[data-testid="stHeader"],
+    .stApp > header,
+    div[data-testid="stToolbar"],
+    div[data-testid="stDecoration"],
+    div[data-testid="stStatusWidget"],
+    #MainMenu,
+    footer,
+    .stDeployButton {
         display: none !important;
         visibility: hidden !important;
         height: 0 !important;
+        width: 0 !important;
     }
     
-    .stApp > header {
-        display: none !important;
-    }
-    
-    div[data-testid="stToolbar"] {
-        display: none !important;
-        visibility: hidden !important;
-    }
-    
-    div[data-testid="stDecoration"] {
-        display: none !important;
-    }
-    
-    div[data-testid="stStatusWidget"] {
-        display: none !important;
-    }
-    
-    #MainMenu {
-        visibility: hidden !important;
-        display: none !important;
-    }
-    
-    footer {
-        visibility: hidden !important;
-        display: none !important;
-    }
-    
-    /* Remove ALL padding and margins */
-    .main .block-container {
+    /* Remove ALL padding, margins, and spacing */
+    .main .block-container,
+    .main,
+    section[data-testid="stSidebar"],
+    [data-testid="stAppViewContainer"] > section,
+    .element-container,
+    .stMarkdown,
+    div[data-testid="column"] {
         padding: 0 !important;
         margin: 0 !important;
         max-width: 100% !important;
     }
     
-    .main {
-        padding: 0 !important;
+    /* Full viewport background with theme gradient */
+    .stApp,
+    [data-testid="stAppViewContainer"] {
         margin: 0 !important;
+        padding: 0 !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%) !important;
+        background-size: 400% 400% !important;
+        animation: gradientShift 15s ease infinite !important;
+        min-height: 100vh !important;
     }
     
-    /* Full viewport background with theme gradient */
-    .stApp {
-        margin: 0 !important;
+    /* Center content vertically and horizontally */
+    .main {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 100vh !important;
+        padding: 2rem 1rem !important;
+    }
+    
+    .main .block-container {
         padding: 0 !important;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
-        background-size: 400% 400%;
-        animation: gradientShift 15s ease infinite;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        margin: 0 auto !important;
+        width: 100% !important;
+    }
+    
+    /* Hide sidebar on login page */
+    section[data-testid="stSidebar"] {
+        display: none !important;
+    }
+    
+    /* Remove any default Streamlit spacing */
+    .css-1d391kg, .css-18e3th9, .css-1y4p8pa {
+        padding: 0 !important;
     }
     
     @keyframes gradientShift {
@@ -488,8 +500,7 @@ def show_login_page():
     </style>
     """, unsafe_allow_html=True)
     
-    # Center the content with proper spacing
-    st.markdown('<div style="padding: 2rem 1rem;">', unsafe_allow_html=True)
+    # Center the content
     col1, col2, col3 = st.columns([1, 2.5, 1])
     
     with col2:
@@ -632,8 +643,6 @@ def show_login_page():
         """, unsafe_allow_html=True)
         
         st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
 
 def show_user_profile():
     """Display user profile in sidebar."""
