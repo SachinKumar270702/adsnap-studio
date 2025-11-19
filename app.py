@@ -470,10 +470,7 @@ def main():
     <div style='margin: 30px 0 40px 0;'>
     """, unsafe_allow_html=True)
     
-    # Use responsive column layout
-    import streamlit as st
-    
-    # Check if mobile view (simplified approach)
+    # Navigation columns
     nav_cols = st.columns([0.5, 1, 1, 1, 1, 1, 1, 0.5])
     
     # Skip first spacer column
