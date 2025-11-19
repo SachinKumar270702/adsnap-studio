@@ -450,24 +450,141 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
-    # Feature Navigation Buttons - Centered Row
+    # Mobile Bottom Navigation Bar
     st.markdown("""
     <style>
+    /* Desktop Navigation - Hide on mobile */
+    .desktop-nav {
+        display: block;
+        margin: 30px 0 40px 0;
+    }
+    
+    /* Mobile Bottom Navigation Bar */
+    .mobile-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+        z-index: 9999;
+        padding: 8px 0;
+    }
+    
+    .mobile-nav-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+        padding: 0 10px;
+        max-width: 100%;
+    }
+    
+    .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 5px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none !important;
+        border: 2px solid transparent;
+        color: inherit;
+    }
+    
+    .mobile-nav-item:hover {
+        background: rgba(255,255,255,0.2);
+        text-decoration: none !important;
+    }
+    
+    .mobile-nav-item:active {
+        transform: scale(0.95);
+    }
+    
+    .mobile-nav-item.active {
+        background: rgba(255,255,255,0.95);
+        border-color: white;
+        box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+    }
+    
+    .mobile-nav-icon {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+    }
+    
+    .mobile-nav-item.active .mobile-nav-icon {
+        filter: grayscale(0);
+    }
+    
+    .mobile-nav-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: white;
+        text-align: center;
+        letter-spacing: 0.3px;
+    }
+    
+    .mobile-nav-item.active .mobile-nav-label {
+        color: #667eea;
+        font-weight: 800;
+    }
+    
+    /* Add bottom padding to content on mobile to prevent overlap */
+    .mobile-content-padding {
+        padding-bottom: 0;
+    }
+    
     @media only screen and (max-width: 768px) {
-        /* Stack navigation buttons on mobile */
-        [data-testid="column"] {
-            min-width: 50% !important;
-            flex: 0 0 50% !important;
+        .desktop-nav {
+            display: none !important;
+        }
+        
+        .mobile-nav {
+            display: block !important;
+        }
+        
+        .mobile-content-padding {
+            padding-bottom: 90px !important;
+        }
+        
+        /* Adjust header for mobile */
+        .header-container {
+            margin: -80px -20px 20px -20px !important;
+            padding: 25px 10px 15px 10px !important;
+        }
+        
+        /* Hide floating auth buttons on mobile */
+        [style*="position: fixed"][style*="top: 20px"] {
+            display: none !important;
         }
     }
+    
     @media only screen and (max-width: 480px) {
-        [data-testid="column"] {
-            min-width: 100% !important;
-            flex: 0 0 100% !important;
+        .mobile-content-padding {
+            padding-bottom: 85px !important;
+        }
+        
+        .mobile-nav {
+            padding: 6px 0;
+        }
+        
+        .mobile-nav-item {
+            padding: 8px 3px;
+        }
+        
+        .mobile-nav-icon {
+            font-size: 1.3rem;
+        }
+        
+        .mobile-nav-label {
+            font-size: 0.65rem;
         }
     }
     </style>
-    <div style='margin: 30px 0 40px 0;'>
+    <div class='desktop-nav'>
     """, unsafe_allow_html=True)
     
     # Navigation columns
@@ -499,6 +616,43 @@ def main():
                     st.rerun()
     
     st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Mobile Bottom Navigation Bar
+    current_page = st.session_state.get('current_page', 0)
+    mobile_nav_items = [
+        ("🏠", "Dashboard", 0),
+        ("🎨", "Generate", 1),
+        ("✨", "Editor", 2),
+        ("🖼️", "Lifestyle", 3),
+        ("🎨", "Fill", 4),
+        ("✂️", "Erase", 5)
+    ]
+    
+    # Create mobile nav with proper navigation
+    mobile_nav_html = '''
+    <div class="mobile-nav">
+        <div class="mobile-nav-grid">
+    '''
+    
+    for icon, label, page_num in mobile_nav_items:
+        active_class = "active" if current_page == page_num else ""
+        # Use JavaScript to update URL and reload
+        mobile_nav_html += f'''
+        <a href="?page={page_num}" class="mobile-nav-item {active_class}" style="text-decoration: none;">
+            <div class="mobile-nav-icon">{icon}</div>
+            <div class="mobile-nav-label">{label}</div>
+        </a>
+        '''
+    
+    mobile_nav_html += '''
+        </div>
+    </div>
+    '''
+    
+    st.markdown(mobile_nav_html, unsafe_allow_html=True)
+    
+    # Add mobile content padding wrapper
+    st.markdown('<div class="mobile-content-padding">', unsafe_allow_html=True)
     
     # Auth buttons in top-right corner (floating)
     st.markdown("""
@@ -1764,6 +1918,9 @@ def main():
                                 st.error(f"❌ Error: {str(e)}")
             else:
                 st.info("👆 Upload an image to start")
+    
+    # Close mobile content padding wrapper
+    st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
