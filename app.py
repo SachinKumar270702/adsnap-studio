@@ -143,34 +143,133 @@ def main():
             st.rerun()
         return
     
-    # Professional Navigation Bar - Optimized Layout
+    # Professional & Elegant Styling
     st.markdown("""
     <style>
-    /* Clean navigation styling */
+    /* Global Styling */
+    .main {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    
+    /* Navigation Buttons */
     .stButton > button {
         background: transparent !important;
         border: none !important;
-        color: rgba(255,255,255,0.9) !important;
-        font-weight: 500 !important;
-        padding: 12px 24px !important;
-        border-radius: 8px !important;
-        transition: all 0.2s ease !important;
+        color: rgba(255,255,255,0.95) !important;
+        font-weight: 600 !important;
+        padding: 14px 28px !important;
+        border-radius: 12px !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         font-size: 0.95rem !important;
         white-space: nowrap !important;
+        letter-spacing: 0.3px !important;
     }
     .stButton > button:hover {
-        background: rgba(255,255,255,0.2) !important;
+        background: rgba(255,255,255,0.25) !important;
         color: white !important;
-        transform: translateY(-1px);
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+    }
+    
+    /* Primary Buttons */
+    .stButton > button[kind="primary"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+        border: none !important;
+    }
+    .stButton > button[kind="primary"]:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6) !important;
+    }
+    
+    /* Feature Cards */
+    .feature-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin: 20px 0;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        transition: all 0.3s ease;
+    }
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.12);
+    }
+    
+    /* Input Fields */
+    .stTextInput > div > div > input,
+    .stTextArea > div > div > textarea,
+    .stSelectbox > div > div > select {
+        border-radius: 12px !important;
+        border: 2px solid rgba(102, 126, 234, 0.2) !important;
+        padding: 12px 16px !important;
+        font-size: 0.95rem !important;
+        transition: all 0.3s ease !important;
+    }
+    .stTextInput > div > div > input:focus,
+    .stTextArea > div > div > textarea:focus {
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+    }
+    
+    /* File Uploader */
+    .stFileUploader {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        border: 2px dashed rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+    }
+    .stFileUploader:hover {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.02);
+    }
+    
+    /* Sliders */
+    .stSlider > div > div > div {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+    
+    /* Info/Warning/Error Boxes */
+    .stAlert {
+        border-radius: 12px !important;
+        padding: 16px 20px !important;
+        margin: 15px 0 !important;
+    }
+    
+    /* Expander */
+    .streamlit-expanderHeader {
+        background: rgba(102, 126, 234, 0.05) !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Markdown Headers */
+    h1, h2, h3, h4 {
+        color: #2d3748 !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.5px !important;
+    }
+    
+    /* Spacing */
+    .block-container {
+        padding: 2rem 3rem !important;
+        max-width: 1400px !important;
     }
     </style>
     """, unsafe_allow_html=True)
     
-    # Navigation Bar Container
+    # Elegant Navigation Bar Container
     st.markdown("""
     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                padding: 20px 40px; margin: -80px -100px 30px -100px; 
-                box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                padding: 25px 50px; margin: -80px -100px 40px -100px; 
+                box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+                border-bottom: 3px solid rgba(255,255,255,0.1);">
     </div>
     """, unsafe_allow_html=True)
     
@@ -178,17 +277,21 @@ def main():
     col_logo, col_menu1, col_menu2, col_menu3, col_menu4, col_menu5, col_menu6, col_spacer, col_profile = st.columns([1.5, 1, 1, 1, 1, 1, 1, 0.5, 1.5])
     
     with col_logo:
-        # Logo
+        # Elegant Logo
         st.markdown("""
-        <div style="display: flex; align-items: center; gap: 10px; margin-top: -60px;">
-            <div style="background: white; padding: 10px; border-radius: 12px; 
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                <span style="font-size: 2rem;">🎨</span>
+        <div style="display: flex; align-items: center; gap: 15px; margin-top: -65px;">
+            <div style="background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%); 
+                        padding: 12px; border-radius: 16px; 
+                        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+                        border: 3px solid rgba(255,255,255,0.3);">
+                <span style="font-size: 2.2rem;">🎨</span>
             </div>
             <div>
-                <h2 style="margin: 0; color: white; font-size: 1.2rem; font-weight: 800; 
-                           letter-spacing: 0.5px; line-height: 1.3; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
-                    AdSnap<br><span style="font-size: 1rem;">Studio</span>
+                <h2 style="margin: 0; color: white; font-size: 1.4rem; font-weight: 900; 
+                           letter-spacing: 1px; line-height: 1.2; 
+                           text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+                           font-family: 'Segoe UI', sans-serif;">
+                    ADSNAP<br><span style="font-size: 1.1rem; font-weight: 600; letter-spacing: 2px;">STUDIO</span>
                 </h2>
             </div>
         </div>
@@ -210,13 +313,19 @@ def main():
             is_active = st.session_state.get('current_page', 0) == page
             
             if is_active:
-                # Active state
+                # Active state - Highlighted
                 st.markdown(f"""
-                <div style="text-align: center; margin-top: -60px; margin-bottom: -55px; pointer-events: none;">
-                    <div style="background: rgba(255,255,255,0.3); padding: 12px 20px; 
-                                border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                                border-bottom: 3px solid white;">
-                        <span style="color: white; font-weight: 700; font-size: 0.95rem;">{name}</span>
+                <div style="text-align: center; margin-top: -65px; margin-bottom: -60px; pointer-events: none;">
+                    <div style="background: linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.25) 100%); 
+                                padding: 14px 24px; border-radius: 14px; 
+                                box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3);
+                                border: 2px solid rgba(255,255,255,0.4);
+                                border-bottom: 4px solid white;
+                                backdrop-filter: blur(10px);">
+                        <span style="color: white; font-weight: 800; font-size: 0.95rem; 
+                                     text-shadow: 1px 1px 2px rgba(0,0,0,0.2); letter-spacing: 0.5px;">
+                            {name}
+                        </span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -225,8 +334,8 @@ def main():
                     st.query_params.update({'page': str(page)})
                     st.rerun()
             else:
-                # Inactive state
-                st.markdown(f"<div style='margin-top: -60px;'></div>", unsafe_allow_html=True)
+                # Inactive state - Elegant hover
+                st.markdown(f"<div style='margin-top: -65px;'></div>", unsafe_allow_html=True)
                 if st.button(name, key=f"menu_{idx}", use_container_width=True):
                     st.session_state.current_page = page
                     st.query_params.update({'page': str(page)})
@@ -259,11 +368,14 @@ def main():
             with profile_cols[0]:
                 st.markdown(f"""
                 <div style="text-align: right; padding: 12px 0;">
-                    <div style="display: inline-block; padding: 10px 16px; 
-                                background: rgba(255,255,255,0.25); border-radius: 25px; 
-                                border: 2px solid rgba(255,255,255,0.4);
-                                box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                        <span style="color: white; font-weight: 700; font-size: 0.9rem;">
+                    <div style="display: inline-block; padding: 12px 20px; 
+                                background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.2) 100%); 
+                                border-radius: 30px; 
+                                border: 2px solid rgba(255,255,255,0.5);
+                                box-shadow: 0 6px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3);
+                                backdrop-filter: blur(10px);">
+                        <span style="color: white; font-weight: 800; font-size: 0.9rem; 
+                                     text-shadow: 1px 1px 2px rgba(0,0,0,0.2); letter-spacing: 0.5px;">
                             👤 {display_name}
                         </span>
                     </div>
