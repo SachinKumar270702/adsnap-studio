@@ -469,8 +469,13 @@ def show_login_page():
                 with col_b:
                     demo_btn = st.form_submit_button("🎭 Demo Mode", use_container_width=True)
                 
-                # Forgot password link
-                forgot_password_btn = st.form_submit_button("🔑 Forgot Password?", use_container_width=True)
+                # Forgot password link - only show if email is configured
+                email_configured = bool(os.getenv('SENDER_EMAIL') and os.getenv('SENDER_PASSWORD'))
+                if email_configured:
+                    forgot_password_btn = st.form_submit_button("🔑 Forgot Password?", use_container_width=True)
+                else:
+                    forgot_password_btn = False
+                    st.info("💡 Tip: Contact admin if you forgot your password")
                 
                 if login_btn:
                     if username and password:
