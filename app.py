@@ -264,17 +264,16 @@ def main():
     </style>
     """, unsafe_allow_html=True)
     
-    # Elegant Navigation Bar Container
+    # Modern Clean Navigation Bar (Mubasic-style)
     st.markdown("""
     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                padding: 25px 50px; margin: -80px -100px 40px -100px; 
-                box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-                border-bottom: 3px solid rgba(255,255,255,0.1);">
+                padding: 20px 50px; margin: -80px -100px 30px -100px; 
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
     </div>
     """, unsafe_allow_html=True)
     
-    # Create navigation layout
-    col_logo, col_menu1, col_menu2, col_menu3, col_menu4, col_menu5, col_menu6, col_spacer, col_profile = st.columns([1.5, 1, 1, 1, 1, 1, 1, 0.5, 1.5])
+    # Create navigation layout - cleaner spacing
+    col_logo, col_spacer1, col_menu, col_spacer2, col_profile = st.columns([2, 0.5, 6, 0.5, 2])
     
     with col_logo:
         # Elegant Logo with Text
