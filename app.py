@@ -1581,74 +1581,60 @@ def main():
                 )
                 
                 if mask_method == "✏️ Draw on Page":
-                    st.info("💡 Draw on the canvas below. White areas will be filled with AI-generated content.")
+                    st.info("💡 Draw your mask using the tools below. White areas will be filled with AI-generated content.")
+                    
+                    # Initialize mask if needed
+                    if 'gf_mask_image' not in st.session_state or st.session_state.get('gf_current_image') != st.session_state.gf_image_name:
+                        st.session_state.gf_mask_image = Image.new('L', img.size, 0)
+                        st.session_state.gf_current_image = st.session_state.gf_image_name
                     
                     # Drawing tools
                     st.markdown("**🎨 Drawing Tools**")
-                    tool_cols = st.columns(3)
+                    tool_cols = st.columns(4)
                     with tool_cols[0]:
-                        stroke_width = st.slider("Brush Size", 5, 100, 20, key="gf_stroke_width")
+                        brush_size = st.slider("Brush Size", 10, 200, 50, key="gf_brush_size")
                     with tool_cols[1]:
-                        stroke_color = st.color_picker("Brush Color", "#FFFFFF", key="gf_stroke_color")
+                        draw_mode = st.radio("Draw", ["⚪ White (Fill)", "⚫ Black (Keep)"], key="gf_draw_mode", horizontal=True)
                     with tool_cols[2]:
-                        drawing_mode = st.selectbox("Mode", ["freedraw", "line", "rect", "circle"], key="gf_drawing_mode")
-                    
-                    # Prepare image for canvas - resize if too large
-                    max_canvas_size = 700
-                    display_img = img.copy()
-                    scale_factor = 1.0
-                    
-                    if display_img.width > max_canvas_size or display_img.height > max_canvas_size:
-                        # Calculate scale factor
-                        scale_factor = min(max_canvas_size / display_img.width, max_canvas_size / display_img.height)
-                        new_width = int(display_img.width * scale_factor)
-                        new_height = int(display_img.height * scale_factor)
-                        display_img = display_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-                    
-                    # Convert to RGB for canvas compatibility
-                    if display_img.mode != 'RGB':
-                        display_img = display_img.convert('RGB')
-                    
-                    # Create canvas
-                    try:
-                        canvas_result = st_canvas(
-                            fill_color="rgba(0, 0, 0, 0)",
-                            stroke_width=stroke_width,
-                            stroke_color=stroke_color,
-                            background_image=display_img,
-                            update_streamlit=True,
-                            height=display_img.height,
-                            width=display_img.width,
-                            drawing_mode=drawing_mode,
-                            key="gf_canvas"
-                        )
-                        
-                        # Process canvas result
-                        if canvas_result.image_data is not None:
-                            # Extract mask from canvas
-                            mask_array = canvas_result.image_data[:, :, 3]  # Alpha channel
-                            mask_img = Image.fromarray(mask_array.astype('uint8'), 'L')
-                            
-                            # Scale mask back to original size if needed
-                            if scale_factor != 1.0:
-                                mask_img = mask_img.resize(img.size, Image.Resampling.LANCZOS)
-                            
-                            st.session_state.gf_mask_image = mask_img
-                            
-                            # Show mask preview
-                            with st.expander("🔍 View Mask"):
-                                st.image(mask_img, caption="Current Mask", use_column_width=True)
-                        else:
-                            # Initialize empty mask
-                            if 'gf_mask_image' not in st.session_state:
-                                st.session_state.gf_mask_image = Image.new('L', img.size, 0)
-                    
-                    except Exception as e:
-                        st.error(f"Canvas error: {str(e)}")
-                        st.info("Please try uploading a mask instead using the '📤 Upload Mask' option above.")
-                        # Initialize empty mask
-                        if 'gf_mask_image' not in st.session_state:
+                        if st.button("🗑️ Clear Mask", use_container_width=True, key="gf_clear"):
                             st.session_state.gf_mask_image = Image.new('L', img.size, 0)
+                            st.rerun()
+                    with tool_cols[3]:
+                        if st.button("⚡ Fill All", use_container_width=True, key="gf_fill"):
+                            st.session_state.gf_mask_image = Image.new('L', img.size, 255)
+                            st.rerun()
+                    
+                    st.markdown("---")
+                    st.markdown("**🖱️ Click on image to draw**")
+                    
+                    # Create composite image showing mask overlay
+                    from PIL import ImageDraw
+                    display_img = img.convert('RGBA')
+                    mask_array = np.array(st.session_state.gf_mask_image)
+                    overlay = Image.new('RGBA', img.size, (0, 0, 0, 0))
+                    overlay_array = np.array(overlay)
+                    overlay_array[mask_array > 128] = [255, 0, 0, 100]  # Red overlay
+                    overlay = Image.fromarray(overlay_array, 'RGBA')
+                    display_img = Image.alpha_composite(display_img, overlay)
+                    
+                    # Show image with click detection
+                    try:
+                        from streamlit_image_coordinates import streamlit_image_coordinates
+                        value = streamlit_image_coordinates(display_img.convert('RGB'), key="gf_click")
+                        
+                        if value is not None and value.get("x") is not None:
+                            draw = ImageDraw.Draw(st.session_state.gf_mask_image)
+                            color = 255 if "White" in draw_mode else 0
+                            x, y = int(value["x"]), int(value["y"])
+                            draw.ellipse([x - brush_size//2, y - brush_size//2, x + brush_size//2, y + brush_size//2], fill=color)
+                            st.rerun()
+                    except ImportError:
+                        st.warning("⚠️ Install streamlit-image-coordinates for click drawing")
+                        st.image(display_img.convert('RGB'), use_column_width=True)
+                    
+                    # Show pure mask
+                    with st.expander("🔍 View Pure Mask"):
+                        st.image(st.session_state.gf_mask_image, caption="Pure Mask", use_column_width=True)
                     
                     # Convert mask to file for API
                     mask_buffer = io.BytesIO()
@@ -1899,7 +1885,7 @@ def main():
                 
                 with col2:
                     st.markdown("#### 🎭 Draw Mask")
-                    st.info("💡 Draw on canvas. White = erase, Black = keep")
+                    st.info("💡 Click to draw. White = erase, Black = keep")
                     
                     # Initialize mask
                     if 'erase_mask_image' not in st.session_state or st.session_state.get('erase_current_image') != st.session_state.erase_image_name:
@@ -1910,60 +1896,43 @@ def main():
                     st.markdown("**🎨 Drawing Tools**")
                     tool_cols = st.columns(3)
                     with tool_cols[0]:
-                        stroke_width = st.slider("Brush Size", 5, 100, 20, key="erase_stroke_width")
+                        brush_size = st.slider("Brush Size", 10, 200, 50, key="erase_brush_size")
                     with tool_cols[1]:
-                        stroke_color = st.color_picker("Brush Color", "#FFFFFF", key="erase_stroke_color")
+                        draw_mode = st.radio("Draw", ["⚪ White (Erase)", "⚫ Black (Keep)"], key="erase_draw_mode", horizontal=True)
                     with tool_cols[2]:
-                        drawing_mode = st.selectbox("Mode", ["freedraw", "line", "rect", "circle"], key="erase_drawing_mode")
-                    
-                    # Prepare image for canvas
-                    max_canvas_size = 700
-                    display_img = img.copy()
-                    scale_factor = 1.0
-                    
-                    if display_img.width > max_canvas_size or display_img.height > max_canvas_size:
-                        scale_factor = min(max_canvas_size / display_img.width, max_canvas_size / display_img.height)
-                        new_width = int(display_img.width * scale_factor)
-                        new_height = int(display_img.height * scale_factor)
-                        display_img = display_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-                    
-                    if display_img.mode != 'RGB':
-                        display_img = display_img.convert('RGB')
-                    
-                    # Create canvas
-                    try:
-                        canvas_result = st_canvas(
-                            fill_color="rgba(0, 0, 0, 0)",
-                            stroke_width=stroke_width,
-                            stroke_color=stroke_color,
-                            background_image=display_img,
-                            update_streamlit=True,
-                            height=display_img.height,
-                            width=display_img.width,
-                            drawing_mode=drawing_mode,
-                            key="erase_canvas"
-                        )
-                        
-                        # Process canvas result
-                        if canvas_result.image_data is not None:
-                            mask_array = canvas_result.image_data[:, :, 3]  # Alpha channel
-                            mask_img = Image.fromarray(mask_array.astype('uint8'), 'L')
-                            
-                            if scale_factor != 1.0:
-                                mask_img = mask_img.resize(img.size, Image.Resampling.LANCZOS)
-                            
-                            st.session_state.erase_mask_image = mask_img
-                            
-                            with st.expander("🔍 View Mask"):
-                                st.image(mask_img, caption="Current Mask", use_column_width=True)
-                        else:
-                            if 'erase_mask_image' not in st.session_state:
-                                st.session_state.erase_mask_image = Image.new('L', img.size, 0)
-                    
-                    except Exception as e:
-                        st.error(f"Canvas error: {str(e)}")
-                        if 'erase_mask_image' not in st.session_state:
+                        if st.button("🗑️ Clear", use_container_width=True, key="erase_clear"):
                             st.session_state.erase_mask_image = Image.new('L', img.size, 0)
+                            st.rerun()
+                    
+                    st.markdown("**🖱️ Click on image to draw**")
+                    
+                    # Create composite image
+                    from PIL import ImageDraw
+                    display_img = img.convert('RGBA')
+                    mask_array = np.array(st.session_state.erase_mask_image)
+                    overlay = Image.new('RGBA', img.size, (0, 0, 0, 0))
+                    overlay_array = np.array(overlay)
+                    overlay_array[mask_array > 128] = [255, 0, 0, 100]
+                    overlay = Image.fromarray(overlay_array, 'RGBA')
+                    display_img = Image.alpha_composite(display_img, overlay)
+                    
+                    # Show image with click detection
+                    try:
+                        from streamlit_image_coordinates import streamlit_image_coordinates
+                        value = streamlit_image_coordinates(display_img.convert('RGB'), key="erase_click")
+                        
+                        if value is not None and value.get("x") is not None:
+                            draw = ImageDraw.Draw(st.session_state.erase_mask_image)
+                            color = 255 if "White" in draw_mode else 0
+                            x, y = int(value["x"]), int(value["y"])
+                            draw.ellipse([x - brush_size//2, y - brush_size//2, x + brush_size//2, y + brush_size//2], fill=color)
+                            st.rerun()
+                    except ImportError:
+                        st.warning("⚠️ Install streamlit-image-coordinates for click drawing")
+                        st.image(display_img.convert('RGB'), use_column_width=True)
+                    
+                    with st.expander("🔍 View Pure Mask"):
+                        st.image(st.session_state.erase_mask_image, caption="Pure Mask", use_column_width=True)
                 
                 with col3:
                     st.markdown("#### ⚙️ Settings")
