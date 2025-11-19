@@ -1599,15 +1599,16 @@ def main():
                     if canvas_img.width > max_size or canvas_img.height > max_size:
                         canvas_img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
                     
-                    # Convert to numpy array for canvas
-                    img_array = np.array(canvas_img)
+                    # Ensure image is in RGB mode for canvas
+                    if canvas_img.mode != 'RGB':
+                        canvas_img = canvas_img.convert('RGB')
                     
                     # Canvas for drawing
                     canvas_result = st_canvas(
                         fill_color="rgba(0, 0, 0, 0)",
                         stroke_width=stroke_width,
                         stroke_color=stroke_color,
-                        background_image=Image.fromarray(img_array),
+                        background_image=canvas_img,
                         update_streamlit=True,
                         height=canvas_img.height,
                         width=canvas_img.width,
@@ -1908,15 +1909,16 @@ def main():
                     if canvas_img.width > max_size or canvas_img.height > max_size:
                         canvas_img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
                     
-                    # Convert to numpy array for canvas
-                    img_array = np.array(canvas_img)
+                    # Ensure image is in RGB mode for canvas
+                    if canvas_img.mode != 'RGB':
+                        canvas_img = canvas_img.convert('RGB')
                     
                     # Canvas for drawing
                     canvas_result = st_canvas(
                         fill_color="rgba(0, 0, 0, 0)",
                         stroke_width=stroke_width,
                         stroke_color=stroke_color,
-                        background_image=Image.fromarray(img_array),
+                        background_image=canvas_img,
                         update_streamlit=True,
                         height=canvas_img.height,
                         width=canvas_img.width,
