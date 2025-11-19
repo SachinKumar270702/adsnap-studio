@@ -370,16 +370,7 @@ def main():
     
     st.markdown("---")
     
-    # Old navigation code removed - using new centered layout above
-    if False:  # Disabled old code
-        pass
-    
-    # Placeholder to prevent errors
-    col_logo = None
-    col_menu = None
-    col_profile = None
-    
-    if col_logo:
+    # Old navigation code removed - all navigation is now in the centered header above
         # Elegant Logo with Text
         st.markdown("""
         <div style="display: flex; align-items: center; gap: 12px; margin-top: -55px;">

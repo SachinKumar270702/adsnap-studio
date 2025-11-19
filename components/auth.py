@@ -322,13 +322,22 @@ def show_login_page():
     }
     
     .auth-logo-icon {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 20px;
+        width: 90px;
+        height: 90px;
         border-radius: 25px;
         box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         margin-bottom: 1rem;
         animation: pulse 2s ease-in-out infinite;
+        line-height: 1;
+    }
+    
+    .auth-logo-icon span {
+        line-height: 1 !important;
+        display: block !important;
     }
     
     @keyframes pulse {
@@ -340,7 +349,7 @@ def show_login_page():
         text-align: center;
         font-size: 2.5rem;
         font-weight: 900;
-        margin: 0;
+        margin: 0.5rem 0 0 0;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -348,15 +357,17 @@ def show_login_page():
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         letter-spacing: 2px;
         text-transform: uppercase;
+        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
     }
     
     .subtitle-text {
         text-align: center;
-        color: #888;
-        font-size: 0.95rem;
-        margin: 0.5rem 0 0 0;
-        font-weight: 500;
-        letter-spacing: 0.5px;
+        color: #555;
+        font-size: 1rem;
+        margin: 0.8rem 0 0 0;
+        font-weight: 600;
+        letter-spacing: 0.8px;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
     }
     
     /* Button styling */
@@ -510,10 +521,10 @@ def show_login_page():
         st.markdown('''
         <div class="auth-logo">
             <div class="auth-logo-icon">
-                <span style="font-size: 3rem;">🎨</span>
+                <span style="font-size: 3rem; line-height: 1; display: block;">🎨</span>
             </div>
-            <h1 class="auth-title">ADSNAP STUDIO</h1>
-            <p class="subtitle-text">AI-Powered Image Generation & Editing</p>
+            <h1 class="auth-title" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">ADSNAP STUDIO</h1>
+            <p class="subtitle-text" style="color: #666; font-weight: 600; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">AI-Powered Image Generation & Editing</p>
         </div>
         ''', unsafe_allow_html=True)
         
