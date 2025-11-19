@@ -1611,34 +1611,36 @@ def main():
                     st.markdown("---")
                     st.markdown("**🖱️ Click on Image to Draw**")
                     
-                    # Try to use streamlit-image-coordinates for click-based drawing
+                    # Use streamlit-image-coordinates for click-based drawing
                     try:
                         from streamlit_image_coordinates import streamlit_image_coordinates
                         
                         # Create composite image showing mask overlay
-                        mask_rgb = st.session_state.gf_mask_image.convert('RGB')
-                        # Create semi-transparent overlay
-                        overlay = Image.new('RGBA', img.size, (255, 255, 255, 0))
-                        mask_overlay = Image.new('RGBA', img.size, (255, 255, 255, 128))
-                        
-                        # Apply mask as overlay
-                        for x in range(img.width):
-                            for y in range(img.height):
-                                if st.session_state.gf_mask_image.getpixel((x, y)) > 128:
-                                    overlay.putpixel((x, y), (255, 255, 255, 128))
-                        
-                        # Composite image
                         display_img = img.convert('RGBA')
+                        
+                        # Create red overlay for white mask areas
+                        mask_array = np.array(st.session_state.gf_mask_image)
+                        overlay = Image.new('RGBA', img.size, (0, 0, 0, 0))
+                        overlay_array = np.array(overlay)
+                        
+                        # Make white mask areas show as semi-transparent red
+                        overlay_array[mask_array > 128] = [255, 0, 0, 100]  # Red with alpha
+                        overlay = Image.fromarray(overlay_array, 'RGBA')
+                        
+                        # Composite
                         display_img = Image.alpha_composite(display_img, overlay)
                         
                         # Get click coordinates
-                        value = streamlit_image_coordinates(display_img, key="gf_image_click")
+                        value = streamlit_image_coordinates(
+                            display_img.convert('RGB'),
+                            key="gf_image_click"
+                        )
                         
                         if value is not None and value.get("x") is not None:
                             # Draw on mask at clicked position
                             draw = ImageDraw.Draw(st.session_state.gf_mask_image)
                             color = 255 if "White" in draw_color else 0
-                            x, y = value["x"], value["y"]
+                            x, y = int(value["x"]), int(value["y"])
                             
                             # Draw circle (brush stroke)
                             draw.ellipse(
@@ -1948,29 +1950,35 @@ def main():
                             st.session_state.erase_mask_image = Image.new('L', img.size, 0)
                             st.rerun()
                     
-                    # Try cursor-based drawing
+                    # Use cursor-based drawing
                     try:
                         from streamlit_image_coordinates import streamlit_image_coordinates
                         
-                        # Create overlay
-                        mask_rgb = st.session_state.erase_mask_image.convert('RGB')
-                        overlay = Image.new('RGBA', img.size, (255, 255, 255, 0))
-                        
-                        for x in range(img.width):
-                            for y in range(img.height):
-                                if st.session_state.erase_mask_image.getpixel((x, y)) > 128:
-                                    overlay.putpixel((x, y), (255, 0, 0, 128))  # Red overlay for erase areas
-                        
+                        # Create composite image showing mask overlay
                         display_img = img.convert('RGBA')
+                        
+                        # Create red overlay for white mask areas (areas to erase)
+                        mask_array = np.array(st.session_state.erase_mask_image)
+                        overlay = Image.new('RGBA', img.size, (0, 0, 0, 0))
+                        overlay_array = np.array(overlay)
+                        
+                        # Make white mask areas show as semi-transparent red
+                        overlay_array[mask_array > 128] = [255, 0, 0, 100]  # Red with alpha
+                        overlay = Image.fromarray(overlay_array, 'RGBA')
+                        
+                        # Composite
                         display_img = Image.alpha_composite(display_img, overlay)
                         
                         # Get click coordinates
-                        value = streamlit_image_coordinates(display_img, key="erase_image_click")
+                        value = streamlit_image_coordinates(
+                            display_img.convert('RGB'),
+                            key="erase_image_click"
+                        )
                         
                         if value is not None and value.get("x") is not None:
                             draw = ImageDraw.Draw(st.session_state.erase_mask_image)
                             color = 255 if "White" in draw_color else 0
-                            x, y = value["x"], value["y"]
+                            x, y = int(value["x"]), int(value["y"])
                             
                             draw.ellipse(
                                 [x - brush_size//2, y - brush_size//2,
