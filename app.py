@@ -205,9 +205,9 @@ def main():
                     is_active = st.session_state.get('current_page', 0) == page
                     
                     if is_active:
-                        # Active state with underline
+                        # Active state - show as highlighted, button still clickable
                         st.markdown(f"""
-                        <div style="text-align: center; padding: 8px 0;">
+                        <div style="text-align: center; padding: 8px 0; margin-bottom: -45px; pointer-events: none;">
                             <div style="color: white; font-weight: 700; font-size: 0.95rem; 
                                         padding: 8px 16px; background: rgba(255,255,255,0.2); 
                                         border-radius: 8px; border-bottom: 3px solid white;">
@@ -215,9 +215,11 @@ def main():
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
-                        # Hidden button for state management
-                        if st.button(f"_{name}", key=f"menu_{idx}", label_visibility="collapsed"):
-                            pass
+                        # Invisible button underneath for click handling
+                        if st.button("​", key=f"menu_{idx}", use_container_width=True):  # Zero-width space
+                            st.session_state.current_page = page
+                            st.query_params.update({'page': str(page)})
+                            st.rerun()
                     else:
                         if st.button(name, key=f"menu_{idx}", use_container_width=True):
                             st.session_state.current_page = page
