@@ -288,19 +288,24 @@ def main():
     <div style="text-align: center; padding: 50px 0 20px 0; margin: -80px -100px 0 -100px;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
         <!-- Logo and Title -->
-        <div style="display: inline-flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px;">
-            <div style="background: white; padding: 18px; border-radius: 20px; 
-                        box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-                <span style="font-size: 3rem;">🎨</span>
+        <div style="display: inline-flex; align-items: center; justify-content: center; gap: 25px; margin-bottom: 15px;">
+            <div style="background: transparent; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 4rem; line-height: 1; display: block; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));">🎨</span>
             </div>
             <div>
-                <h1 style="margin: 0; color: white; font-size: 3rem; font-weight: 900; 
-                           letter-spacing: 2px; text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
-                           font-family: 'Segoe UI', sans-serif; line-height: 1;">
+                <h1 style="margin: 0; color: white; font-size: 3.5rem; font-weight: 900; 
+                           letter-spacing: 4px; text-shadow: 4px 4px 8px rgba(0,0,0,0.4);
+                           font-family: 'Segoe UI', 'Arial Black', sans-serif; line-height: 1;
+                           background: linear-gradient(to bottom, #ffffff 0%, #e0e7ff 100%);
+                           -webkit-background-clip: text;
+                           -webkit-text-fill-color: transparent;
+                           background-clip: text;
+                           filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">
                     ADSNAP STUDIO
                 </h1>
-                <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.95); font-size: 1rem; 
-                          font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">
+                <p style="margin: 12px 0 0 0; color: rgba(255,255,255,0.95); font-size: 1.05rem; 
+                          font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+                          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
                     AI-Powered Image Generation & Editing
                 </p>
             </div>
