@@ -1375,125 +1375,186 @@ def main():
             else:
                 st.info("👆 Please upload an image to get started")
         
-        else:  # Manual mask drawing
-            st.info("💡 Draw on the image to mark areas you want to erase. White areas will be removed.")
+        else:  # Manual mask drawing with cursor
+            st.info("💡 Click on the image below to draw. Each click adds a brush stroke to mark areas for removal.")
             
             uploaded_file = st.file_uploader(
-                "Upload Image",
+                "Upload Image to Edit",
                 type=["png", "jpg", "jpeg"],
                 key="erase_image_manual"
             )
             
             if uploaded_file:
-                # Initialize drawing state
-                if 'drawing_mask' not in st.session_state:
-                    st.session_state.drawing_mask = None
+                # Store image in session state
+                if 'erase_uploaded_image' not in st.session_state or st.session_state.get('erase_image_name') != uploaded_file.name:
+                    st.session_state.erase_uploaded_image = uploaded_file.getvalue()
+                    st.session_state.erase_image_name = uploaded_file.name
+                    st.session_state.erase_manual_result = None
                 
-                img = Image.open(uploaded_file)
+                # Open image
+                img = Image.open(io.BytesIO(st.session_state.erase_uploaded_image))
                 
                 st.markdown("---")
-                st.markdown("### ✏️ Draw Mask")
                 
-                col1, col2 = st.columns(2)
+                # Three-column layout
+                col1, col2, col3 = st.columns([2, 2, 1])
                 
                 with col1:
-                    st.markdown("**Original Image**")
+                    st.markdown("#### 🖼️ Original Image")
                     st.image(img, use_column_width=True)
-                    
-                    st.markdown("**Drawing Tools**")
-                    brush_size = st.slider("Brush Size", 5, 100, 30, key="brush_size")
-                    
-                    col_a, col_b, col_c = st.columns(3)
-                    with col_a:
-                        if st.button("🖌️ Draw Mode", use_container_width=True):
-                            st.session_state.draw_mode = "draw"
-                    with col_b:
-                        if st.button("🧹 Erase Mode", use_container_width=True):
-                            st.session_state.draw_mode = "erase"
-                    with col_c:
-                        if st.button("🗑️ Clear All", use_container_width=True):
-                            st.session_state.drawing_mask = None
-                            st.rerun()
-                    
-                    # Simple drawing interface using HTML/JS
-                    st.markdown("""
-                    <div style="background: #f0f0f0; padding: 20px; border-radius: 10px; text-align: center;">
-                        <p>⚠️ <strong>Drawing Interface</strong></p>
-                        <p>Use an external tool to create a mask:</p>
-                        <ol style="text-align: left; display: inline-block;">
-                            <li>Download the image above</li>
-                            <li>Open in Paint/Photoshop/GIMP</li>
-                            <li>Draw white areas where you want to erase</li>
-                            <li>Save as PNG and upload below</li>
-                        </ol>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    mask_file = st.file_uploader(
-                        "Upload Mask (white = erase, black = keep)",
-                        type=["png", "jpg", "jpeg"],
-                        key="manual_mask_upload"
-                    )
                 
                 with col2:
-                    if mask_file:
-                        st.markdown("**Mask Preview**")
-                        mask = Image.open(mask_file)
-                        st.image(mask, use_column_width=True)
-                        
-                        if st.session_state.get('erase_manual_result'):
-                            st.markdown("**Result**")
-                            st.image(st.session_state.erase_manual_result, use_column_width=True)
-                            
-                            # Download button
-                            image_data = download_image(st.session_state.erase_manual_result)
-                            if image_data:
-                                st.download_button(
-                                    "⬇️ Download Result",
-                                    image_data,
-                                    "erase_manual_result.png",
-                                    "image/png",
-                                    use_container_width=True
-                                )
-                    else:
-                        st.info("Upload a mask to see preview")
-                
-                if mask_file:
-                    st.markdown("---")
+                    st.markdown("#### 🎭 Draw Mask")
+                    st.info("💡 Click on image to draw. White = erase, Black = keep")
                     
-                    prompt = st.text_input(
-                        "What should fill the erased area? (optional)",
-                        placeholder="e.g., 'grass', 'sky', 'wall'",
-                        key="erase_fill_prompt"
+                    # Initialize mask
+                    if 'erase_mask_image' not in st.session_state or st.session_state.get('erase_current_image') != st.session_state.erase_image_name:
+                        st.session_state.erase_mask_image = Image.new('L', img.size, 0)
+                        st.session_state.erase_current_image = st.session_state.erase_image_name
+                    
+                    from PIL import ImageDraw
+                    
+                    # Drawing tools
+                    tool_cols = st.columns(3)
+                    with tool_cols[0]:
+                        brush_size = st.slider("Brush Size", 10, 150, 50, step=10, key="erase_brush_size")
+                    with tool_cols[1]:
+                        draw_color = st.radio("Draw", ["⚪ White (Erase)", "⚫ Black (Keep)"], key="erase_draw_color", horizontal=True)
+                    with tool_cols[2]:
+                        if st.button("🗑️ Clear", use_container_width=True, key="erase_clear_mask"):
+                            st.session_state.erase_mask_image = Image.new('L', img.size, 0)
+                            st.rerun()
+                    
+                    # Try cursor-based drawing
+                    try:
+                        from streamlit_image_coordinates import streamlit_image_coordinates
+                        
+                        # Create overlay
+                        mask_rgb = st.session_state.erase_mask_image.convert('RGB')
+                        overlay = Image.new('RGBA', img.size, (255, 255, 255, 0))
+                        
+                        for x in range(img.width):
+                            for y in range(img.height):
+                                if st.session_state.erase_mask_image.getpixel((x, y)) > 128:
+                                    overlay.putpixel((x, y), (255, 0, 0, 128))  # Red overlay for erase areas
+                        
+                        display_img = img.convert('RGBA')
+                        display_img = Image.alpha_composite(display_img, overlay)
+                        
+                        # Get click coordinates
+                        value = streamlit_image_coordinates(display_img, key="erase_image_click")
+                        
+                        if value is not None and value.get("x") is not None:
+                            draw = ImageDraw.Draw(st.session_state.erase_mask_image)
+                            color = 255 if "White" in draw_color else 0
+                            x, y = value["x"], value["y"]
+                            
+                            draw.ellipse(
+                                [x - brush_size//2, y - brush_size//2,
+                                 x + brush_size//2, y + brush_size//2],
+                                fill=color
+                            )
+                            st.rerun()
+                    
+                    except ImportError:
+                        # Fallback
+                        mask_rgb = st.session_state.erase_mask_image.convert('RGB')
+                        blended = Image.blend(img.convert('RGB'), mask_rgb, alpha=0.4)
+                        st.image(blended, caption="Current Mask", use_column_width=True)
+                        
+                        st.markdown("**Manual Drawing:**")
+                        coord_cols = st.columns(3)
+                        with coord_cols[0]:
+                            click_x = st.number_input("X", 0, img.width-1, img.width//2, key="erase_manual_x")
+                        with coord_cols[1]:
+                            click_y = st.number_input("Y", 0, img.height-1, img.height//2, key="erase_manual_y")
+                        with coord_cols[2]:
+                            if st.button("🖌️ Draw", key="erase_manual_draw", use_container_width=True):
+                                draw = ImageDraw.Draw(st.session_state.erase_mask_image)
+                                color = 255 if "White" in draw_color else 0
+                                draw.ellipse(
+                                    [click_x - brush_size//2, click_y - brush_size//2,
+                                     click_x + brush_size//2, click_y + brush_size//2],
+                                    fill=color
+                                )
+                                st.rerun()
+                    
+                    with st.expander("🔍 View Pure Mask"):
+                        st.image(st.session_state.erase_mask_image, caption="Pure Mask", use_column_width=True)
+                
+                with col3:
+                    st.markdown("#### ⚙️ Settings")
+                    prompt = st.text_area(
+                        "Fill with",
+                        placeholder="e.g., 'grass', 'sky'",
+                        height=80,
+                        key="erase_prompt"
                     )
                     
-                    if st.button("🗑️ Erase & Fill", type="primary", use_container_width=True):
-                        if not st.session_state.api_key:
-                            st.error("Please enter your API key in the sidebar")
-                        else:
-                            with st.spinner("🗑️ Erasing and filling..."):
-                                try:
-                                    # Use generative fill to erase and fill
-                                    result = generative_fill(
-                                        api_key=st.session_state.api_key,
-                                        image_data=uploaded_file.getvalue(),
-                                        mask_data=mask_file.getvalue(),
-                                        prompt=prompt if prompt else "natural background",
-                                        sync=True
-                                    )
-                                    
-                                    if result and "result_url" in result:
-                                        st.session_state.erase_manual_result = result["result_url"]
-                                        st.success("✨ Area erased and filled successfully!")
+                    sync_mode = st.checkbox("Wait for result", value=True, key="erase_sync")
+                
+                # Show result
+                if st.session_state.get('erase_manual_result'):
+                    st.markdown("---")
+                    st.markdown("### ✨ Result")
+                    
+                    result_cols = st.columns([2, 2, 1])
+                    with result_cols[0]:
+                        st.image(img, caption="Original", use_column_width=True)
+                    with result_cols[1]:
+                        st.image(st.session_state.erase_manual_result, caption="Erased", use_column_width=True)
+                    with result_cols[2]:
+                        result_data = download_image(st.session_state.erase_manual_result)
+                        if result_data:
+                            st.download_button(
+                                "⬇️ Download",
+                                result_data,
+                                "erase_result.png",
+                                "image/png",
+                                use_container_width=True
+                            )
+                        if st.button("🔄 New Edit", use_container_width=True):
+                            st.session_state.erase_manual_result = None
+                            st.rerun()
+                
+                # Generate button
+                st.markdown("---")
+                
+                # Convert mask to bytes
+                mask_buffer = io.BytesIO()
+                st.session_state.erase_mask_image.save(mask_buffer, format='PNG')
+                mask_data = mask_buffer.getvalue()
+                
+                if st.button("🗑️ Erase & Fill", type="primary", use_container_width=True, key="erase_generate"):
+                    if not st.session_state.api_key:
+                        st.error("❌ Please enter your API key")
+                    else:
+                        with st.spinner("🗑️ Erasing and filling..."):
+                            try:
+                                result = generative_fill(
+                                    api_key=st.session_state.api_key,
+                                    image_data=st.session_state.erase_uploaded_image,
+                                    mask_data=mask_data,
+                                    prompt=prompt if prompt else "natural background",
+                                    num_results=1,
+                                    sync=sync_mode
+                                )
+                                
+                                if result and "result_url" in result:
+                                    st.session_state.erase_manual_result = result["result_url"]
+                                    st.success("✨ Area erased successfully!")
+                                    st.rerun()
+                                elif result and "result" in result and isinstance(result["result"], list):
+                                    if len(result["result"]) > 0 and "urls" in result["result"][0]:
+                                        st.session_state.erase_manual_result = result["result"][0]["urls"][0]
+                                        st.success("✨ Area erased successfully!")
                                         st.rerun()
-                                    else:
-                                        st.error("No result URL in API response")
-                                        with st.expander("Debug: API Response"):
-                                            st.json(result)
-                                except Exception as e:
-                                    st.error(f"Error: {str(e)}")
+                                else:
+                                    st.error("❌ No result in API response")
+                            except Exception as e:
+                                st.error(f"❌ Error: {str(e)}")
             else:
-                st.info("👆 Please upload an image to get started")
+                st.info("👆 Upload an image to start")
 
 if __name__ == "__main__":
     main()
