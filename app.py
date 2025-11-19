@@ -1581,38 +1581,71 @@ def main():
                 )
                 
                 if mask_method == "✏️ Draw on Page":
-                    st.info("💡 Use an external tool (Paint, Photoshop, etc.) to create a mask, then upload it below.")
-                    st.markdown("**Mask Instructions:**")
-                    st.markdown("- White areas = Fill with AI")
-                    st.markdown("- Black areas = Keep original")
+                    st.info("💡 Draw on the canvas below. White areas will be filled with AI-generated content.")
                     
-                    # Show original image for reference
-                    st.image(img, caption="Original Image (for reference)", use_column_width=True)
+                    # Drawing tools
+                    st.markdown("**🎨 Drawing Tools**")
+                    tool_cols = st.columns(3)
+                    with tool_cols[0]:
+                        stroke_width = st.slider("Brush Size", 5, 100, 20, key="gf_stroke_width")
+                    with tool_cols[1]:
+                        stroke_color = st.color_picker("Brush Color", "#FFFFFF", key="gf_stroke_color")
+                    with tool_cols[2]:
+                        drawing_mode = st.selectbox("Mode", ["freedraw", "line", "rect", "circle"], key="gf_drawing_mode")
                     
-                    # Mask upload
-                    mask_file = st.file_uploader(
-                        "📤 Upload Mask Image",
-                        type=["png", "jpg", "jpeg"],
-                        key="gf_mask_upload",
-                        help="Upload a black and white mask image"
-                    )
+                    # Prepare image for canvas - resize if too large
+                    max_canvas_size = 700
+                    display_img = img.copy()
+                    scale_factor = 1.0
                     
-                    if mask_file:
-                        # Load and process mask
-                        mask_img = Image.open(mask_file)
+                    if display_img.width > max_canvas_size or display_img.height > max_canvas_size:
+                        # Calculate scale factor
+                        scale_factor = min(max_canvas_size / display_img.width, max_canvas_size / display_img.height)
+                        new_width = int(display_img.width * scale_factor)
+                        new_height = int(display_img.height * scale_factor)
+                        display_img = display_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                    
+                    # Convert to RGB for canvas compatibility
+                    if display_img.mode != 'RGB':
+                        display_img = display_img.convert('RGB')
+                    
+                    # Create canvas
+                    try:
+                        canvas_result = st_canvas(
+                            fill_color="rgba(0, 0, 0, 0)",
+                            stroke_width=stroke_width,
+                            stroke_color=stroke_color,
+                            background_image=display_img,
+                            update_streamlit=True,
+                            height=display_img.height,
+                            width=display_img.width,
+                            drawing_mode=drawing_mode,
+                            key="gf_canvas"
+                        )
                         
-                        # Resize mask to match original image if needed
-                        if mask_img.size != img.size:
-                            mask_img = mask_img.resize(img.size, Image.Resampling.LANCZOS)
-                        
-                        # Convert to grayscale
-                        mask_gray = mask_img.convert('L')
-                        st.session_state.gf_mask_image = mask_gray
-                        
-                        # Show mask preview
-                        st.image(mask_gray, caption="Uploaded Mask", use_column_width=True)
-                    else:
-                        st.warning("⚠️ Please upload a mask image to continue")
+                        # Process canvas result
+                        if canvas_result.image_data is not None:
+                            # Extract mask from canvas
+                            mask_array = canvas_result.image_data[:, :, 3]  # Alpha channel
+                            mask_img = Image.fromarray(mask_array.astype('uint8'), 'L')
+                            
+                            # Scale mask back to original size if needed
+                            if scale_factor != 1.0:
+                                mask_img = mask_img.resize(img.size, Image.Resampling.LANCZOS)
+                            
+                            st.session_state.gf_mask_image = mask_img
+                            
+                            # Show mask preview
+                            with st.expander("🔍 View Mask"):
+                                st.image(mask_img, caption="Current Mask", use_column_width=True)
+                        else:
+                            # Initialize empty mask
+                            if 'gf_mask_image' not in st.session_state:
+                                st.session_state.gf_mask_image = Image.new('L', img.size, 0)
+                    
+                    except Exception as e:
+                        st.error(f"Canvas error: {str(e)}")
+                        st.info("Please try uploading a mask instead using the '📤 Upload Mask' option above.")
                         # Initialize empty mask
                         if 'gf_mask_image' not in st.session_state:
                             st.session_state.gf_mask_image = Image.new('L', img.size, 0)
@@ -1866,49 +1899,69 @@ def main():
                 
                 with col2:
                     st.markdown("#### 🎭 Draw Mask")
-                    st.info("💡 Click on image to draw. White = erase, Black = keep")
+                    st.info("💡 Draw on canvas. White = erase, Black = keep")
                     
                     # Initialize mask
                     if 'erase_mask_image' not in st.session_state or st.session_state.get('erase_current_image') != st.session_state.erase_image_name:
                         st.session_state.erase_mask_image = Image.new('L', img.size, 0)
                         st.session_state.erase_current_image = st.session_state.erase_image_name
                     
-                    from PIL import ImageDraw
+                    # Drawing tools
+                    st.markdown("**🎨 Drawing Tools**")
+                    tool_cols = st.columns(3)
+                    with tool_cols[0]:
+                        stroke_width = st.slider("Brush Size", 5, 100, 20, key="erase_stroke_width")
+                    with tool_cols[1]:
+                        stroke_color = st.color_picker("Brush Color", "#FFFFFF", key="erase_stroke_color")
+                    with tool_cols[2]:
+                        drawing_mode = st.selectbox("Mode", ["freedraw", "line", "rect", "circle"], key="erase_drawing_mode")
                     
-                    # Mask instructions
-                    st.info("💡 Use an external tool (Paint, Photoshop, etc.) to create a mask, then upload it below.")
-                    st.markdown("**Mask Instructions:**")
-                    st.markdown("- White areas = Erase")
-                    st.markdown("- Black areas = Keep")
+                    # Prepare image for canvas
+                    max_canvas_size = 700
+                    display_img = img.copy()
+                    scale_factor = 1.0
                     
-                    # Show original image for reference
-                    st.image(img, caption="Original Image (for reference)", use_column_width=True)
+                    if display_img.width > max_canvas_size or display_img.height > max_canvas_size:
+                        scale_factor = min(max_canvas_size / display_img.width, max_canvas_size / display_img.height)
+                        new_width = int(display_img.width * scale_factor)
+                        new_height = int(display_img.height * scale_factor)
+                        display_img = display_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
                     
-                    # Mask upload
-                    mask_file = st.file_uploader(
-                        "📤 Upload Mask Image",
-                        type=["png", "jpg", "jpeg"],
-                        key="erase_mask_upload",
-                        help="Upload a black and white mask image"
-                    )
+                    if display_img.mode != 'RGB':
+                        display_img = display_img.convert('RGB')
                     
-                    if mask_file:
-                        # Load and process mask
-                        mask_img = Image.open(mask_file)
+                    # Create canvas
+                    try:
+                        canvas_result = st_canvas(
+                            fill_color="rgba(0, 0, 0, 0)",
+                            stroke_width=stroke_width,
+                            stroke_color=stroke_color,
+                            background_image=display_img,
+                            update_streamlit=True,
+                            height=display_img.height,
+                            width=display_img.width,
+                            drawing_mode=drawing_mode,
+                            key="erase_canvas"
+                        )
                         
-                        # Resize mask to match original image if needed
-                        if mask_img.size != img.size:
-                            mask_img = mask_img.resize(img.size, Image.Resampling.LANCZOS)
-                        
-                        # Convert to grayscale
-                        mask_gray = mask_img.convert('L')
-                        st.session_state.erase_mask_image = mask_gray
-                        
-                        # Show mask preview
-                        st.image(mask_gray, caption="Uploaded Mask", use_column_width=True)
-                    else:
-                        st.warning("⚠️ Please upload a mask image to continue")
-                        # Initialize empty mask
+                        # Process canvas result
+                        if canvas_result.image_data is not None:
+                            mask_array = canvas_result.image_data[:, :, 3]  # Alpha channel
+                            mask_img = Image.fromarray(mask_array.astype('uint8'), 'L')
+                            
+                            if scale_factor != 1.0:
+                                mask_img = mask_img.resize(img.size, Image.Resampling.LANCZOS)
+                            
+                            st.session_state.erase_mask_image = mask_img
+                            
+                            with st.expander("🔍 View Mask"):
+                                st.image(mask_img, caption="Current Mask", use_column_width=True)
+                        else:
+                            if 'erase_mask_image' not in st.session_state:
+                                st.session_state.erase_mask_image = Image.new('L', img.size, 0)
+                    
+                    except Exception as e:
+                        st.error(f"Canvas error: {str(e)}")
                         if 'erase_mask_image' not in st.session_state:
                             st.session_state.erase_mask_image = Image.new('L', img.size, 0)
                 
