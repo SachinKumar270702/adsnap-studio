@@ -143,135 +143,135 @@ def main():
             st.rerun()
         return
     
-    # Clean Professional Menu Bar (Inspired by Awwwards)
+    # Professional Navigation Bar - Optimized Layout
     st.markdown("""
     <style>
-    /* Clean menu bar styling */
-    .top-menu-bar {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 12px 40px;
-        border-radius: 0;
-        margin: -80px -100px 30px -100px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+    /* Clean navigation styling */
     .stButton > button {
         background: transparent !important;
         border: none !important;
         color: rgba(255,255,255,0.9) !important;
         font-weight: 500 !important;
-        padding: 8px 16px !important;
+        padding: 12px 24px !important;
         border-radius: 8px !important;
         transition: all 0.2s ease !important;
         font-size: 0.95rem !important;
+        white-space: nowrap !important;
     }
     .stButton > button:hover {
-        background: rgba(255,255,255,0.15) !important;
+        background: rgba(255,255,255,0.2) !important;
         color: white !important;
         transform: translateY(-1px);
     }
     </style>
     """, unsafe_allow_html=True)
     
-    # Top Menu Bar - Clean Horizontal Layout
-    menu_container = st.container()
-    with menu_container:
-        col_logo, col_nav, col_profile = st.columns([1.5, 6, 1.5])
-        
-        with col_logo:
-            # Simple Logo
-            st.markdown("""
-            <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0;">
-                <span style="font-size: 2rem;">🎨</span>
-                <h3 style="margin: 0; color: white; font-size: 1.4rem; font-weight: 700; letter-spacing: 0.5px;">
-                    AdSnap Studio
-                </h3>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col_nav:
-            # Horizontal Navigation Menu
-            nav_cols = st.columns(6)
-            menu_items = [
-                ("Dashboard", 0),
-                ("Generate", 1),
-                ("Editor", 2),
-                ("Lifestyle", 3),
-                ("Fill", 4),
-                ("Erase", 5)
-            ]
-            
-            for idx, (col, (name, page)) in enumerate(zip(nav_cols, menu_items)):
-                with col:
-                    is_active = st.session_state.get('current_page', 0) == page
-                    
-                    if is_active:
-                        # Active state - show as highlighted, button still clickable
-                        st.markdown(f"""
-                        <div style="text-align: center; padding: 8px 0; margin-bottom: -45px; pointer-events: none;">
-                            <div style="color: white; font-weight: 700; font-size: 0.95rem; 
-                                        padding: 8px 16px; background: rgba(255,255,255,0.2); 
-                                        border-radius: 8px; border-bottom: 3px solid white;">
-                                {name}
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
-                        # Invisible button underneath for click handling
-                        if st.button("​", key=f"menu_{idx}", use_container_width=True):  # Zero-width space
-                            st.session_state.current_page = page
-                            st.query_params.update({'page': str(page)})
-                            st.rerun()
-                    else:
-                        if st.button(name, key=f"menu_{idx}", use_container_width=True):
-                            st.session_state.current_page = page
-                            st.query_params.update({'page': str(page)})
-                            st.rerun()
-        
-        with col_profile:
-            # Profile Section - Far Right
-            user_info = st.session_state.get('user_info', {})
-            username = st.session_state.get('username', 'User')
-            display_name = user_info.get('full_name', username)
-            
-            # Check if demo user
-            is_demo = username == 'demo_user'
-            
-            # Truncate if too long
-            if len(display_name) > 15:
-                display_name = display_name[:12] + "..."
-            
-            # Show Login/Sign Up for demo users, Profile for real users
-            if is_demo:
-                # Login and Sign Up buttons for demo users
-                login_col, signup_col = st.columns(2)
-                
-                with login_col:
-                    if st.button("🔑 Login", key="top_login_btn", use_container_width=True):
-                        logout()  # This will take them back to login page
-                
-                with signup_col:
-                    if st.button("✨ Sign Up", key="top_signup_btn", use_container_width=True, type="primary"):
-                        logout()  # This will take them back to login page
-            else:
-                # Profile section for logged-in users
-                profile_btn_col, settings_col = st.columns([3, 1])
-                
-                with profile_btn_col:
-                    st.markdown(f"""
-                    <div style="text-align: right; padding: 8px 0;">
-                        <div style="display: inline-block; padding: 8px 16px; background: rgba(255,255,255,0.15); 
-                                    border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);">
-                            <span style="color: white; font-weight: 600; font-size: 0.9rem;">
-                                👤 {display_name}
-                            </span>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                with settings_col:
-                    if st.button("⚙️", key="profile_menu_btn", use_container_width=True):
-                        st.session_state.show_profile_menu = not st.session_state.get('show_profile_menu', False)
+    # Navigation Bar Container
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                padding: 20px 40px; margin: -80px -100px 30px -100px; 
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+    </div>
+    """, unsafe_allow_html=True)
     
-    st.markdown("<br>", unsafe_allow_html=True)
+    # Create navigation layout
+    col_logo, col_menu1, col_menu2, col_menu3, col_menu4, col_menu5, col_menu6, col_spacer, col_profile = st.columns([1.5, 1, 1, 1, 1, 1, 1, 0.5, 1.5])
+    
+    with col_logo:
+        # Logo
+        st.markdown("""
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: -60px;">
+            <div style="background: white; padding: 10px; border-radius: 12px; 
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <span style="font-size: 2rem;">🎨</span>
+            </div>
+            <div>
+                <h2 style="margin: 0; color: white; font-size: 1.2rem; font-weight: 800; 
+                           letter-spacing: 0.5px; line-height: 1.3; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+                    AdSnap<br><span style="font-size: 1rem;">Studio</span>
+                </h2>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Navigation menu items
+    menu_columns = [col_menu1, col_menu2, col_menu3, col_menu4, col_menu5, col_menu6]
+    menu_items = [
+        ("Dashboard", 0),
+        ("Generate", 1),
+        ("Editor", 2),
+        ("Lifestyle", 3),
+        ("Fill", 4),
+        ("Erase", 5)
+    ]
+    
+    for idx, (col, (name, page)) in enumerate(zip(menu_columns, menu_items)):
+        with col:
+            is_active = st.session_state.get('current_page', 0) == page
+            
+            if is_active:
+                # Active state
+                st.markdown(f"""
+                <div style="text-align: center; margin-top: -60px; margin-bottom: -55px; pointer-events: none;">
+                    <div style="background: rgba(255,255,255,0.3); padding: 12px 20px; 
+                                border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                                border-bottom: 3px solid white;">
+                        <span style="color: white; font-weight: 700; font-size: 0.95rem;">{name}</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                if st.button("​", key=f"menu_{idx}", use_container_width=True):
+                    st.session_state.current_page = page
+                    st.query_params.update({'page': str(page)})
+                    st.rerun()
+            else:
+                # Inactive state
+                st.markdown(f"<div style='margin-top: -60px;'></div>", unsafe_allow_html=True)
+                if st.button(name, key=f"menu_{idx}", use_container_width=True):
+                    st.session_state.current_page = page
+                    st.query_params.update({'page': str(page)})
+                    st.rerun()
+    
+    with col_profile:
+        # Profile section
+        user_info = st.session_state.get('user_info', {})
+        username = st.session_state.get('username', 'User')
+        display_name = user_info.get('full_name', username)
+        is_demo = username == 'demo_user'
+        
+        if len(display_name) > 10:
+            display_name = display_name[:8] + "..."
+        
+        st.markdown(f"<div style='margin-top: -60px;'></div>", unsafe_allow_html=True)
+        
+        if is_demo:
+            # Login/Sign Up for demo
+            auth_cols = st.columns(2)
+            with auth_cols[0]:
+                if st.button("🔑 Login", key="top_login_btn", use_container_width=True):
+                    logout()
+            with auth_cols[1]:
+                if st.button("✨ Sign Up", key="top_signup_btn", use_container_width=True):
+                    logout()
+        else:
+            # User profile
+            profile_cols = st.columns([2, 1])
+            with profile_cols[0]:
+                st.markdown(f"""
+                <div style="text-align: right; padding: 12px 0;">
+                    <div style="display: inline-block; padding: 10px 16px; 
+                                background: rgba(255,255,255,0.25); border-radius: 25px; 
+                                border: 2px solid rgba(255,255,255,0.4);
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                        <span style="color: white; font-weight: 700; font-size: 0.9rem;">
+                            👤 {display_name}
+                        </span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            with profile_cols[1]:
+                if st.button("⚙️", key="profile_menu_btn", use_container_width=True, help="Settings"):
+                    st.session_state.show_profile_menu = not st.session_state.get('show_profile_menu', False)
     
     # Profile dropdown menu
     if st.session_state.get('show_profile_menu', False):
