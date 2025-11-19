@@ -230,27 +230,44 @@ def main():
             username = st.session_state.get('username', 'User')
             display_name = user_info.get('full_name', username)
             
+            # Check if demo user
+            is_demo = username == 'demo_user'
+            
             # Truncate if too long
             if len(display_name) > 15:
                 display_name = display_name[:12] + "..."
             
-            profile_btn_col, settings_col = st.columns([3, 1])
-            
-            with profile_btn_col:
-                st.markdown(f"""
-                <div style="text-align: right; padding: 8px 0;">
-                    <div style="display: inline-block; padding: 8px 16px; background: rgba(255,255,255,0.15); 
-                                border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);">
-                        <span style="color: white; font-weight: 600; font-size: 0.9rem;">
-                            👤 {display_name}
-                        </span>
+            # Show Login/Sign Up for demo users, Profile for real users
+            if is_demo:
+                # Login and Sign Up buttons for demo users
+                login_col, signup_col = st.columns(2)
+                
+                with login_col:
+                    if st.button("🔑 Login", key="top_login_btn", use_container_width=True):
+                        logout()  # This will take them back to login page
+                
+                with signup_col:
+                    if st.button("✨ Sign Up", key="top_signup_btn", use_container_width=True, type="primary"):
+                        logout()  # This will take them back to login page
+            else:
+                # Profile section for logged-in users
+                profile_btn_col, settings_col = st.columns([3, 1])
+                
+                with profile_btn_col:
+                    st.markdown(f"""
+                    <div style="text-align: right; padding: 8px 0;">
+                        <div style="display: inline-block; padding: 8px 16px; background: rgba(255,255,255,0.15); 
+                                    border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);">
+                            <span style="color: white; font-weight: 600; font-size: 0.9rem;">
+                                👤 {display_name}
+                            </span>
+                        </div>
                     </div>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            with settings_col:
-                if st.button("⚙️", key="profile_menu_btn", use_container_width=True):
-                    st.session_state.show_profile_menu = not st.session_state.get('show_profile_menu', False)
+                    """, unsafe_allow_html=True)
+                
+                with settings_col:
+                    if st.button("⚙️", key="profile_menu_btn", use_container_width=True):
+                        st.session_state.show_profile_menu = not st.session_state.get('show_profile_menu', False)
     
     st.markdown("<br>", unsafe_allow_html=True)
     
