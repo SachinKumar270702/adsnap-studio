@@ -456,7 +456,7 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
-    # Mobile Bottom Navigation Bar
+    # Mobile Hamburger Menu
     st.markdown("""
     <style>
     /* Desktop Navigation - Hide on mobile */
@@ -465,84 +465,149 @@ def main():
         margin: 30px 0 40px 0;
     }
     
-    /* Mobile Bottom Navigation Bar */
-    .mobile-nav {
+    /* Hamburger Menu Button */
+    .hamburger-btn {
         display: none;
         position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        top: 15px;
+        left: 15px;
+        z-index: 10001;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
-        z-index: 9999;
-        padding: 8px 0;
-    }
-    
-    .mobile-nav-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 5px;
-        padding: 0 10px;
-        max-width: 100%;
-    }
-    
-    a.mobile-nav-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 10px 5px;
-        background: rgba(255,255,255,0.1);
+        border: none;
         border-radius: 12px;
+        width: 50px;
+        height: 50px;
         cursor: pointer;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
         transition: all 0.3s ease;
-        text-decoration: none !important;
-        border: 2px solid transparent;
-        color: white;
     }
     
-    a.mobile-nav-item:hover {
-        background: rgba(255,255,255,0.2);
-        text-decoration: none !important;
-    }
-    
-    a.mobile-nav-item:active {
+    .hamburger-btn:active {
         transform: scale(0.95);
     }
     
-    a.mobile-nav-item.active {
-        background: rgba(255,255,255,0.95);
-        border-color: white;
-        box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+    .hamburger-icon {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
     }
     
-    .mobile-nav-icon {
-        font-size: 1.5rem;
-        margin-bottom: 4px;
+    .hamburger-icon span {
+        display: block;
+        width: 25px;
+        height: 3px;
+        background: white;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+    
+    /* Mobile Slide-out Menu */
+    .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 280px;
+        height: 100vh;
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+        z-index: 10000;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
+    
+    .mobile-menu.active {
+        left: 0;
+    }
+    
+    .mobile-menu-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 9999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .mobile-menu-overlay.active {
+        opacity: 1;
+    }
+    
+    .mobile-menu-header {
+        padding: 20px;
+        border-bottom: 2px solid rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .mobile-menu-logo {
+        font-size: 2.5rem;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
+    
+    .mobile-menu-title {
+        color: white;
+        font-size: 1.3rem;
+        font-weight: 900;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .mobile-menu-items {
+        padding: 10px 0;
+    }
+    
+    .mobile-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 18px 25px;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+    
+    .mobile-menu-item:hover {
+        background: rgba(255,255,255,0.1);
+        border-left-color: white;
+    }
+    
+    .mobile-menu-item.active {
+        background: rgba(255,255,255,0.2);
+        border-left-color: white;
+        font-weight: 700;
+    }
+    
+    .mobile-menu-item-icon {
+        font-size: 1.8rem;
         line-height: 1;
     }
     
-    a.mobile-nav-item.active .mobile-nav-icon {
-        filter: grayscale(0);
-    }
-    
-    .mobile-nav-label {
-        font-size: 0.7rem;
+    .mobile-menu-item-label {
+        font-size: 1rem;
         font-weight: 600;
-        color: white;
+        letter-spacing: 0.5px;
+    }
+    
+    .mobile-menu-footer {
+        padding: 20px;
+        border-top: 2px solid rgba(255,255,255,0.2);
+        margin-top: auto;
+    }
+    
+    .mobile-menu-footer-text {
+        color: rgba(255,255,255,0.8);
+        font-size: 0.85rem;
         text-align: center;
-        letter-spacing: 0.3px;
-        line-height: 1.2;
-    }
-    
-    a.mobile-nav-item.active .mobile-nav-label {
-        color: #667eea;
-        font-weight: 800;
-    }
-    
-    /* Add bottom padding to content on mobile to prevent overlap */
-    .mobile-content-padding {
-        padding-bottom: 0;
     }
     
     @media only screen and (max-width: 768px) {
@@ -550,18 +615,22 @@ def main():
             display: none !important;
         }
         
-        .mobile-nav {
+        .hamburger-btn {
             display: block !important;
         }
         
-        .mobile-content-padding {
-            padding-bottom: 90px !important;
+        .mobile-menu {
+            display: block !important;
         }
         
-        /* Adjust header for mobile */
+        .mobile-menu-overlay {
+            display: block !important;
+        }
+        
+        /* Adjust header for mobile with hamburger menu */
         .header-container {
             margin: -80px -20px 20px -20px !important;
-            padding: 25px 10px 15px 10px !important;
+            padding: 25px 10px 15px 70px !important;
         }
         
         /* Hide floating auth buttons on mobile */
@@ -571,24 +640,17 @@ def main():
     }
     
     @media only screen and (max-width: 480px) {
-        .mobile-content-padding {
-            padding-bottom: 85px !important;
+        .header-container {
+            padding: 20px 5px 10px 65px !important;
         }
         
-        .mobile-nav {
-            padding: 6px 0;
+        .hamburger-btn {
+            width: 45px;
+            height: 45px;
         }
         
-        .mobile-nav-item {
-            padding: 8px 3px;
-        }
-        
-        .mobile-nav-icon {
-            font-size: 1.3rem;
-        }
-        
-        .mobile-nav-label {
-            font-size: 0.65rem;
+        .mobile-menu {
+            width: 260px;
         }
     }
     </style>
@@ -625,9 +687,9 @@ def main():
     
     st.markdown("</div>", unsafe_allow_html=True)
     
-    # Mobile Bottom Navigation Bar
+    # Mobile Hamburger Menu
     current_page = st.session_state.get('current_page', 0)
-    mobile_nav_items = [
+    mobile_menu_items = [
         ("🏠", "Dashboard", 0),
         ("🎨", "Generate", 1),
         ("✨", "Editor", 2),
@@ -636,51 +698,53 @@ def main():
         ("✂️", "Erase", 5)
     ]
     
-    # Create mobile nav with proper navigation
-    mobile_nav_html = '<div class="mobile-nav"><div class="mobile-nav-grid">'
+    # Create hamburger menu HTML
+    mobile_menu_html = '''
+    <button class="hamburger-btn" onclick="toggleMobileMenu()">
+        <div class="hamburger-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </button>
     
-    for icon, label, page_num in mobile_nav_items:
-        active_class = "active" if current_page == page_num else ""
-        mobile_nav_html += f'<a href="?page={page_num}" class="mobile-nav-item {active_class}"><div class="mobile-nav-icon">{icon}</div><div class="mobile-nav-label">{label}</div></a>'
+    <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
     
-    mobile_nav_html += '</div></div>'
-    
-    # Add mobile settings button (floating)
-    mobile_settings_html = '''
-    <style>
-    .mobile-settings-btn {
-        display: none;
-        position: fixed;
-        top: 15px;
-        right: 15px;
-        z-index: 10000;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    @media only screen and (max-width: 768px) {
-        .mobile-settings-btn {
-            display: flex !important;
-        }
-    }
-    </style>
-    <button class="mobile-settings-btn" onclick="alert('Settings: API Key and preferences can be configured here. Feature coming soon!')">⚙️</button>
+    <div class="mobile-menu">
+        <div class="mobile-menu-header">
+            <div class="mobile-menu-logo">🎨</div>
+            <div class="mobile-menu-title">ADSNAP</div>
+        </div>
+        <div class="mobile-menu-items">
     '''
     
-    st.markdown(mobile_nav_html + mobile_settings_html, unsafe_allow_html=True)
+    for icon, label, page_num in mobile_menu_items:
+        active_class = "active" if current_page == page_num else ""
+        mobile_menu_html += f'''
+        <a href="?page={page_num}" class="mobile-menu-item {active_class}">
+            <div class="mobile-menu-item-icon">{icon}</div>
+            <div class="mobile-menu-item-label">{label}</div>
+        </a>
+        '''
     
-    # Add mobile content padding wrapper
-    st.markdown('<div class="mobile-content-padding">', unsafe_allow_html=True)
+    mobile_menu_html += '''
+        </div>
+        <div class="mobile-menu-footer">
+            <div class="mobile-menu-footer-text">AI-Powered Image Generation</div>
+        </div>
+    </div>
+    
+    <script>
+    function toggleMobileMenu() {
+        const menu = document.querySelector('.mobile-menu');
+        const overlay = document.querySelector('.mobile-menu-overlay');
+        menu.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+    </script>
+    '''
+    
+    st.markdown(mobile_menu_html, unsafe_allow_html=True)
     
     # Auth buttons in top-right corner (floating)
     st.markdown("""
@@ -1947,8 +2011,7 @@ def main():
             else:
                 st.info("👆 Upload an image to start")
     
-    # Close mobile content padding wrapper
-    st.markdown('</div>', unsafe_allow_html=True)
+
 
 if __name__ == "__main__":
     main()
