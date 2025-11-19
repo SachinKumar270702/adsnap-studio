@@ -428,6 +428,32 @@ def show_login_page():
     </style>
     """, unsafe_allow_html=True)
     
+    # White bar at the top with AdSnap Studio text
+    st.markdown('''
+    <div style="background: white; padding: 20px 40px; margin: -80px -100px 40px -100px; 
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 0 0 20px 20px;
+                display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                    padding: 12px; border-radius: 16px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+            <span style="font-size: 2rem;">🎨</span>
+        </div>
+        <div>
+            <h1 style="margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                       font-size: 2rem; font-weight: 900; letter-spacing: 1px;">
+                ADSNAP STUDIO
+            </h1>
+            <p style="margin: 0; color: #888; font-size: 0.9rem; font-weight: 500; letter-spacing: 0.5px;">
+                AI-Powered Image Generation & Editing
+            </p>
+        </div>
+        <div style="display: flex; gap: 8px; font-size: 1.5rem;">
+            <span style="animation: bounce 2s ease-in-out infinite;">✨</span>
+            <span style="animation: bounce 2s ease-in-out infinite; animation-delay: 0.2s;">💫</span>
+        </div>
+    </div>
+    ''', unsafe_allow_html=True)
+    
     # Center the content
     col1, col2, col3 = st.columns([1, 2, 1])
     
@@ -435,16 +461,12 @@ def show_login_page():
         st.markdown('<div class="auth-container">', unsafe_allow_html=True)
         st.markdown('''
         <div style="text-align: center; margin-bottom: 2rem;">
-            <div style="font-size: 4rem; margin-bottom: 0.5rem; animation: bounce 2s ease-in-out infinite;">
-                🎨
-            </div>
-            <h1 class="auth-title">AdSnap Studio</h1>
-            <p class="subtitle-text">AI-Powered Image Generation & Editing</p>
-            <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; font-size: 1.5rem;">
-                <span style="animation: bounce 2s ease-in-out infinite; animation-delay: 0.1s;">✨</span>
-                <span style="animation: bounce 2s ease-in-out infinite; animation-delay: 0.2s;">🚀</span>
-                <span style="animation: bounce 2s ease-in-out infinite; animation-delay: 0.3s;">💫</span>
-            </div>
+            <h2 style="color: #667eea; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">
+                Welcome Back! 👋
+            </h2>
+            <p style="color: #888; font-size: 1rem;">
+                Sign in to continue creating amazing content
+            </p>
         </div>
         ''', unsafe_allow_html=True)
         

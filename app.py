@@ -277,22 +277,27 @@ def main():
     col_logo, col_menu1, col_menu2, col_menu3, col_menu4, col_menu5, col_menu6, col_spacer, col_profile = st.columns([1.5, 1, 1, 1, 1, 1, 1, 0.5, 1.5])
     
     with col_logo:
-        # Elegant Logo
+        # Elegant Logo with Text
         st.markdown("""
-        <div style="display: flex; align-items: center; gap: 15px; margin-top: -65px;">
-            <div style="background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%); 
-                        padding: 12px; border-radius: 16px; 
-                        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-                        border: 3px solid rgba(255,255,255,0.3);">
-                <span style="font-size: 2.2rem;">🎨</span>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: -65px;">
+            <div style="background: white; 
+                        padding: 10px; border-radius: 14px; 
+                        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+                        border: 2px solid rgba(255,255,255,0.4);">
+                <span style="font-size: 2rem;">�</span>
             </div>
-            <div>
-                <h2 style="margin: 0; color: white; font-size: 1.4rem; font-weight: 900; 
-                           letter-spacing: 1px; line-height: 1.2; 
-                           text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <h2 style="margin: 0; color: white; font-size: 1.3rem; font-weight: 900; 
+                           letter-spacing: 0.5px; line-height: 1.1; 
+                           text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
                            font-family: 'Segoe UI', sans-serif;">
-                    ADSNAP<br><span style="font-size: 1.1rem; font-weight: 600; letter-spacing: 2px;">STUDIO</span>
+                    AdSnap Studio
                 </h2>
+                <p style="margin: 0; color: rgba(255,255,255,0.85); font-size: 0.75rem; 
+                          font-weight: 500; letter-spacing: 0.5px; margin-top: 2px;
+                          text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                    AI-Powered Creativity
+                </p>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -354,12 +359,50 @@ def main():
         st.markdown(f"<div style='margin-top: -60px;'></div>", unsafe_allow_html=True)
         
         if is_demo:
-            # Login/Sign Up for demo
+            # Login/Sign Up buttons with proper styling
+            st.markdown("""
+            <div style="display: flex; gap: 10px; justify-content: flex-end; align-items: center; margin-top: -65px;">
+            </div>
+            """, unsafe_allow_html=True)
+            
             auth_cols = st.columns(2)
             with auth_cols[0]:
+                st.markdown("""
+                <style>
+                .login-btn button {
+                    background: rgba(255,255,255,0.15) !important;
+                    border: 2px solid rgba(255,255,255,0.4) !important;
+                    color: white !important;
+                    font-weight: 700 !important;
+                    padding: 12px 24px !important;
+                    border-radius: 12px !important;
+                }
+                .login-btn button:hover {
+                    background: rgba(255,255,255,0.25) !important;
+                    border-color: white !important;
+                }
+                </style>
+                """, unsafe_allow_html=True)
                 if st.button("🔑 Login", key="top_login_btn", use_container_width=True):
                     logout()
             with auth_cols[1]:
+                st.markdown("""
+                <style>
+                .signup-btn button {
+                    background: white !important;
+                    border: 2px solid white !important;
+                    color: #667eea !important;
+                    font-weight: 800 !important;
+                    padding: 12px 24px !important;
+                    border-radius: 12px !important;
+                }
+                .signup-btn button:hover {
+                    background: rgba(255,255,255,0.95) !important;
+                    transform: translateY(-2px) !important;
+                    box-shadow: 0 6px 20px rgba(255,255,255,0.3) !important;
+                }
+                </style>
+                """, unsafe_allow_html=True)
                 if st.button("✨ Sign Up", key="top_signup_btn", use_container_width=True):
                     logout()
         else:
