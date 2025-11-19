@@ -279,7 +279,7 @@ def main():
     with col_logo:
         # Elegant Logo with Text
         st.markdown("""
-        <div style="display: flex; align-items: center; gap: 12px; margin-top: -65px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: -55px;">
             <div style="background: white; 
                         padding: 10px; border-radius: 14px; 
                         box-shadow: 0 6px 20px rgba(0,0,0,0.25);
