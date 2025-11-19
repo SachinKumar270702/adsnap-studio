@@ -283,9 +283,20 @@ def main():
     
     /* ========== MOBILE RESPONSIVE STYLES ========== */
     @media only screen and (max-width: 768px) {
+        /* Hide sidebar on mobile */
+        section[data-testid="stSidebar"] {
+            display: none !important;
+        }
+        
+        /* Expand main content to full width */
+        .main .block-container {
+            max-width: 100% !important;
+            padding: 0.5rem !important;
+        }
+        
         /* Reduce padding on mobile */
         .block-container {
-            padding: 1rem !important;
+            padding: 0.5rem !important;
         }
         
         /* Smaller buttons on mobile */
@@ -323,11 +334,6 @@ def main():
         /* File uploader */
         .stFileUploader {
             padding: 15px;
-        }
-        
-        /* Sidebar adjustments */
-        section[data-testid="stSidebar"] {
-            width: 100% !important;
         }
     }
     
@@ -480,7 +486,7 @@ def main():
         max-width: 100%;
     }
     
-    .mobile-nav-item {
+    a.mobile-nav-item {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -492,19 +498,19 @@ def main():
         transition: all 0.3s ease;
         text-decoration: none !important;
         border: 2px solid transparent;
-        color: inherit;
+        color: white;
     }
     
-    .mobile-nav-item:hover {
+    a.mobile-nav-item:hover {
         background: rgba(255,255,255,0.2);
         text-decoration: none !important;
     }
     
-    .mobile-nav-item:active {
+    a.mobile-nav-item:active {
         transform: scale(0.95);
     }
     
-    .mobile-nav-item.active {
+    a.mobile-nav-item.active {
         background: rgba(255,255,255,0.95);
         border-color: white;
         box-shadow: 0 4px 15px rgba(255,255,255,0.3);
@@ -513,9 +519,10 @@ def main():
     .mobile-nav-icon {
         font-size: 1.5rem;
         margin-bottom: 4px;
+        line-height: 1;
     }
     
-    .mobile-nav-item.active .mobile-nav-icon {
+    a.mobile-nav-item.active .mobile-nav-icon {
         filter: grayscale(0);
     }
     
@@ -525,9 +532,10 @@ def main():
         color: white;
         text-align: center;
         letter-spacing: 0.3px;
+        line-height: 1.2;
     }
     
-    .mobile-nav-item.active .mobile-nav-label {
+    a.mobile-nav-item.active .mobile-nav-label {
         color: #667eea;
         font-weight: 800;
     }
@@ -629,27 +637,47 @@ def main():
     ]
     
     # Create mobile nav with proper navigation
-    mobile_nav_html = '''
-    <div class="mobile-nav">
-        <div class="mobile-nav-grid">
-    '''
+    mobile_nav_html = '<div class="mobile-nav"><div class="mobile-nav-grid">'
     
     for icon, label, page_num in mobile_nav_items:
         active_class = "active" if current_page == page_num else ""
-        # Use JavaScript to update URL and reload
-        mobile_nav_html += f'''
-        <a href="?page={page_num}" class="mobile-nav-item {active_class}" style="text-decoration: none;">
-            <div class="mobile-nav-icon">{icon}</div>
-            <div class="mobile-nav-label">{label}</div>
-        </a>
-        '''
+        mobile_nav_html += f'<a href="?page={page_num}" class="mobile-nav-item {active_class}"><div class="mobile-nav-icon">{icon}</div><div class="mobile-nav-label">{label}</div></a>'
     
-    mobile_nav_html += '''
-        </div>
-    </div>
+    mobile_nav_html += '</div></div>'
+    
+    # Add mobile settings button (floating)
+    mobile_settings_html = '''
+    <style>
+    .mobile-settings-btn {
+        display: none;
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        z-index: 10000;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    @media only screen and (max-width: 768px) {
+        .mobile-settings-btn {
+            display: flex !important;
+        }
+    }
+    </style>
+    <button class="mobile-settings-btn" onclick="alert('Settings: API Key and preferences can be configured here. Feature coming soon!')">⚙️</button>
     '''
     
-    st.markdown(mobile_nav_html, unsafe_allow_html=True)
+    st.markdown(mobile_nav_html + mobile_settings_html, unsafe_allow_html=True)
     
     # Add mobile content padding wrapper
     st.markdown('<div class="mobile-content-padding">', unsafe_allow_html=True)
