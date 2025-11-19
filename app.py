@@ -280,42 +280,200 @@ def main():
         padding: 2rem 3rem !important;
         max-width: 1400px !important;
     }
+    
+    /* ========== MOBILE RESPONSIVE STYLES ========== */
+    @media only screen and (max-width: 768px) {
+        /* Reduce padding on mobile */
+        .block-container {
+            padding: 1rem !important;
+        }
+        
+        /* Smaller buttons on mobile */
+        .stButton > button {
+            padding: 10px 16px !important;
+            font-size: 0.85rem !important;
+        }
+        
+        /* Stack columns vertically */
+        [data-testid="column"] {
+            width: 100% !important;
+            flex: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        /* Smaller headers */
+        h1 { font-size: 1.8rem !important; }
+        h2 { font-size: 1.5rem !important; }
+        h3 { font-size: 1.3rem !important; }
+        h4 { font-size: 1.1rem !important; }
+        
+        /* Adjust feature cards */
+        .feature-card {
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        /* Smaller input fields */
+        .stTextInput > div > div > input,
+        .stTextArea > div > div > textarea {
+            font-size: 0.9rem !important;
+            padding: 10px 12px !important;
+        }
+        
+        /* File uploader */
+        .stFileUploader {
+            padding: 15px;
+        }
+        
+        /* Sidebar adjustments */
+        section[data-testid="stSidebar"] {
+            width: 100% !important;
+        }
+    }
+    
+    @media only screen and (max-width: 480px) {
+        /* Extra small devices */
+        .block-container {
+            padding: 0.5rem !important;
+        }
+        
+        .stButton > button {
+            padding: 8px 12px !important;
+            font-size: 0.8rem !important;
+        }
+        
+        h1 { font-size: 1.5rem !important; }
+        h2 { font-size: 1.3rem !important; }
+        h3 { font-size: 1.1rem !important; }
+    }
     </style>
     """, unsafe_allow_html=True)
     
     # Centered Header with Logo and Features
     st.markdown("""
-    <div style="text-align: center; padding: 50px 0 20px 0; margin: -80px -100px 0 -100px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-        <!-- Logo and Title -->
-        <div style="display: inline-flex; align-items: center; justify-content: center; gap: 25px; margin-bottom: 15px;">
+    <style>
+    .header-container {
+        text-align: center;
+        padding: 50px 0 20px 0;
+        margin: -80px -100px 0 -100px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .logo-title-wrapper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 25px;
+        margin-bottom: 15px;
+    }
+    .logo-emoji {
+        font-size: 4rem;
+        line-height: 1;
+        display: block;
+        filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+    }
+    .main-title {
+        margin: 0;
+        color: white;
+        font-size: 3.5rem;
+        font-weight: 900;
+        letter-spacing: 4px;
+        text-shadow: 4px 4px 8px rgba(0,0,0,0.4);
+        font-family: 'Segoe UI', 'Arial Black', sans-serif;
+        line-height: 1;
+        background: linear-gradient(to bottom, #ffffff 0%, #e0e7ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+    }
+    .subtitle {
+        margin: 12px 0 0 0;
+        color: rgba(255,255,255,0.95);
+        font-size: 1.05rem;
+        font-weight: 600;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    /* Mobile Responsive Header */
+    @media only screen and (max-width: 768px) {
+        .header-container {
+            padding: 30px 10px 15px 10px;
+            margin: -80px -20px 0 -20px;
+        }
+        .logo-title-wrapper {
+            flex-direction: column;
+            gap: 15px;
+        }
+        .logo-emoji {
+            font-size: 3rem;
+        }
+        .main-title {
+            font-size: 2rem;
+            letter-spacing: 2px;
+        }
+        .subtitle {
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+        }
+    }
+    
+    @media only screen and (max-width: 480px) {
+        .header-container {
+            padding: 20px 5px 10px 5px;
+            margin: -80px -10px 0 -10px;
+        }
+        .logo-emoji {
+            font-size: 2.5rem;
+        }
+        .main-title {
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+        .subtitle {
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+        }
+    }
+    </style>
+    <div class="header-container">
+        <div class="logo-title-wrapper">
             <div style="background: transparent; padding: 0; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 4rem; line-height: 1; display: block; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));">🎨</span>
+                <span class="logo-emoji">🎨</span>
             </div>
             <div>
-                <h1 style="margin: 0; color: white; font-size: 3.5rem; font-weight: 900; 
-                           letter-spacing: 4px; text-shadow: 4px 4px 8px rgba(0,0,0,0.4);
-                           font-family: 'Segoe UI', 'Arial Black', sans-serif; line-height: 1;
-                           background: linear-gradient(to bottom, #ffffff 0%, #e0e7ff 100%);
-                           -webkit-background-clip: text;
-                           -webkit-text-fill-color: transparent;
-                           background-clip: text;
-                           filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">
-                    ADSNAP STUDIO
-                </h1>
-                <p style="margin: 12px 0 0 0; color: rgba(255,255,255,0.95); font-size: 1.05rem; 
-                          font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
-                          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-                    AI-Powered Image Generation & Editing
-                </p>
+                <h1 class="main-title">ADSNAP STUDIO</h1>
+                <p class="subtitle">AI-Powered Image Generation & Editing</p>
             </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
     # Feature Navigation Buttons - Centered Row
-    st.markdown("<div style='margin: 30px 0 40px 0;'>", unsafe_allow_html=True)
+    st.markdown("""
+    <style>
+    @media only screen and (max-width: 768px) {
+        /* Stack navigation buttons on mobile */
+        [data-testid="column"] {
+            min-width: 50% !important;
+            flex: 0 0 50% !important;
+        }
+    }
+    @media only screen and (max-width: 480px) {
+        [data-testid="column"] {
+            min-width: 100% !important;
+            flex: 0 0 100% !important;
+        }
+    }
+    </style>
+    <div style='margin: 30px 0 40px 0;'>
+    """, unsafe_allow_html=True)
     
+    # Use responsive column layout
+    import streamlit as st
+    
+    # Check if mobile view (simplified approach)
     nav_cols = st.columns([0.5, 1, 1, 1, 1, 1, 1, 0.5])
     
     # Skip first spacer column

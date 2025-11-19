@@ -508,6 +508,140 @@ def show_login_page():
         padding: 1rem 1.2rem;
         margin: 1rem 0;
     }
+    
+    /* ========== MOBILE RESPONSIVE STYLES ========== */
+    @media only screen and (max-width: 768px) {
+        .main {
+            padding: 1rem 0.5rem !important;
+        }
+        
+        .auth-container {
+            max-width: 95%;
+            padding: 2rem 1.5rem;
+            margin: 1rem auto;
+        }
+        
+        .auth-logo-icon {
+            width: 70px;
+            height: 70px;
+        }
+        
+        .auth-logo-icon span {
+            font-size: 2.5rem !important;
+        }
+        
+        .auth-title {
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle-text {
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .welcome-message h3 {
+            font-size: 1.3rem;
+        }
+        
+        .welcome-message p {
+            font-size: 0.85rem;
+        }
+        
+        .stButton > button {
+            padding: 0.65rem 1.2rem;
+            font-size: 0.9rem;
+        }
+        
+        .stTextInput > div > div > input {
+            font-size: 0.9rem;
+            padding: 0.7rem 0.9rem;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            padding: 0.7rem 1.2rem;
+            font-size: 0.85rem;
+        }
+        
+        .auth-footer p {
+            font-size: 0.85rem;
+        }
+        
+        .auth-footer-icons {
+            gap: 1rem;
+            font-size: 0.8rem;
+            flex-wrap: wrap;
+        }
+    }
+    
+    @media only screen and (max-width: 480px) {
+        .auth-container {
+            max-width: 100%;
+            padding: 1.5rem 1rem;
+            border-radius: 20px;
+        }
+        
+        .auth-logo {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+        }
+        
+        .auth-logo-icon {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .auth-logo-icon span {
+            font-size: 2rem !important;
+        }
+        
+        .auth-title {
+            font-size: 1.4rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .subtitle-text {
+            font-size: 0.75rem;
+            letter-spacing: 0.3px;
+        }
+        
+        .welcome-message h3 {
+            font-size: 1.1rem;
+        }
+        
+        .welcome-message p {
+            font-size: 0.8rem;
+        }
+        
+        .stButton > button {
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .stTextInput > div > div > input {
+            font-size: 0.85rem;
+            padding: 0.65rem 0.8rem;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            padding: 0.6rem 1rem;
+            font-size: 0.8rem;
+        }
+        
+        .auth-footer {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+        }
+        
+        .auth-footer p {
+            font-size: 0.8rem;
+        }
+        
+        .auth-footer-icons {
+            font-size: 0.75rem;
+            gap: 0.8rem;
+        }
+    }
     </style>
     """, unsafe_allow_html=True)
     
