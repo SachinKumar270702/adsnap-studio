@@ -113,6 +113,11 @@ def download_image(url):
         return response.content
     except Exception as e:
         st.error(f"Error downloading image: {str(e)}")
+
+def main():
+    initialize_session_state()
+    add_custom_css()
+
     # Show welcome dashboard for first-time users
     if not st.session_state.get('has_used_app', False):
         show_welcome_dashboard()
@@ -1060,8 +1065,8 @@ def download_image(url):
                     **How to create a mask:**
                     1. Download your image using the button in the left column
                     2. Open it in Paint, Photoshop, or any image editor
-                    3. Draw white areas where you want AI to fill
-                    4. Keep black areas as original
+                    3. Paint WHITE where you want AI to fill
+                    4. Keep BLACK where you want original
                     5. Save and upload the mask below
                     """)
                     
@@ -1450,7 +1455,6 @@ def download_image(url):
                                 st.error(f"❌ Error: {str(e)}")
             else:
                 st.info("👆 Upload an image to start")
-    
 
 
 if __name__ == "__main__":
