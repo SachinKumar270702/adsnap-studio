@@ -9,7 +9,7 @@ import os
 from datetime import datetime
 
 # Import custom components
-from components.auth import show_auth_page, logout
+from components.auth import show_login_page, logout
 from components.dashboard import show_dashboard, show_feature_tour
 from components.sidebar import create_sidebar
 from components.interactive_ui import (
