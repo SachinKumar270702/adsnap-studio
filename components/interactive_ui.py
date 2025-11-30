@@ -6,6 +6,7 @@ from io import BytesIO
 from PIL import Image
 import streamlit.components.v1 as components
 import textwrap
+from components.styles import INTERACTIVE_UI_CSS
 
 def show_lottie_animation(url, height=300, key=None):
     """Embed a Lottie animation from a URL."""

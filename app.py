@@ -155,7 +155,7 @@ def track_current_activity(action, details, metadata=None):
     )
 
 # Import styles
-from styles import GLOBAL_CSS
+from components.styles import GLOBAL_CSS
 
 def main():
     initialize_session_state()
