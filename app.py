@@ -9,6 +9,14 @@ import os
 import textwrap
 from datetime import datetime
 
+# Import services
+from services.hd_image_generation import generate_hd_image
+from services.prompt_enhancement import enhance_prompt
+from services.packshot import create_packshot
+from services.shadow import add_shadow
+from services.generative_fill import generative_fill
+from services.erase_foreground import erase_foreground
+
 # Import custom components
 from components.auth import show_login_page, logout
 from components.dashboard import show_dashboard, show_feature_tour
@@ -18,7 +26,8 @@ from components.interactive_ui import (
     enhanced_file_uploader, 
     show_generation_status,
     create_interactive_sidebar,
-    show_welcome_dashboard
+    show_welcome_dashboard,
+    show_navigation_dock
 )
 from components.activity_dashboard import (
     track_activity, 
@@ -72,70 +81,8 @@ def initialize_session_state():
     if 'enhanced_prompt' not in st.session_state:
         st.session_state.enhanced_prompt = ""
 
-# API Functions (Mocked or Real)
-def enhance_prompt(api_key, prompt):
-    # Mock implementation for demo
-    time.sleep(1)
-    return f"{prompt}, highly detailed, professional lighting, 8k resolution, photorealistic"
+# API Functions imported from services
 
-def generate_hd_image(prompt, api_key, num_results=1, aspect_ratio="1:1", sync=True, enhance_image=True, medium="photography", prompt_enhancement=False, content_moderation=True):
-    # Using Bria API if key exists, otherwise mock
-    if not api_key:
-        raise ValueError("API Key required")
-    
-    url = "https://engine.bria.ai/v1/text-to-image/base/1.4"
-    
-    payload = {
-        "prompt": prompt,
-        "num_results": num_results,
-        "aspect_ratio": aspect_ratio,
-        "sync": sync,
-        "medium": medium,
-        "prompt_enhancement": prompt_enhancement,
-        "content_moderation": content_moderation
-    }
-    
-    headers = {
-        "accept": "application/json",
-        "content-type": "application/json",
-        "api_token": api_key
-    }
-    
-    response = requests.post(url, json=payload, headers=headers)
-    
-    if response.status_code == 200:
-        return response.json()
-    else:
-        # Fallback for demo/testing if API fails or no key
-        if "demo" in api_key.lower() or response.status_code == 401:
-            time.sleep(2)
-            # Return placeholder images
-            return {
-                "result": [
-                    {"urls": ["https://picsum.photos/1024/1024"]} for _ in range(num_results)
-                ]
-            }
-        raise Exception(f"API Error: {response.text}")
-
-def create_packshot(api_key, image_data, background_color="#FFFFFF", sku=None, force_rmbg=False, content_moderation=True):
-    # Mock implementation
-    time.sleep(2)
-    return {"result_url": "https://picsum.photos/1024/1024"}
-
-def add_shadow(api_key, image_data, shadow_type="natural", background_color="#FFFFFF", shadow_color="#000000", shadow_intensity=60, force_rmbg=False, content_moderation=True):
-    # Mock implementation
-    time.sleep(2)
-    return {"result_url": "https://picsum.photos/1024/1024"}
-
-def generative_fill(api_key, image_data, mask_data, prompt, num_results=1, sync=True, content_moderation=True):
-    # Mock implementation
-    time.sleep(2)
-    return {"result_url": "https://picsum.photos/1024/1024"}
-
-def erase_foreground(api_key, image_data, content_moderation=True):
-    # Mock implementation
-    time.sleep(2)
-    return {"result_url": "https://picsum.photos/1024/1024"}
 
 def download_image(url):
     try:
@@ -262,7 +209,7 @@ def main():
             pass
             
     # Display current page
-    from components.interactive_ui import show_navigation_dock
+    # Display current page
     show_navigation_dock()
     
     if st.session_state.current_page == 0:
@@ -299,11 +246,12 @@ def main():
                             st.info(f"Enhanced prompt: {final_prompt}")
                         
                         result = generate_hd_image(
-                            final_prompt, 
-                            st.session_state.api_key, 
+                            prompt=final_prompt, 
+                            api_key=st.session_state.api_key, 
                             num_results=num_results,
                             aspect_ratio=aspect_ratio,
-                            medium=medium
+                            medium=medium,
+                            enhance_image=True
                         )
                         
                         if result and "result" in result:
@@ -328,9 +276,8 @@ def main():
         # Image Editor Page
         show_animated_header("Image Editor", "Enhance and modify your images", '<i class="fas fa-sliders"></i>')
         
-        # Import services
-        from services.packshot import create_packshot
-        from services.shadow import add_shadow
+        # Services imported globally
+
         
         uploaded_file = enhanced_file_uploader("Upload Image to Edit")
         
@@ -532,7 +479,7 @@ def main():
         show_animated_header("Generative Fill", "Add or replace elements in your image", '<i class="fas fa-fill-drip"></i>')
         
         # Import service
-        from services.generative_fill import generative_fill
+
         
         col1, col2 = st.columns([1, 1])
         
@@ -604,7 +551,7 @@ def main():
         show_animated_header("Erase Elements", "Remove unwanted objects from your image", '<i class="fas fa-eraser"></i>')
         
         # Import service
-        from services.erase_foreground import erase_foreground
+
         
         # Initialize session state for erase tool
         if 'erase_mode' not in st.session_state:
