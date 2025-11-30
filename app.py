@@ -159,10 +159,10 @@ def main():
     initialize_session_state()
 
     # Import styles and header
-    from components.styles import GLOBAL_CSS, HEADER_HTML
+    from components.styles import apply_custom_css, HEADER_HTML
     
     # Apply global CSS
-    st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+    apply_custom_css()
     
     # Render header
     st.markdown(HEADER_HTML, unsafe_allow_html=True)

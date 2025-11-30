@@ -1,5 +1,8 @@
+import streamlit as st
 
-# Global CSS and Styles
+def apply_custom_css():
+    """Apply global CSS styles to the application."""
+    st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 
 GLOBAL_CSS = """<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
