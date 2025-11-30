@@ -237,12 +237,207 @@ def add_custom_css():
     
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+    }
+    
+    /* Primary button style */
+    .primary-button > button {
+        background: linear-gradient(45deg, var(--accent-color), var(--success-color)) !important;
+        color: white !important;
+        font-size: 1.1rem !important;
+    }
+    
+    /* Success button style */
+    .success-button > button {
+        background: linear-gradient(45deg, #28a745, #20c997) !important;
+        color: white !important;
+    }
+    
+    /* Warning button style */
+    .warning-button > button {
+        background: linear(45deg, #ffc107, #fd7e14) !important;
+        color: white !important;
+    }
+    
+    /* Enhanced cards */
+    .feature-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        border: 1px solid rgba(255,255,255,0.2);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        border-color: var(--primary-color);
+    }
+    
+    /* Progress bars */
+    .progress-container {
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .progress-bar {
+        background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+        height: 8px;
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+    
+    /* Animated icons */
+    .rotating-icon {
+        animation: rotate 2s linear infinite;
+    }
+    
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .pulse-icon {
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    /* Enhanced metrics */
+    .metric-card {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        margin: 0.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .metric-label {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+    
+    /* Image gallery */
+    .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .image-item {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .image-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    
+    /* Loading animations */
+    .loading-spinner {
+        border: 4px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top: 4px solid var(--primary-color);
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Notification styles */
+    .notification {
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        border-left: 4px solid;
+        animation: slideIn 0.5s ease-out;
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateX(-100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .notification.success {
+        background: rgba(76, 205, 196, 0.1);
+        border-color: var(--success-color);
+        color: var(--success-color);
+    }
+    
+    .notification.warning {
+        background: rgba(255, 217, 61, 0.1);
+        border-color: var(--warning-color);
+        color: var(--warning-color);
+    }
+    
+    .notification.error {
+        background: rgba(255, 107, 107, 0.1);
+        border-color: var(--error-color);
+        color: var(--error-color);
+    }
+    
+    /* Sidebar enhancements */
+    .sidebar-section {
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    /* Tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+        border-radius: 10px;
+        padding: 0.5rem 1rem;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
         color: white;
     }
     </style>
     """, unsafe_allow_html=True)
 
-def show_animated_header(title, subtitle="", icon="🎨"):
+def show_animated_header(title, subtitle="", icon='<i class="fas fa-palette"></i>'):
     """Display an animated header with icon."""
     st.markdown(f"""
     <div style="text-align: center; padding: 2rem 0;">
@@ -268,6 +463,16 @@ def show_feature_card(title, description, icon, action_text="Learn More", key=No
     """
     
     st.markdown(card_html, unsafe_allow_html=True)
+    
+    st.markdown(f"""
+    <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 1.5rem; margin-right: 0.5rem;"><i class="fas fa-folder"></i></span>
+            <span style="font-weight: bold;">Current Project</span>
+        </div>
+        <div style="font-size: 0.9rem; color: #888;">{st.session_state.get('current_project', 'Untitled Project')}</div>
+    </div>
+    """, unsafe_allow_html=True)
     
     if key and st.button(action_text, key=key, use_container_width=True):
         return True
@@ -365,7 +570,7 @@ def enhanced_file_uploader(label, accepted_types=None, help_text=None, key=None)
     st.markdown(f"""
     <div style="border: 2px dashed #667eea; border-radius: 10px; padding: 2rem; 
                 text-align: center; background: rgba(102, 126, 234, 0.05); margin: 1rem 0;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">📁</div>
+        <div style="font-size: 3rem; margin-bottom: 1rem;"><i class="fas fa-cloud-upload-alt"></i></div>
         <h4 style="color: #667eea; margin-bottom: 0.5rem;">{label}</h4>
         {f'<p style="color: #666; font-size: 0.9rem;">{help_text}</p>' if help_text else ''}
     </div>
@@ -385,7 +590,7 @@ def show_generation_status(status_text, is_processing=False):
         with col2:
             st.markdown(f"""
             <div style="text-align: center; padding: 2rem;">
-                <div class="rotating-icon" style="font-size: 3rem; margin-bottom: 1rem;">🎨</div>
+                <div class="rotating-icon" style="font-size: 3rem; margin-bottom: 1rem;"><i class="fas fa-paint-brush"></i></div>
                 <h3 style="color: #667eea;">{status_text}</h3>
                 <div class="loading-spinner" style="margin: 1rem auto;"></div>
             </div>
@@ -434,7 +639,7 @@ def create_interactive_sidebar():
 
 def show_welcome_dashboard():
     """Display a welcome dashboard for new users."""
-    show_animated_header("Welcome to AdSnap Studio", "Generate & modify images with AI-powered tools", "🚀")
+    show_animated_header("Welcome to AdSnap Studio", "Generate & modify images with AI-powered tools", '<i class="fas fa-rocket"></i>')
     
     # Feature overview
     st.markdown("### 🌟 What you can do:")
@@ -442,39 +647,42 @@ def show_welcome_dashboard():
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if show_feature_card(
-            "Generate Images", 
-            "Create stunning visuals from text prompts using advanced AI",
-            "🎨",
-            "Start Creating",
-            "feature_generate"
-        ):
-            st.session_state.active_tab = 1  # Generate Image tab
+        st.markdown("""
+        <div class="feature-card" style="text-align: center;">
+            <div style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"><i class="fas fa-palette"></i></div>
+            <h3>Generate Images</h3>
+            <p>Create stunning product images from text descriptions.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("Start Generating", use_container_width=True, type="primary"):
             st.session_state.has_used_app = True
+            st.session_state.active_tab = 1
             st.rerun()
-    
+            
     with col2:
-        if show_feature_card(
-            "Lifestyle Shots",
-            "Transform product photos into lifestyle scenes",
-            "📸",
-            "Try Now",
-            "feature_lifestyle"
-        ):
-            st.session_state.active_tab = 2  # Lifestyle Shot tab
+        st.markdown("""
+        <div class="feature-card" style="text-align: center;">
+            <div style="font-size: 3rem; color: #FF6B6B; margin-bottom: 1rem;"><i class="fas fa-camera"></i></div>
+            <h3>Lifestyle Shots</h3>
+            <p>Place your products in realistic lifestyle environments.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("Create Lifestyle Shot", use_container_width=True):
             st.session_state.has_used_app = True
+            st.session_state.active_tab = 2
             st.rerun()
-    
+            
     with col3:
-        if show_feature_card(
-            "Image Editing",
-            "Remove backgrounds, add shadows, and enhance your images",
-            "✨",
-            "Explore",
-            "feature_editing"
-        ):
-            st.session_state.active_tab = 3  # Generative Fill tab
+        st.markdown("""
+        <div class="feature-card" style="text-align: center;">
+            <div style="font-size: 3rem; color: #4ECDC4; margin-bottom: 1rem;"><i class="fas fa-magic"></i></div>
+            <h3>AI Editing</h3>
+            <p>Remove backgrounds, add shadows, and enhance quality.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("Open Editor", use_container_width=True):
             st.session_state.has_used_app = True
+            st.session_state.active_tab = 3
             st.rerun()
     
     # Quick start guide
@@ -501,3 +709,18 @@ def show_welcome_dashboard():
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div style="margin-top: 2rem;">
+        <h4 style="color: #667eea; margin-bottom: 1rem;">System Status</h4>
+        <div style="display: flex; align-items: center; margin-bottom: 0.5rem; color: #4ECDC4;">
+            <span style="margin-right: 0.5rem;"><i class="fas fa-check-circle"></i></span> API Connected
+        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 0.5rem; color: #4ECDC4;">
+            <span style="margin-right: 0.5rem;"><i class="fas fa-box"></i></span> Models Loaded
+        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 0.5rem; color: #FFD93D;">
+            <span style="margin-right: 0.5rem;"><i class="fas fa-magic"></i></span> GPU Ready
+        </div>
+    </div>
+    """, unsafe_allow_html=True)

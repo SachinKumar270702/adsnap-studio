@@ -21,7 +21,7 @@ def show_dashboard():
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                 padding: 2rem; border-radius: 15px; color: white; margin-bottom: 2rem;">
-        <h2 style="margin: 0; font-size: 2rem;">{greeting}, {user_name}! 👋</h2>
+        <h2 style="margin: 0; font-size: 2rem;"><i class="fas fa-hand-sparkles"></i> {greeting}, {user_name}!</h2>
         <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Ready to create some amazing ads today?</p>
     </div>
     """, unsafe_allow_html=True)
@@ -30,29 +30,29 @@ def show_dashboard():
     show_activity_statistics()
     
     # Quick actions section
-    st.markdown("### 🚀 Quick Actions")
+    st.markdown("### <i class='fas fa-rocket'></i> Quick Actions", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("🎨 Generate New Image", use_container_width=True, type="primary"):
+        if st.button("Generate New Image", use_container_width=True, type="primary"):
             st.session_state.active_tab = 1  # Generate Image tab
             st.session_state.quick_action = "generate"
-            st.success("🚀 Navigating to Image Generation...")
+            st.success("Navigating to Image Generation...")
             st.rerun()
     
     with col2:
-        if st.button("📸 Create Lifestyle Shot", use_container_width=True):
+        if st.button("Create Lifestyle Shot", use_container_width=True):
             st.session_state.active_tab = 2  # Lifestyle Shot tab
             st.session_state.quick_action = "lifestyle"
-            st.success("🚀 Navigating to Lifestyle Shot...")
+            st.success("Navigating to Lifestyle Shot...")
             st.rerun()
     
     with col3:
-        if st.button("✨ Enhance Image", use_container_width=True):
+        if st.button("Enhance Image", use_container_width=True):
             st.session_state.active_tab = 3  # Generative Fill tab (for image enhancement)
             st.session_state.quick_action = "enhance"
-            st.success("🚀 Navigating to Image Enhancement...")
+            st.success("Navigating to Image Enhancement...")
             st.rerun()
     
     # Recent activity and tips
@@ -96,14 +96,14 @@ def get_user_stats():
 
 def show_recent_activity():
     """Display recent user activity."""
-    st.markdown("### 📊 Recent Activity")
+    st.markdown("### <i class='fas fa-chart-line'></i> Recent Activity", unsafe_allow_html=True)
     
     activities = [
-        ("Generated product image", "2 minutes ago", "🎨", "success"),
-        ("Created lifestyle shot", "15 minutes ago", "📸", "info"),
-        ("Enhanced image quality", "1 hour ago", "✨", "success"),
-        ("Removed background", "2 hours ago", "✂️", "info"),
-        ("Added shadow effect", "Yesterday", "🌟", "success")
+        ("Generated product image", "2 minutes ago", '<i class="fas fa-palette"></i>', "success"),
+        ("Created lifestyle shot", "15 minutes ago", '<i class="fas fa-camera"></i>', "info"),
+        ("Enhanced image quality", "1 hour ago", '<i class="fas fa-magic"></i>', "success"),
+        ("Removed background", "2 hours ago", '<i class="fas fa-scissors"></i>', "info"),
+        ("Added shadow effect", "Yesterday", '<i class="fas fa-star"></i>', "success")
     ]
     
     for activity, time_ago, icon, status in activities:
@@ -123,7 +123,7 @@ def show_recent_activity():
 
 def show_daily_tip():
     """Display a daily tip."""
-    st.markdown("### 💡 Daily Tip")
+    st.markdown("### <i class='fas fa-lightbulb'></i> Daily Tip", unsafe_allow_html=True)
     
     # Get a consistent tip for the day
     day_of_year = datetime.now().timetuple().tm_yday
@@ -132,28 +132,28 @@ def show_daily_tip():
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, #FFD93D, #FF6B6B); 
                 padding: 1.5rem; border-radius: 10px; color: white;">
-        <div style="font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem;">Tip of the Day</div>
+        <div style="font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem;"><i class="fas fa-lightbulb"></i> Tip of the Day</div>
         <div style="font-size: 0.95rem; line-height: 1.4;">{tip}</div>
     </div>
     """, unsafe_allow_html=True)
     
     # Quick prompt suggestions
-    st.markdown("### 🎯 Quick Prompts")
+    st.markdown("### <i class='fas fa-bullseye'></i> Quick Prompts", unsafe_allow_html=True)
     
-    if st.button("🎲 Get Random Prompt", use_container_width=True):
+    if st.button("Get Random Prompt", use_container_width=True):
         prompt = random.choice(SAMPLE_PROMPTS)
         st.session_state.suggested_prompt = prompt
         st.success(f"Try this: {prompt}")
     
     if st.session_state.get('suggested_prompt'):
-        if st.button("🚀 Use This Prompt", use_container_width=True, type="primary"):
+        if st.button("Use This Prompt", use_container_width=True, type="primary"):
             st.session_state.active_tab = 0
             st.session_state.quick_prompt = st.session_state.suggested_prompt
             st.rerun()
 
 def show_feature_tour():
     """Display an interactive feature tour."""
-    st.markdown("### 🗺️ Feature Tour")
+    st.markdown("### <i class='fas fa-map-signs'></i> Feature Tour", unsafe_allow_html=True)
     st.markdown("New to AdSnap Studio? Take a quick tour of our features!")
     
     if 'tour_step' not in st.session_state:
@@ -172,7 +172,7 @@ def show_feature_tour():
             <p style="margin-bottom: 1rem; color: #666;">{feature['description']}</p>
             <div style="background: rgba(102, 126, 234, 0.1); padding: 0.75rem; border-radius: 5px; 
                         font-style: italic; color: #667eea;">
-                💡 {feature['demo_action']}
+                <i class="fas fa-lightbulb"></i> {feature['demo_action']}
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -180,17 +180,17 @@ def show_feature_tour():
         col1, col2, col3 = st.columns([1, 1, 1])
         
         with col1:
-            if st.button("⏮️ Previous", disabled=st.session_state.tour_step == 0):
+            if st.button("Previous", disabled=st.session_state.tour_step == 0):
                 st.session_state.tour_step -= 1
                 st.rerun()
         
         with col2:
-            if st.button("⏭️ Next", disabled=st.session_state.tour_step == len(FEATURE_TOUR) - 1):
+            if st.button("Next", disabled=st.session_state.tour_step == len(FEATURE_TOUR) - 1):
                 st.session_state.tour_step += 1
                 st.rerun()
         
         with col3:
-            if st.button("✅ Finish Tour"):
+            if st.button("Finish Tour"):
                 st.session_state.tour_completed = True
                 st.session_state.tour_step = 0
                 st.success("Tour completed! You're ready to create amazing ads! 🎉")
@@ -198,13 +198,13 @@ def show_feature_tour():
     
     else:
         st.success("🎉 Tour completed! You're all set to create amazing ads!")
-        if st.button("🔄 Restart Tour"):
+        if st.button("Restart Tour"):
             st.session_state.tour_step = 0
             st.rerun()
 
 def show_project_gallery():
     """Display user's project gallery."""
-    st.markdown("### 🖼️ Your Projects")
+    st.markdown("### <i class='fas fa-images'></i> Your Projects", unsafe_allow_html=True)
     
     # Simulate project data
     projects = [

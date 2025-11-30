@@ -662,7 +662,7 @@ def show_login_page():
         st.markdown('''
         <div class="auth-logo">
             <div class="auth-logo-icon">
-                <span style="font-size: 3rem; line-height: 1; display: block;">🎨</span>
+                <span style="font-size: 3rem; line-height: 1; display: block;"><i class="fas fa-layer-group"></i></span>
             </div>
             <h1 class="auth-title" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">ADSNAP STUDIO</h1>
             <p class="subtitle-text" style="color: #666; font-weight: 600; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">AI-Powered Image Generation & Editing</p>
@@ -672,13 +672,13 @@ def show_login_page():
         # Welcome message
         st.markdown('''
         <div class="welcome-message">
-            <h3>Welcome Back! 👋</h3>
+            <h3>Welcome Back!</h3>
             <p>Sign in to continue creating amazing content</p>
         </div>
         ''', unsafe_allow_html=True)
         
         # Login/Signup tabs
-        tab1, tab2 = st.tabs(["🔑 Login", "📝 Sign Up"])
+        tab1, tab2 = st.tabs(["Login", "Sign Up"])
         
         with tab1:
             with st.form("login_form"):
@@ -687,14 +687,14 @@ def show_login_page():
                 
                 col_a, col_b = st.columns(2)
                 with col_a:
-                    login_btn = st.form_submit_button("🚀 Login", use_container_width=True)
+                    login_btn = st.form_submit_button("Login", use_container_width=True)
                 with col_b:
-                    demo_btn = st.form_submit_button("🎭 Demo Mode", use_container_width=True)
+                    demo_btn = st.form_submit_button("Demo Mode", use_container_width=True)
                 
                 # Forgot password link - only show if email is configured
                 email_configured = bool(os.getenv('SENDER_EMAIL') and os.getenv('SENDER_PASSWORD'))
                 if email_configured:
-                    forgot_password_btn = st.form_submit_button("🔑 Forgot Password?", use_container_width=True)
+                    forgot_password_btn = st.form_submit_button("Forgot Password?", use_container_width=True)
                 else:
                     forgot_password_btn = False
                     st.info("💡 Tip: Contact admin if you forgot your password")
@@ -760,7 +760,7 @@ def show_login_page():
                 new_password = st.text_input("Password", type="password", placeholder="Create a strong password")
                 confirm_password = st.text_input("Confirm Password", type="password", placeholder="Confirm your password")
                 
-                signup_btn = st.form_submit_button("🌟 Create Account", use_container_width=True)
+                signup_btn = st.form_submit_button("Create Account", use_container_width=True)
                 
                 if signup_btn:
                     if all([full_name, email, new_username, new_password, confirm_password]):
@@ -787,9 +787,9 @@ def show_login_page():
         <div class="auth-footer">
             <p>✨ Generate & modify images with AI-powered tools ✨</p>
             <div class="auth-footer-icons">
-                <span>🎨 Create</span>
-                <span>✂️ Edit</span>
-                <span>🚀 Transform</span>
+                <span><i class="fas fa-palette"></i> Create</span>
+                <span><i class="fas fa-sliders"></i> Edit</span>
+                <span><i class="fas fa-rocket"></i> Transform</span>
             </div>
         </div>
         """, unsafe_allow_html=True)

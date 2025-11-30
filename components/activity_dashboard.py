@@ -4,15 +4,15 @@ import random
 
 def show_real_time_activities():
     """Display real-time user activities."""
-    st.markdown("### 🔄 Recent Activities")
+    st.markdown("### <i class='fas fa-sync-alt'></i> Recent Activities", unsafe_allow_html=True)
     
     # Simulate recent activities
     activities = [
-        ("Generated image", "2 minutes ago", "🎨"),
-        ("Added shadow effect", "5 minutes ago", "🌟"),
-        ("Created lifestyle shot", "10 minutes ago", "📸"),
-        ("Enhanced image quality", "15 minutes ago", "✨"),
-        ("Removed background", "20 minutes ago", "✂️")
+        ("Generated image", "2 minutes ago", '<i class="fas fa-palette"></i>'),
+        ("Added shadow effect", "5 minutes ago", '<i class="fas fa-star"></i>'),
+        ("Created lifestyle shot", "10 minutes ago", '<i class="fas fa-camera"></i>'),
+        ("Enhanced image quality", "15 minutes ago", '<i class="fas fa-magic"></i>'),
+        ("Removed background", "20 minutes ago", '<i class="fas fa-scissors"></i>')
     ]
     
     for activity, time_ago, icon in activities:
@@ -29,7 +29,7 @@ def show_real_time_activities():
 
 def show_activity_statistics():
     """Display activity statistics."""
-    st.markdown("### 📊 Usage Statistics")
+    st.markdown("### <i class='fas fa-chart-bar'></i> Usage Statistics", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     
@@ -44,7 +44,7 @@ def show_activity_statistics():
 
 def show_recent_images():
     """Display recent images."""
-    st.markdown("### 🖼️ Recent Images")
+    st.markdown("### <i class='fas fa-images'></i> Recent Images", unsafe_allow_html=True)
     st.info("Recent images will appear here after you start generating or editing images.")
 
 def track_current_activity(activity_type: str, description: str, details: dict = None):

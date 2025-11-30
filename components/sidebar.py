@@ -14,10 +14,10 @@ def get_config():
         "sync": True
     }
     
-    st.sidebar.header("Configuration")
+    st.sidebar.markdown("### <i class='fas fa-cog'></i> Configuration", unsafe_allow_html=True)
     
     # Image Generation Settings
-    st.sidebar.subheader("Image Generation")
+    st.sidebar.markdown("#### <i class='fas fa-image'></i> Image Generation", unsafe_allow_html=True)
     config["num_results"] = st.sidebar.slider("Number of Results", 1, 4, 1)
     config["aspect_ratio"] = st.sidebar.selectbox(
         "Aspect Ratio",
@@ -26,7 +26,7 @@ def get_config():
     config["sync"] = st.sidebar.checkbox("Wait for Results", True)
     
     # Packshot Settings
-    st.sidebar.subheader("Packshot")
+    st.sidebar.markdown("#### <i class='fas fa-box-open'></i> Packshot", unsafe_allow_html=True)
     config["create_packshot"] = st.sidebar.checkbox(
         "Create Packshot",
         help="Create a professional product packshot"
@@ -38,7 +38,7 @@ def get_config():
         )
     
     # Shadow Settings
-    st.sidebar.subheader("Shadow")
+    st.sidebar.markdown("#### <i class='fas fa-cloud-sun'></i> Shadow", unsafe_allow_html=True)
     config["add_shadow"] = st.sidebar.checkbox(
         "Add Shadow",
         help="Add shadow to the product image"
@@ -50,7 +50,7 @@ def get_config():
         ).lower()
     
     # Lifestyle Shot Settings
-    st.sidebar.subheader("Lifestyle Shot")
+    st.sidebar.markdown("#### <i class='fas fa-camera-retro'></i> Lifestyle Shot", unsafe_allow_html=True)
     config["lifestyle_shot"] = st.sidebar.checkbox(
         "Create Lifestyle Shot",
         help="Generate lifestyle context for the product"
