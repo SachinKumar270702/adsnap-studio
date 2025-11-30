@@ -47,13 +47,13 @@ def show_recent_images():
     st.markdown("### <i class='fas fa-images'></i> Recent Images", unsafe_allow_html=True)
     st.info("Recent images will appear here after you start generating or editing images.")
 
-def track_current_activity(activity_type: str, description: str, details: dict = None):
-    """Track current user activity (simplified version)."""
-    # For now, just store in session state for demo purposes
+def track_activity(username, activity_type, description, details=None):
+    """Track user activity."""
     if 'user_activities' not in st.session_state:
         st.session_state.user_activities = []
     
     activity = {
+        'username': username,
         'type': activity_type,
         'description': description,
         'details': details or {},
@@ -63,3 +63,9 @@ def track_current_activity(activity_type: str, description: str, details: dict =
     st.session_state.user_activities.insert(0, activity)
     # Keep only last 50 activities
     st.session_state.user_activities = st.session_state.user_activities[:50]
+
+def get_recent_activities(limit=5):
+    """Get recent activities."""
+    if 'user_activities' not in st.session_state:
+        return []
+    return st.session_state.user_activities[:limit]
