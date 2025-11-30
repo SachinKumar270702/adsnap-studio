@@ -64,6 +64,31 @@ def show_dashboard():
     
     st.markdown("<br>", unsafe_allow_html=True)
     
+    # Quick Actions
+    st.markdown("### <i class='fas fa-bolt'></i> Quick Actions", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        if st.button("Generate New Image", use_container_width=True, type="primary", key="dash_quick_generate"):
+            st.session_state.current_page = 1  # Generate Image page
+            st.session_state.quick_action = "generate"
+            st.rerun()
+    
+    with col2:
+        if st.button("Create Lifestyle Shot", use_container_width=True, key="dash_quick_lifestyle"):
+            st.session_state.current_page = 3  # Lifestyle Shot page
+            st.session_state.quick_action = "lifestyle"
+            st.rerun()
+    
+    with col3:
+        if st.button("Enhance Image", use_container_width=True, key="dash_quick_enhance"):
+            st.session_state.current_page = 2  # Image Editor page
+            st.session_state.quick_action = "enhance"
+            st.rerun()
+            
+    st.markdown("<br>", unsafe_allow_html=True)
+    
     # Show recent activities and other dashboard content
     col1, col2 = st.columns([2, 1])
     
