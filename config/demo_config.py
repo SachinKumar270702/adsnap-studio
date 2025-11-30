@@ -48,46 +48,14 @@ ENHANCEMENT_PRESETS = {
         'style': 'Minimalist Photography',
         'lighting': 'Soft Lighting',
         'background': 'Simple Clean',
-"""
-Demo configuration for AdSnap Studio
-This file contains sample configurations and settings for demo mode.
-"""
-
-# Demo user data
-DEMO_USER = {
-    'username': 'demo_user',
-    'full_name': 'Demo User',
-    'email': 'demo@adsnap.studio',
-    'created_at': '2024-01-01T00:00:00',
-    'is_demo': True
+        'mood': 'Calm'
+    }
 }
 
-# Sample prompts for quick testing
-SAMPLE_PROMPTS = [
-    "A luxury watch on a marble surface with dramatic lighting",
-    "Fresh organic vegetables arranged on a rustic wooden table",
-    "Modern smartphone floating in a minimalist tech environment",
-    "Artisanal coffee beans scattered around a steaming cup",
-    "Designer sneakers on a vibrant urban street background",
-    "Elegant perfume bottle surrounded by flower petals",
-    "Gourmet chocolate pieces on a dark slate surface",
-    "Vintage camera with film rolls in a photographer's studio"
-]
-
-# Sample enhancement options
-ENHANCEMENT_PRESETS = {
-    'professional': {
-        'style': 'Professional Photography',
-        'lighting': 'Studio Lighting',
-        'background': 'Clean White',
-        'mood': 'Corporate'
-    },
-    'lifestyle': {
-        'style': 'Lifestyle Photography',
-        'lighting': 'Natural Light',
-        'background': 'Real Environment',
-        'mood': 'Casual'
-    },
+# Feature tour steps
+FEATURE_TOUR = [
+    {
+        'title': 'Generate Images',
         'description': 'Create stunning visuals from text descriptions using AI',
         'icon': '<i class="fas fa-palette"></i>',
         'demo_action': 'Try generating an image with: "Modern laptop on a clean desk"'
