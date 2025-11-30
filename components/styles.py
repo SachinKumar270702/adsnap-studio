@@ -2,8 +2,9 @@
 GLOBAL_CSS = """
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* Hide style tags if they appear as text */
-style {
+/* Critical: Hide any CSS that appears as text */
+.stMarkdown style,
+.stMarkdown link {
     display: none !important;
 }
 
