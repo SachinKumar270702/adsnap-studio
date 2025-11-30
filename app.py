@@ -420,10 +420,24 @@ def main():
                 canvas_width = 400
                 canvas_height = int(img_height * (canvas_width / img_width))
                 
+                # CSS workaround for background image
+                img_url = pil_to_data_url(image)
+                st.markdown(f"""
+                <style>
+                iframe[title="streamlit_drawable_canvas.st_canvas"] {{
+                    background-image: url('{img_url}');
+                    background-size: 100% 100%;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                }}
+                </style>
+                """, unsafe_allow_html=True)
+
                 canvas_result = st_canvas(
                     fill_color="rgba(255, 255, 255, 1.0)",  # White mask
                     stroke_width=20,
                     # background_image=pil_to_data_url(image), # Causing AttributeError
+                    background_color="rgba(0, 0, 0, 0)", # Transparent
                     update_streamlit=True,
                     height=canvas_height,
                     width=canvas_width,
@@ -572,11 +586,25 @@ def main():
                     canvas_width = 400
                     canvas_height = int(img_height * (canvas_width / img_width))
                     
+                    # CSS workaround for background image
+                    img_url = pil_to_data_url(image)
+                    st.markdown(f"""
+                    <style>
+                    iframe[title="streamlit_drawable_canvas.st_canvas"] {{
+                        background-image: url('{img_url}');
+                        background-size: 100% 100%;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                    }}
+                    </style>
+                    """, unsafe_allow_html=True)
+                    
                     canvas_result = st_canvas(
                         fill_color="rgba(255, 255, 255, 1.0)",
                         stroke_width=20,
                         stroke_color="rgba(255, 255, 255, 1.0)",
                         # background_image=pil_to_data_url(image), # Causing AttributeError
+                        background_color="rgba(0, 0, 0, 0)", # Transparent
                         update_streamlit=True,
                         height=canvas_height,
                         width=canvas_width,
