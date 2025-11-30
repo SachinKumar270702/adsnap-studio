@@ -50,7 +50,7 @@ st.set_page_config(
     page_title="AdSnap Studio",
     page_icon="✨",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 # Initialize session state
@@ -67,6 +67,13 @@ def initialize_session_state():
         st.session_state.user_credits = 100
     if 'theme' not in st.session_state:
         st.session_state.theme = "Midnight Aurora"
+
+def pil_to_data_url(image):
+    """Convert PIL image to data URL."""
+    buffered = io.BytesIO()
+    image.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    return f"data:image/png;base64,{img_str}"
 
 def main():
     initialize_session_state()
@@ -416,8 +423,7 @@ def main():
                 canvas_result = st_canvas(
                     fill_color="rgba(255, 255, 255, 1.0)",  # White mask
                     stroke_width=20,
-                    stroke_color="rgba(255, 255, 255, 1.0)",
-                    background_image=image,
+                    # background_image=pil_to_data_url(image), # Causing AttributeError
                     update_streamlit=True,
                     height=canvas_height,
                     width=canvas_width,
@@ -570,7 +576,7 @@ def main():
                         fill_color="rgba(255, 255, 255, 1.0)",
                         stroke_width=20,
                         stroke_color="rgba(255, 255, 255, 1.0)",
-                        background_image=image,
+                        # background_image=pil_to_data_url(image), # Causing AttributeError
                         update_streamlit=True,
                         height=canvas_height,
                         width=canvas_width,
