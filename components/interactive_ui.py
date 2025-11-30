@@ -6,13 +6,27 @@ from io import BytesIO
 from PIL import Image
 import streamlit.components.v1 as components
 import textwrap
-from components.styles import INTERACTIVE_UI_CSS
+from .styles import INTERACTIVE_UI_CSS
 
 def show_lottie_animation(url, height=300, key=None):
     """Embed a Lottie animation from a URL."""
     components.html(
         textwrap.dedent(f"""
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+        <lottie-player src="{url}" background="transparent" speed="1" style="width: 100%; height: {height}px;" loop autoplay></lottie-player>
+        """),
+        height=height,
+        key=key
+    )
+
+def add_custom_css():
+    """Add custom CSS for enhanced UI."""
+    st.markdown(INTERACTIVE_UI_CSS, unsafe_allow_html=True)
+
+def show_animated_header(title, subtitle="", icon='<i class="fas fa-palette"></i>'):
+    """Display an animated header with icon."""
+    st.markdown(textwrap.dedent(f"""
+    <div style="text-align: center; padding: 3rem 0;" class="animate-fade-in">
         <div class="pulse-icon" style="font-size: 4rem; margin-bottom: 1.5rem;">{icon}</div>
         <h1 class="gradient-text" style="font-size: 3.5rem; margin-bottom: 1rem; font-weight: 800;">{title}</h1>
         {f'<p style="font-size: 1.25rem; color: var(--text-secondary); margin-top: 0; max-width: 600px; margin: 0 auto;">{subtitle}</p>' if subtitle else ''}
