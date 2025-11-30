@@ -137,6 +137,11 @@ def main():
     
     # Show welcome dashboard for first-time users
     if not st.session_state.get('has_used_app', False):
+        show_welcome_dashboard()
+    
+    # Header and Navigation
+    st.markdown("""
+    <style>
     .header-container {
         text-align: center;
         padding: 50px 0 20px 0;
@@ -229,6 +234,54 @@ def main():
         .subtitle {
             font-size: 0.65rem;
             letter-spacing: 1px;
+        }
+    }
+    </style>
+    <div class="header-container">
+        <div class="logo-title-wrapper">
+            <div style="background: transparent; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <span class="logo-emoji"><i class="fas fa-layer-group"></i></span>
+            </div>
+            <div>
+                <h1 class="main-title">ADSNAP STUDIO</h1>
+                <p class="subtitle">AI-Powered Image Generation & Editing</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Mobile Hamburger Menu
+    current_page = st.session_state.get('current_page', 0)
+    mobile_menu_items = [
+        ('<i class="fas fa-home"></i>', "Dashboard", 0),
+        ('<i class="fas fa-wand-magic-sparkles"></i>', "Generate", 1),
+        ('<i class="fas fa-sliders"></i>', "Editor", 2),
+        ('<i class="fas fa-image"></i>', "Lifestyle", 3),
+        ('<i class="fas fa-fill-drip"></i>', "Fill", 4),
+        ('<i class="fas fa-eraser"></i>', "Erase", 5)
+    ]
+    
+    # Create hamburger menu HTML
+    mobile_menu_html = '''
+    <button class="hamburger-btn" onclick="toggleMobileMenu()">
+        <div class="hamburger-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </button>
+    
+    <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
+    
+    <div class="mobile-menu">
+        <div class="mobile-menu-header">
+            <div class="mobile-menu-logo"><i class="fas fa-layer-group"></i></div>
+            <div class="mobile-menu-title">ADSNAP</div>
+        </div>
+        <div class="mobile-menu-items">
+    '''
+    
+    for icon, label, page_num in mobile_menu_items:
         active_class = "active" if current_page == page_num else ""
         mobile_menu_html += f'''
         <a href="?page={page_num}" class="mobile-menu-item {active_class}">
