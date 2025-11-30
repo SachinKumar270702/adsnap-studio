@@ -340,13 +340,33 @@ def main():
             
             st.markdown("### Editing Options")
             
-            tab1, tab2 = st.tabs(["✂️ Remove Background", "🌑 Add Shadow"])
+            # Tool Selection Buttons
+            col_t1, col_t2, col_t3 = st.columns(3)
             
-            with tab1:
-                st.markdown("#### Remove Background")
+            with col_t1:
+                if st.button("Remove Background", use_container_width=True):
+                    st.session_state.editor_tool = "remove_bg"
+            
+            with col_t2:
+                if st.button("Add Shadow", use_container_width=True):
+                    st.session_state.editor_tool = "add_shadow"
+            
+            with col_t3:
+                if st.button("Upscale", use_container_width=True):
+                    st.session_state.editor_tool = "upscale"
+            
+            # Default tool if none selected
+            if "editor_tool" not in st.session_state:
+                st.session_state.editor_tool = "remove_bg"
+            
+            st.markdown("---")
+            
+            # Tool Interfaces
+            if st.session_state.editor_tool == "remove_bg":
+                st.markdown("#### ✂️ Remove Background")
                 st.info("Remove the background from your image automatically.")
                 
-                if st.button("Remove Background", type="primary", use_container_width=True):
+                if st.button("Process Image", type="primary", key="btn_process_rmbg"):
                     if not st.session_state.api_key:
                         st.error("Please enter your API key in the sidebar")
                     else:
@@ -365,12 +385,11 @@ def main():
                                     st.markdown(f"[Download Image]({result['result_url']})")
                                 else:
                                     st.error("Failed to remove background")
-                                    st.json(result)
                             except Exception as e:
                                 st.error(f"Error: {str(e)}")
-            
-            with tab2:
-                st.markdown("#### Add Shadow")
+
+            elif st.session_state.editor_tool == "add_shadow":
+                st.markdown("#### 🌑 Add Shadow")
                 
                 col_s1, col_s2 = st.columns(2)
                 with col_s1:
@@ -381,7 +400,7 @@ def main():
                     shadow_color = st.color_picker("Shadow Color", "#000000")
                     bg_color = st.color_picker("Background Color", "#FFFFFF")
                 
-                if st.button("Add Shadow", type="primary", use_container_width=True):
+                if st.button("Apply Shadow", type="primary", key="btn_process_shadow"):
                     if not st.session_state.api_key:
                         st.error("Please enter your API key in the sidebar")
                     else:
@@ -403,9 +422,19 @@ def main():
                                     st.markdown(f"[Download Image]({result['result_url']})")
                                 else:
                                     st.error("Failed to add shadow")
-                                    st.json(result)
                             except Exception as e:
                                 st.error(f"Error: {str(e)}")
+
+            elif st.session_state.editor_tool == "upscale":
+                st.markdown("#### 🔍 Upscale Image")
+                st.info("Enhance image resolution and quality.")
+                
+                scale_factor = st.select_slider("Scale Factor", options=["2x", "4x"], value="2x")
+                
+                if st.button("Upscale Image", type="primary", key="btn_process_upscale"):
+                    st.warning("Upscaling service is currently under maintenance. Please try again later.")
+                    # Placeholder for future implementation
+                    # result = upscale_image(...)
                     
     elif st.session_state.current_page == 3:
         # Lifestyle Shot Page
