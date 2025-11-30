@@ -187,9 +187,14 @@ def show_login_page():
     <style>
     /* AGGRESSIVE removal of ALL Streamlit default elements and spacing */
     html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%) !important;
-        background-size: 400% 400% !important;
-        animation: gradientShift 15s ease infinite !important;
+        background-color: #0f172a !important;
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.3) 0px, transparent 50%),
+            radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.3) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.3) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, rgba(168, 85, 247, 0.3) 0px, transparent 50%) !important;
+        background-size: 100% 100% !important;
+        background-attachment: fixed !important;
     }
     
     /* Hide ALL Streamlit chrome */
@@ -220,14 +225,11 @@ def show_login_page():
         max-width: 100% !important;
     }
     
-    /* Full viewport background with theme gradient */
+    /* Full viewport background */
     .stApp,
     [data-testid="stAppViewContainer"] {
         margin: 0 !important;
         padding: 0 !important;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%) !important;
-        background-size: 400% 400% !important;
-        animation: gradientShift 15s ease infinite !important;
         min-height: 100vh !important;
     }
     
@@ -256,13 +258,7 @@ def show_login_page():
         padding: 0 !important;
     }
     
-    @keyframes gradientShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-    
-    /* Floating particles effect */
+    /* Animated Grid Background */
     .stApp::before {
         content: '';
         position: fixed;
@@ -271,42 +267,50 @@ def show_login_page():
         width: 100%;
         height: 100%;
         background-image: 
-            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 60% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-        animation: float 20s ease-in-out infinite;
-        pointer-events: none;
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
         z-index: 0;
+        pointer-events: none;
+        mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
     }
     
-    @keyframes float {
-        0%, 100% { transform: translateY(0px) scale(1); }
-        50% { transform: translateY(-30px) scale(1.05); }
+    /* Floating Orbs Animation */
+    .stApp::after {
+        content: '';
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+        transform: translate(-50%, -50%);
+        z-index: 0;
+        pointer-events: none;
+        animation: pulse-glow 8s ease-in-out infinite alternate;
+    }
+    
+    @keyframes pulse-glow {
+        0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+        100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
     }
     
     /* Login container with glass morphism - Applied to the COLUMN */
     [data-testid="column"]:nth-of-type(2) {
-        background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(30px) !important;
-        border-radius: 30px !important;
+        background: rgba(15, 23, 42, 0.6) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-radius: 24px !important;
         padding: 3rem 2.5rem !important;
-        box-shadow: 0 30px 80px rgba(0,0,0,0.35), 
-                    0 0 0 1px rgba(255,255,255,0.5),
-                    inset 0 1px 0 rgba(255,255,255,0.8) !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+                    0 0 0 1px rgba(255, 255, 255, 0.1) !important;
         animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        border: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
     
     @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(50px) scale(0.95);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
     /* Logo section at top of card */
@@ -314,135 +318,126 @@ def show_login_page():
         text-align: center;
         margin-bottom: 2rem;
         padding-bottom: 1.5rem;
-        border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .auth-logo-icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        width: 90px;
-        height: 90px;
-        border-radius: 25px;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
         margin-bottom: 1rem;
-        animation: pulse 2s ease-in-out infinite;
-        line-height: 1;
+        position: relative;
+    }
+    
+    .auth-logo-icon::after {
+        content: '';
+        position: absolute;
+        top: -2px; left: -2px; right: -2px; bottom: -2px;
+        background: linear-gradient(45deg, #6366f1, #ec4899, #8b5cf6);
+        z-index: -1;
+        border-radius: 22px;
+        filter: blur(10px);
+        opacity: 0.7;
     }
     
     .auth-logo-icon span {
         line-height: 1 !important;
         display: block !important;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); }
-        50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6); }
+        color: white !important;
     }
     
     .auth-title {
         text-align: center;
-        font-size: 2.5rem;
-        font-weight: 900;
+        font-size: 2.2rem;
+        font-weight: 800;
         margin: 0.5rem 0 0 0;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(to right, #fff, #cbd5e1);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        font-family: 'Inter', sans-serif;
+        letter-spacing: -0.5px;
     }
     
     .subtitle-text {
         text-align: center;
-        color: #555;
-        font-size: 1rem;
-        margin: 0.8rem 0 0 0;
-        font-weight: 600;
-        letter-spacing: 0.8px;
-        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        color: #94a3b8;
+        font-size: 0.95rem;
+        margin: 0.5rem 0 0 0;
+        font-weight: 400;
     }
     
     /* Button styling */
     .stButton > button {
         width: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(to right, #6366f1, #8b5cf6);
         border: none;
-        border-radius: 15px;
-        padding: 0.85rem 1.5rem;
-        font-weight: 700;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
         color: white;
         font-size: 1rem;
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        letter-spacing: 0.5px;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     }
     
     .stButton > button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    }
-    
-    .stButton > button:active {
-        transform: translateY(-1px);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5);
+        background: linear-gradient(to right, #4f46e5, #7c3aed);
     }
     
     /* Input field styling */
     .stTextInput > div > div > input {
         border-radius: 12px;
-        border: 2px solid rgba(102, 126, 234, 0.2);
-        padding: 0.85rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.75rem 1rem;
         transition: all 0.3s ease;
-        background: white;
+        background: rgba(15, 23, 42, 0.6);
         font-size: 0.95rem;
-        color: #2d3748 !important;
+        color: #f8fafc !important;
     }
     
     .stTextInput > div > div > input::placeholder {
-        color: #a0aec0 !important;
-        opacity: 1 !important;
+        color: #64748b !important;
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
-        background: white;
-        color: #1a202c !important;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        background: rgba(15, 23, 42, 0.8);
     }
     
     /* Tab styling */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 12px;
-        background: transparent;
-        border-bottom: none;
+        gap: 8px;
+        background: rgba(15, 23, 42, 0.3);
+        padding: 4px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
         margin-bottom: 1.5rem;
     }
     
     .stTabs [data-baseweb="tab"] {
-        background: rgba(102, 126, 234, 0.08);
-        border-radius: 12px;
-        padding: 0.85rem 1.8rem;
-        color: #667eea;
-        font-weight: 700;
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
-        font-size: 0.95rem;
-    }
-    
-    .stTabs [data-baseweb="tab"]:hover {
-        background: rgba(102, 126, 234, 0.15);
-        transform: translateY(-2px);
+        background: transparent;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        color: #94a3b8;
+        font-weight: 500;
+        border: none;
+        transition: all 0.2s ease;
+        flex: 1;
+        justify-content: center;
     }
     
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: rgba(255, 255, 255, 0.1);
         color: white;
-        border-color: transparent;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
     
     /* Form styling */
@@ -455,18 +450,18 @@ def show_login_page():
     /* Welcome message styling */
     .welcome-message {
         text-align: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
     }
     
     .welcome-message h3 {
-        color: #667eea;
+        color: #f8fafc;
         font-size: 1.5rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
     }
     
     .welcome-message p {
-        color: #999;
+        color: #94a3b8;
         font-size: 0.95rem;
     }
     
@@ -474,15 +469,15 @@ def show_login_page():
     .auth-footer {
         margin-top: 2rem;
         padding-top: 1.5rem;
-        border-top: 2px solid rgba(102, 126, 234, 0.1);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
         text-align: center;
     }
     
     .auth-footer p {
-        color: #667eea;
-        font-weight: 600;
-        margin-bottom: 0.8rem;
-        font-size: 0.95rem;
+        color: #64748b;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
     }
     
     .auth-footer-icons {
@@ -658,8 +653,8 @@ def show_login_page():
             <div class="auth-logo-icon">
                 <span style="font-size: 3rem; line-height: 1; display: block;"><i class="fas fa-layer-group"></i></span>
             </div>
-            <h1 class="auth-title" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">ADSNAP STUDIO</h1>
-            <p class="subtitle-text" style="color: #666; font-weight: 600; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">AI-Powered Image Generation & Editing</p>
+            <h1 class="auth-title">ADSNAP STUDIO</h1>
+            <p class="subtitle-text">AI-Powered Image Generation & Editing</p>
         </div>
         ''', unsafe_allow_html=True)
         
