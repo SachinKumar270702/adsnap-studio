@@ -174,51 +174,11 @@ def main():
         ('<i class="fas fa-eraser"></i>', "Erase", 5)
     ]
     
+    # Import HTML templates
+    from components.html_templates import get_mobile_menu_html
+
     # Create hamburger menu HTML
-    mobile_menu_html = textwrap.dedent('''
-    <button class="hamburger-btn" onclick="toggleMobileMenu()">
-        <div class="hamburger-icon">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    </button>
-    
-    <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
-    
-    <div class="mobile-menu">
-        <div class="mobile-menu-header">
-            <div class="mobile-menu-logo"><i class="fas fa-layer-group"></i></div>
-            <div class="mobile-menu-title">ADSNAP</div>
-        </div>
-        <div class="mobile-menu-items">
-    ''')
-    
-    for icon, label, page_num in mobile_menu_items:
-        active_class = "active" if current_page == page_num else ""
-        mobile_menu_html += f'''
-        <a href="?page={page_num}" class="mobile-menu-item {active_class}">
-            <div class="mobile-menu-item-icon">{icon}</div>
-            <div class="mobile-menu-item-label">{label}</div>
-        </a>
-        '''
-    
-    mobile_menu_html += '''
-        </div>
-        <div class="mobile-menu-footer">
-            <div class="mobile-menu-footer-text">AI-Powered Image Generation</div>
-        </div>
-    </div>
-    
-    <script>
-    function toggleMobileMenu() {
-        const menu = document.querySelector('.mobile-menu');
-        const overlay = document.querySelector('.mobile-menu-overlay');
-        menu.classList.toggle('active');
-        overlay.classList.toggle('active');
-    }
-    </script>
-    '''
+    mobile_menu_html = get_mobile_menu_html(current_page, mobile_menu_items)
     
     st.markdown(mobile_menu_html, unsafe_allow_html=True)
     
