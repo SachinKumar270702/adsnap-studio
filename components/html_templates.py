@@ -12,8 +12,11 @@ def get_mobile_menu_html(current_page, menu_items):
         str: The complete HTML string for the mobile menu.
     """
     
-    # Start of the HTML - using dedent to ensure no leading whitespace
-    html = textwrap.dedent("""
+    # Build HTML using a list for cleaner construction and to avoid indentation issues
+    html_parts = []
+    
+    # Hamburger button
+    html_parts.append("""
     <button class="hamburger-btn" onclick="toggleMobileMenu()">
         <div class="hamburger-icon">
             <span></span>
@@ -21,9 +24,13 @@ def get_mobile_menu_html(current_page, menu_items):
             <span></span>
         </div>
     </button>
-
-    <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
-
+    """)
+    
+    # Overlay
+    html_parts.append('<div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>')
+    
+    # Menu Start
+    html_parts.append("""
     <div class="mobile-menu">
         <div class="mobile-menu-header">
             <div class="mobile-menu-logo"><i class="fas fa-layer-group"></i></div>
@@ -31,34 +38,47 @@ def get_mobile_menu_html(current_page, menu_items):
         </div>
         <div class="mobile-menu-items">
     """)
-
-    # Add menu items
+    
+    # Menu Items
     for icon, label, page_num in menu_items:
         active_class = "active" if current_page == page_num else ""
-        # dedent ensures these lines don't have 8 spaces of indentation
-        html += textwrap.dedent(f"""
+        html_parts.append(f"""
         <a href="?page={page_num}" class="mobile-menu-item {active_class}">
             <div class="mobile-menu-item-icon">{icon}</div>
             <div class="mobile-menu-item-label">{label}</div>
         </a>
         """)
-
-    # End of the HTML
-    html += textwrap.dedent("""
+        
+    # Menu Footer and End
+    html_parts.append("""
         </div>
         <div class="mobile-menu-footer">
             <div class="mobile-menu-footer-text">AI-Powered Image Generation</div>
         </div>
     </div>
-
+    """)
+    
+    # Script
+    html_parts.append("""
     <script>
     function toggleMobileMenu() {
         const menu = document.querySelector('.mobile-menu');
         const overlay = document.querySelector('.mobile-menu-overlay');
-        menu.classList.toggle('active');
-        overlay.classList.toggle('active');
+        if (menu && overlay) {
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
     }
     </script>
     """)
     
-    return html
+    # Join all parts and dedent each part individually to be safe, 
+    # but the list approach is already safer.
+    # We'll use textwrap.dedent on the final joined string or per block.
+    # Best approach: dedent each block before appending or just ensure no indentation in the blocks.
+    
+    final_html = ""
+    for part in html_parts:
+        final_html += textwrap.dedent(part)
+        
+    return final_html
