@@ -36,21 +36,21 @@ def show_dashboard():
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("Generate New Image", use_container_width=True, type="primary"):
+        if st.button("Generate New Image", use_container_width=True, type="primary", key="dash_quick_generate"):
             st.session_state.active_tab = 1  # Generate Image tab
             st.session_state.quick_action = "generate"
             st.success("Navigating to Image Generation...")
             st.rerun()
     
     with col2:
-        if st.button("Create Lifestyle Shot", use_container_width=True):
+        if st.button("Create Lifestyle Shot", use_container_width=True, key="dash_quick_lifestyle"):
             st.session_state.active_tab = 2  # Lifestyle Shot tab
             st.session_state.quick_action = "lifestyle"
             st.success("Navigating to Lifestyle Shot...")
             st.rerun()
     
     with col3:
-        if st.button("Enhance Image", use_container_width=True):
+        if st.button("Enhance Image", use_container_width=True, key="dash_quick_enhance"):
             st.session_state.active_tab = 3  # Generative Fill tab (for image enhancement)
             st.session_state.quick_action = "enhance"
             st.success("Navigating to Image Enhancement...")
@@ -141,13 +141,13 @@ def show_daily_tip():
     # Quick prompt suggestions
     st.markdown("### <i class='fas fa-bullseye'></i> Quick Prompts", unsafe_allow_html=True)
     
-    if st.button("Get Random Prompt", use_container_width=True):
+    if st.button("Get Random Prompt", use_container_width=True, key="dash_tip_random_prompt"):
         prompt = random.choice(SAMPLE_PROMPTS)
         st.session_state.suggested_prompt = prompt
         st.success(f"Try this: {prompt}")
     
     if st.session_state.get('suggested_prompt'):
-        if st.button("Use This Prompt", use_container_width=True, type="primary"):
+        if st.button("Use This Prompt", use_container_width=True, type="primary", key="dash_tip_use_prompt"):
             st.session_state.active_tab = 0
             st.session_state.quick_prompt = st.session_state.suggested_prompt
             st.rerun()
@@ -180,17 +180,17 @@ def show_feature_tour():
         col1, col2, col3 = st.columns([1, 1, 1])
         
         with col1:
-            if st.button("Previous", disabled=st.session_state.tour_step == 0):
+            if st.button("Previous", disabled=st.session_state.tour_step == 0, key="tour_btn_prev"):
                 st.session_state.tour_step -= 1
                 st.rerun()
         
         with col2:
-            if st.button("Next", disabled=st.session_state.tour_step == len(FEATURE_TOUR) - 1):
+            if st.button("Next", disabled=st.session_state.tour_step == len(FEATURE_TOUR) - 1, key="tour_btn_next"):
                 st.session_state.tour_step += 1
                 st.rerun()
         
         with col3:
-            if st.button("Finish Tour"):
+            if st.button("Finish Tour", key="tour_btn_finish"):
                 st.session_state.tour_completed = True
                 st.session_state.tour_step = 0
                 st.success("Tour completed! You're ready to create amazing ads! 🎉")
@@ -198,7 +198,7 @@ def show_feature_tour():
     
     else:
         st.success("🎉 Tour completed! You're all set to create amazing ads!")
-        if st.button("Restart Tour"):
+        if st.button("Restart Tour", key="tour_btn_restart"):
             st.session_state.tour_step = 0
             st.rerun()
 
