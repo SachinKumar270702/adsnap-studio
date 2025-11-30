@@ -313,42 +313,84 @@ def show_login_page():
         to { opacity: 1; transform: translateY(0); }
     }
     
+    /* Rocket Animation */
+    @keyframes rocketLaunch {
+        0% {
+            transform: translate(-100vw, 100vh) rotate(-45deg) scale(0.5);
+            opacity: 0;
+        }
+        50% {
+            opacity: 1;
+        }
+        70% {
+            transform: translate(-10vw, 10vh) rotate(-10deg) scale(1.1);
+        }
+        85% {
+            transform: translate(0, -15px) rotate(0deg) scale(1.05);
+        }
+        100% {
+            transform: translate(0, 0) rotate(0deg) scale(1);
+        }
+    }
+
     /* Logo section at top of card */
     .auth-logo {
         text-align: center;
         margin-bottom: 2rem;
         padding-bottom: 1.5rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: visible; /* Allow rocket to fly in */
     }
     
     .auth-logo-icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        width: 80px;
-        height: 80px;
-        border-radius: 20px;
-        box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        background: transparent; /* Removed blue box */
+        width: 100px;
+        height: 100px;
         margin-bottom: 1rem;
         position: relative;
+        animation: rocketLaunch 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
     
+    /* Rocket flame effect */
     .auth-logo-icon::after {
         content: '';
         position: absolute;
-        top: -2px; left: -2px; right: -2px; bottom: -2px;
-        background: linear-gradient(45deg, #6366f1, #ec4899, #8b5cf6);
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 40px;
+        background: linear-gradient(to bottom, #f59e0b, #ef4444, transparent);
+        border-radius: 50%;
+        filter: blur(5px);
+        opacity: 0;
+        animation: flameFlicker 0.1s infinite alternate;
         z-index: -1;
-        border-radius: 22px;
-        filter: blur(10px);
-        opacity: 0.7;
+    }
+
+    @keyframes flameFlicker {
+        0% { height: 40px; opacity: 0.8; }
+        100% { height: 50px; opacity: 0.6; }
+    }
+    
+    /* Only show flame during flight, hide at end (optional, or keep it pulsing) */
+    /* For simplicity, let's keep the rocket glow instead */
+    
+    .auth-logo-icon::after {
+        display: none; /* Simpler approach: just glow */
     }
     
     .auth-logo-icon span {
         line-height: 1 !important;
         display: block !important;
-        color: white !important;
+        font-size: 5rem !important;
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 25px rgba(168, 85, 247, 0.6));
     }
     
     .auth-title {
@@ -651,7 +693,7 @@ def show_login_page():
         st.markdown('''
         <div class="auth-logo">
             <div class="auth-logo-icon">
-                <span style="font-size: 3rem; line-height: 1; display: block;"><i class="fas fa-layer-group"></i></span>
+                <span style="display: block;"><i class="fas fa-rocket"></i></span>
             </div>
             <h1 class="auth-title">ADSNAP STUDIO</h1>
             <p class="subtitle-text">AI-Powered Image Generation & Editing</p>
