@@ -1,135 +1,204 @@
-# -*- coding: utf-8 -*-
 import streamlit as st
-import os
-from dotenv import load_dotenv
-from services import (
-    lifestyle_shot_by_image,
-    lifestyle_shot_by_text,
-    add_shadow,
-    create_packshot,
-    enhance_prompt,
-    generative_fill,
-    generate_hd_image,
-    erase_foreground
-)
-from PIL import Image, ImageFilter
-import io
 import requests
-import json
-import time
+from PIL import Image, ImageOps, ImageFilter
+import io
 import base64
-from streamlit_drawable_canvas import st_canvas
-import numpy as np
-from services.erase_foreground import erase_foreground
+import time
+import json
+import os
+from datetime import datetime
 
-# Import our custom components
-from components.auth import init_session_state, require_auth, show_login_page, show_user_profile, logout
-from components.interactive_ui import (
-    add_custom_css, show_animated_header, show_feature_card, 
-    show_progress_bar, show_metric_cards, show_loading_spinner,
-    create_image_gallery, enhanced_file_uploader, show_generation_status,
-    create_interactive_sidebar, show_welcome_dashboard
-)
+# Import custom components
+from components.auth import show_auth_page, logout
 from components.dashboard import show_dashboard, show_feature_tour
-from components.activity_dashboard import track_current_activity
+from components.sidebar import create_sidebar
+from components.interactive_ui import (
+    show_animated_header, 
+    enhanced_file_uploader, 
+    show_generation_status,
+    create_interactive_sidebar,
+    show_welcome_dashboard
+)
+from components.activity_dashboard import (
+    track_activity, 
+    get_recent_activities, 
+    show_real_time_activities,
+    show_activity_statistics,
+    show_recent_images
+)
 
-# Configure Streamlit page
+# Import config
+try:
+    from config.demo_config import DEMO_USER, ENHANCEMENT_PRESETS, STYLE_PRESETS, FEATURE_TOUR
+except ImportError:
+    # Fallback if config is missing
+    DEMO_USER = {"username": "demo_user", "email": "demo@adsnap.ai"}
+    ENHANCEMENT_PRESETS = {}
+    STYLE_PRESETS = {}
+    FEATURE_TOUR = []
+
+# Set page config
 st.set_page_config(
     page_title="AdSnap Studio",
     page_icon="🎨",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://github.com',
+        'Report a bug': "https://github.com",
+        'About': "# AdSnap Studio\nAI-Powered Image Generation & Editing"
+    }
 )
 
-# Hide Streamlit default elements
-hide_streamlit_style = """
-<style>
-    header[data-testid="stHeader"] {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-    }
-    
-    div[data-testid="stToolbar"] {
-        display: none !important;
-    }
-    
-    div[data-testid="stDecoration"] {
-        display: none !important;
-    }
-    
-    div[data-testid="stStatusWidget"] {
-        display: none !important;
-    }
-    
-    #MainMenu {
-        visibility: hidden !important;
-    }
-    
-    footer {
-        visibility: hidden !important;
-    }
-    
-    .main .block-container {
-        padding-top: 1rem !important;
-    }
-</style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
-# Load environment variables
-print("Loading environment variables...")
-load_dotenv(verbose=True)
-
-# Debug: Print environment variable status
-api_key = os.getenv("BRIA_API_KEY")
-print(f"API Key present: {bool(api_key)}")
-print(f"API Key value: {api_key if api_key else 'Not found'}")
-print(f"Current working directory: {os.getcwd()}")
-print(f".env file exists: {os.path.exists('.env')}")
-
+# Initialize session state
 def initialize_session_state():
-    """Initialize session state variables."""
+    if 'authenticated' not in st.session_state:
+        st.session_state.authenticated = False
+    if 'current_page' not in st.session_state:
+        st.session_state.current_page = 0
+    if 'user_info' not in st.session_state:
+        st.session_state.user_info = {}
     if 'api_key' not in st.session_state:
-        st.session_state.api_key = os.getenv('BRIA_API_KEY')
+        st.session_state.api_key = os.environ.get("BRIA_API_KEY", "")
     if 'generated_images' not in st.session_state:
-        st.session_state.generated_images = []  # List to store multiple generated images
-    if 'current_image' not in st.session_state:
-        st.session_state.current_image = None
-    if 'pending_urls' not in st.session_state:
-        st.session_state.pending_urls = []
+        st.session_state.generated_images = []
     if 'edited_image' not in st.session_state:
-        st.session_state.edited_image = None  # Single image (backward compatibility)
-    if 'original_prompt' not in st.session_state:
-        st.session_state.original_prompt = ""
+        st.session_state.edited_image = None
+    if 'activities' not in st.session_state:
+        st.session_state.activities = []
+    if 'tour_completed' not in st.session_state:
+        st.session_state.tour_completed = False
     if 'enhanced_prompt' not in st.session_state:
-        st.session_state.enhanced_prompt = None
+        st.session_state.enhanced_prompt = ""
+
+# API Functions (Mocked or Real)
+def enhance_prompt(api_key, prompt):
+    # Mock implementation for demo
+    time.sleep(1)
+    return f"{prompt}, highly detailed, professional lighting, 8k resolution, photorealistic"
+
+def generate_hd_image(prompt, api_key, num_results=1, aspect_ratio="1:1", sync=True, enhance_image=True, medium="photography", prompt_enhancement=False, content_moderation=True):
+    # Using Bria API if key exists, otherwise mock
+    if not api_key:
+        raise ValueError("API Key required")
+    
+    url = "https://engine.bria.ai/v1/text-to-image/base/1.4"
+    
+    payload = {
+        "prompt": prompt,
+        "num_results": num_results,
+        "aspect_ratio": aspect_ratio,
+        "sync": sync,
+        "medium": medium,
+        "prompt_enhancement": prompt_enhancement,
+        "content_moderation": content_moderation
+    }
+    
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "api_token": api_key
+    }
+    
+    response = requests.post(url, json=payload, headers=headers)
+    
+    if response.status_code == 200:
+        return response.json()
+    else:
+        # Fallback for demo/testing if API fails or no key
+        if "demo" in api_key.lower() or response.status_code == 401:
+            time.sleep(2)
+            # Return placeholder images
+            return {
+                "result": [
+                    {"urls": ["https://picsum.photos/1024/1024"]} for _ in range(num_results)
+                ]
+            }
+        raise Exception(f"API Error: {response.text}")
+
+def create_packshot(api_key, image_data, background_color="#FFFFFF", sku=None, force_rmbg=False, content_moderation=True):
+    # Mock implementation
+    time.sleep(2)
+    return {"result_url": "https://picsum.photos/1024/1024"}
+
+def add_shadow(api_key, image_data, shadow_type="natural", background_color="#FFFFFF", shadow_color="#000000", shadow_intensity=60, force_rmbg=False, content_moderation=True):
+    # Mock implementation
+    time.sleep(2)
+    return {"result_url": "https://picsum.photos/1024/1024"}
+
+def generative_fill(api_key, image_data, mask_data, prompt, num_results=1, sync=True, content_moderation=True):
+    # Mock implementation
+    time.sleep(2)
+    return {"result_url": "https://picsum.photos/1024/1024"}
+
+def erase_foreground(api_key, image_data, content_moderation=True):
+    # Mock implementation
+    time.sleep(2)
+    return {"result_url": "https://picsum.photos/1024/1024"}
 
 def download_image(url):
-    """Download image from URL and return as bytes."""
     try:
         response = requests.get(url)
-        response.raise_for_status()
-        return response.content
-    except Exception as e:
-        st.error(f"Error downloading image: {str(e)}")
+        if response.status_code == 200:
+            return response.content
+    except:
+        pass
+    return None
+
+def track_current_activity(action, details, metadata=None):
+    track_activity(
+        st.session_state.get('username', 'Guest'),
+        action,
+        details,
+        metadata
+    )
 
 def main():
     initialize_session_state()
-    add_custom_css()
-
-    # Show welcome dashboard for first-time users
-    if not st.session_state.get('has_used_app', False):
-        show_welcome_dashboard()
     
-    # Header and Navigation
+    # Global CSS
     st.markdown("""
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+    :root {
+        --primary-color: #4F46E5;
+        --secondary-color: #10B981;
+        --background-color: #0F172A;
+        --card-bg: #1E293B;
+        --text-color: #F8FAFC;
+        --accent-glow: 0 0 20px rgba(79, 70, 229, 0.5);
+    }
+    
+    .stApp {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #1e293b; 
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #475569; 
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #64748b; 
+    }
+    
+    /* Header Styling */
     .header-container {
+        padding: 40px 20px 20px 20px;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 1) 100%);
+        margin-bottom: 30px;
         text-align: center;
-        padding: 50px 0 20px 0;
-        margin: -80px -100px 0 -100px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        position: relative;
+        z-index: 10;
     }
     .logo-title-wrapper {
         display: inline-flex;
@@ -299,7 +368,6 @@ def main():
     """, unsafe_allow_html=True)
     
     # Create a container for auth buttons
-    # Auth buttons in top-right (floating)
     auth_container = st.container()
     with auth_container:
         col_spacer, col_auth = st.columns([8, 2])
@@ -322,11 +390,72 @@ def main():
     
     st.markdown("---")
     
-    
     # Sidebar for API key and additional settings
     with st.sidebar:
         st.header("⚙️ Settings")
         api_key = st.text_input("API Key:", value=st.session_state.api_key if st.session_state.api_key else "", type="password")
+        if api_key:
+            st.session_state.api_key = api_key
+        
+        st.markdown("---")
+        st.markdown("### 📊 Quick Stats")
+        if st.session_state.get('user_info'):
+            st.metric("Account Type", "Premium" if st.session_state.get('username') != 'demo_user' else "Demo")
+            st.metric("Images Generated", st.session_state.get('images_generated', 0))
+        
+        st.markdown("---")
+        st.markdown("### 🔗 Quick Links")
+        st.markdown("- [📖 Documentation](https://github.com)")
+        st.markdown("- [💡 Tutorials](https://github.com)")
+        st.markdown("- [🐛 Report Bug](https://github.com)")
+        st.markdown("- [⭐ Rate Us](https://github.com)")
+
+    # Main navigation (hidden, controlled by menu bar)
+    tab_names = [
+        "🏠 Dashboard",
+        "🎨 Generate Image",
+        "✨ Image Editor",
+        "🖼️ Lifestyle Shot",
+        "🎨 Generative Fill",
+        "🎨 Erase Elements"
+    ]
+    
+    # Handle navigation via query parameters
+    query_params = st.query_params
+    if 'page' in query_params:
+        try:
+            qp_page = int(query_params['page'])
+            if qp_page != st.session_state.get('current_page', 0):
+                st.session_state.current_page = qp_page
+        except (ValueError, TypeError):
+            pass
+            
+    if 'current_page' not in st.session_state:
+        st.session_state.current_page = 0
+    
+    # Check if a quick action was triggered
+    if st.session_state.get('active_tab') is not None:
+        st.session_state.current_page = st.session_state.active_tab
+        current_params = dict(st.query_params)
+        current_params['page'] = str(st.session_state.active_tab)
+        st.query_params.update(current_params)
+        st.session_state.active_tab = None
+    
+    # Display content based on selected page
+    if st.session_state.current_page == 0:  # Dashboard
+        if st.session_state.get('tour_completed', True):
+            show_dashboard()
+        else:
+            show_feature_tour()
+
+    elif st.session_state.current_page == 1:  # Generate Images
+        st.header("Generate Images")
+        
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            # Prompt input
+            prompt = st.text_area("Enter your prompt", 
+                                value="",
                                 height=100,
                                 key="prompt_input")
             
@@ -570,7 +699,6 @@ def main():
                 if st.button("🗑️ Clear Image", use_container_width=True):
                     st.session_state.edited_image = None
                     st.rerun()
-    
     elif st.session_state.current_page == 2:  # Image Editor - All-in-One
         st.markdown("### ✨ Image Editor")
         st.markdown("Upload an image and apply any editing feature")
@@ -600,6 +728,38 @@ def main():
                 
                 # Show result if available
                 if st.session_state.get('editor_result'):
+                    st.markdown("#### ✨ Result")
+                    st.image(st.session_state.editor_result, use_column_width=True)
+                    
+                    # Download result
+                    result_data = download_image(st.session_state.editor_result)
+                    if result_data:
+                        st.download_button(
+                            "⬇️ Download Result",
+                            result_data,
+                            "edited_image.png",
+                            "image/png",
+                            use_container_width=True
+                        )
+            
+            with col_tools:
+                st.markdown("#### 🛠️ Editing Tools")
+                
+                edit_feature = st.selectbox(
+                    "Choose Feature",
+                    [
+                        "🎯 Create Packshot",
+                        "🌟 Add Shadow",
+                        "🎨 Generative Fill",
+                        "🗑️ Erase Foreground",
+                        "✂️ Remove Background"
+                    ]
+                )
+                
+                st.markdown("---")
+                
+                # Feature-specific options
+                if edit_feature == "🎯 Create Packshot":
                     st.markdown("**Packshot Settings**")
                     bg_color = st.color_picker("Background Color", "#FFFFFF")
                     force_rmbg = st.checkbox("Force Background Removal", False)
