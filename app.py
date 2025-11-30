@@ -22,7 +22,7 @@ from services.lifestyle_shot import lifestyle_shot_by_text
 
 # Import custom components
 from components.auth import show_login_page, logout
-from components.styles import apply_custom_css, get_custom_css
+from components.styles import apply_custom_css
 from components.html_templates import get_mobile_menu_html
 from components.dashboard import show_dashboard
 from components.interactive_ui import (
