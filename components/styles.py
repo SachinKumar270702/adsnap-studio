@@ -2,14 +2,41 @@ import streamlit as st
 
 def apply_custom_css():
     """Apply global CSS styles to the application."""
+    # First, inject CSS to hide any style/link tags that appear as text
+    st.markdown("""
+    <style>
+    /* CRITICAL: Hide all style and link elements that render as text */
+    style {
+        display: none !important;
+        visibility: hidden !important;
+        position: absolute !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }
+    link {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    /* Hide default Streamlit branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Load Font Awesome separately
+    st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', unsafe_allow_html=True)
+    
+    # Now apply the main CSS
     st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 
-GLOBAL_CSS = """<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+GLOBAL_CSS = """
 <style>
-/* Critical: Hide any CSS that appears as text */
-.stMarkdown style,
-.stMarkdown link {
+/* CRITICAL: Hide all style and link tags that appear as text */
+style, link {
     display: none !important;
+    visibility: hidden !important;
 }
 
 :root {
