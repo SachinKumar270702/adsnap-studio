@@ -352,7 +352,93 @@ def main():
     elif st.session_state.current_page == 3:
         # Lifestyle Shot Page
         show_animated_header("Lifestyle Shot", "Place your product in any environment", '<i class="fas fa-image"></i>')
-        st.info("Coming soon!")
+        
+        # Import service
+        from services.lifestyle_shot import lifestyle_shot_by_text
+        
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            uploaded_file = enhanced_file_uploader("Upload Product Image", key="lifestyle_upload")
+            
+            if uploaded_file:
+                image = Image.open(uploaded_file)
+                st.image(image, caption="Product Image", use_column_width=True)
+        
+        with col2:
+            if uploaded_file:
+                scene_description = st.text_area("Describe the scene", height=100, 
+                                               placeholder="A modern kitchen counter with sunlight streaming in...")
+                
+                col_opt1, col_opt2 = st.columns(2)
+                with col_opt1:
+                    placement = st.selectbox("Placement", ["original", "automatic", "manual_placement"])
+                    num_results = st.slider("Number of images", 1, 4, 1)
+                
+                with col_opt2:
+                    fast_mode = st.checkbox("Fast Mode", value=True)
+                    sync_mode = st.checkbox("Sync Mode", value=True)
+                
+                if st.button("Generate Lifestyle Shot", type="primary", use_container_width=True):
+                    if not st.session_state.api_key:
+                        st.error("Please enter your API key in the sidebar")
+                    else:
+                        with st.spinner("Generating lifestyle shot..."):
+                            try:
+                                # Call API
+                                result = lifestyle_shot_by_text(
+                                    api_key=st.session_state.api_key,
+                                    image_data=uploaded_file.getvalue(),
+                                    scene_description=scene_description,
+                                    placement_type=placement,
+                                    num_results=num_results,
+                                    sync=sync_mode,
+                                    fast=fast_mode
+                                )
+                                
+                                # Handle response
+                                if result and "result" in result:
+                                    st.success("✨ Lifestyle shot generated successfully!")
+                                    
+                                    # Display results
+                                    result_urls = []
+                                    if isinstance(result["result"], list):
+                                        for item in result["result"]:
+                                            if isinstance(item, str): # URL string
+                                                result_urls.append(item)
+                                            elif isinstance(item, dict):
+                                                if "url" in item:
+                                                    result_urls.append(item["url"])
+                                                elif "urls" in item and item["urls"]:
+                                                    result_urls.extend(item["urls"])
+                                    elif isinstance(result["result"], dict):
+                                         if "url" in result["result"]:
+                                             result_urls.append(result["result"]["url"])
+                                    
+                                    # Display images in grid
+                                    if result_urls:
+                                        cols = st.columns(min(len(result_urls), 2))
+                                        for i, url in enumerate(result_urls):
+                                            with cols[i % 2]:
+                                                st.image(url, use_column_width=True)
+                                                st.markdown(f"[Download Image]({url})")
+                                    else:
+                                        st.warning("No image URLs found in response")
+                                        st.json(result)
+                                        
+                                else:
+                                    st.error("Failed to generate image")
+                                    st.json(result)
+                                    
+                            except Exception as e:
+                                st.error(f"Error: {str(e)}")
+            else:
+                st.info("👆 Please upload a product image to get started")
+                
+                # Show demo example
+                st.markdown("### Example")
+                st.image("https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop", 
+                         caption="Product placed in a lifestyle setting", width=400)
         
     elif st.session_state.current_page == 4:
         # Generative Fill Page
