@@ -154,31 +154,18 @@ def track_current_activity(action, details, metadata=None):
         metadata
     )
 
-# Import styles
-from components.styles import GLOBAL_CSS
 
 def main():
     initialize_session_state()
+
+    # Import styles and header
+    from components.styles import GLOBAL_CSS, HEADER_HTML
     
-    # CRITICAL FIX: Hide CSS text that appears on screen
-    st.markdown("""
-    <style>
-    /* Hide any visible CSS/style elements */
-    .stMarkdown style {
-        display: none !important;
-    }
-    .stMarkdown link {
-        display: none !important;
-    }
-    /* Hide default Streamlit elements */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Now apply the global CSS
+    # Apply global CSS
     st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+    
+    # Render header
+    st.markdown(HEADER_HTML, unsafe_allow_html=True)
 
     # Mobile Hamburger Menu
     current_page = st.session_state.get('current_page', 0)

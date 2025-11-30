@@ -1,6 +1,7 @@
 
-GLOBAL_CSS = """
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+# Global CSS and Styles
+
+GLOBAL_CSS = """<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 /* Critical: Hide any CSS that appears as text */
 .stMarkdown style,
@@ -188,8 +189,7 @@ HEADER_HTML = """
 </div>
 """
 
-INTERACTIVE_UI_CSS = """
-<style>
+INTERACTIVE_UI_CSS = """<style>
 /* Enhanced buttons */
 .stButton > button {
     background: linear-gradient(135deg, var(--primary-color), #4f46e5);
