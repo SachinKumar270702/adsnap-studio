@@ -285,21 +285,17 @@ def show_login_page():
         50% { transform: translateY(-30px) scale(1.05); }
     }
     
-    /* Login container with glass morphism */
-    .auth-container {
-        max-width: 480px;
-        margin: 0 auto;
-        padding: 3rem 2.5rem;
-        background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(30px);
-        border-radius: 30px;
+    /* Login container with glass morphism - Applied to the COLUMN */
+    [data-testid="column"]:nth-of-type(2) {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(30px) !important;
+        border-radius: 30px !important;
+        padding: 3rem 2.5rem !important;
         box-shadow: 0 30px 80px rgba(0,0,0,0.35), 
                     0 0 0 1px rgba(255,255,255,0.5),
-                    inset 0 1px 0 rgba(255,255,255,0.8);
-        color: #333;
-        position: relative;
-        z-index: 1;
-        animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+                    inset 0 1px 0 rgba(255,255,255,0.8) !important;
+        animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.4) !important;
     }
     
     @keyframes slideUp {
@@ -656,8 +652,6 @@ def show_login_page():
     col1, col2, col3 = st.columns([1, 2.5, 1])
     
     with col2:
-        st.markdown('<div class="auth-container">', unsafe_allow_html=True)
-        
         # Logo and title section
         st.markdown('''
         <div class="auth-logo">
@@ -794,7 +788,7 @@ def show_login_page():
         </div>
         """, unsafe_allow_html=True)
         
-        st.markdown('</div>', unsafe_allow_html=True)
+
 
 def show_user_profile():
     """Display user profile in sidebar."""
