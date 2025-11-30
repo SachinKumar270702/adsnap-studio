@@ -262,6 +262,9 @@ def main():
             pass
             
     # Display current page
+    from components.interactive_ui import show_navigation_dock
+    show_navigation_dock()
+    
     if st.session_state.current_page == 0:
         show_dashboard()
         

@@ -311,3 +311,30 @@ def show_welcome_dashboard():
         </div>
     </div>
     """), unsafe_allow_html=True)
+
+def show_navigation_dock():
+    """Display a navigation dock with buttons for all features."""
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Define navigation items
+    nav_items = [
+        ("🏠 Dashboard", 0, "Dashboard"),
+        ("🎨 Generate", 1, "Generate Image"),
+        ("✨ Editor", 2, "Image Editor"),
+        ("📸 Lifestyle", 3, "Lifestyle Shot"),
+        ("🖌️ Fill", 4, "Generative Fill"),
+        ("🧹 Erase", 5, "Erase Elements")
+    ]
+    
+    # Create columns for buttons
+    cols = st.columns(len(nav_items))
+    
+    current_page = st.session_state.get('current_page', 0)
+    
+    for i, (label, page_idx, help_text) in enumerate(nav_items):
+        with cols[i]:
+            # Highlight current page button
+            type_ = "primary" if current_page == page_idx else "secondary"
+            if st.button(label, key=f"nav_dock_{i}", use_container_width=True, type=type_, help=help_text):
+                st.session_state.current_page = page_idx
+                st.rerun()
