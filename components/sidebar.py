@@ -1,6 +1,6 @@
 import streamlit as st
 
-def get_config():
+def create_sidebar():
     """Get configuration from sidebar."""
     config = {
         "create_packshot": False,
