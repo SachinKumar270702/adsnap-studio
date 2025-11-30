@@ -160,8 +160,22 @@ from components.styles import GLOBAL_CSS
 def main():
     initialize_session_state()
     
-    # Global CSS
-    st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+    # Apply Global CSS using st.html for better rendering
+    try:
+        # Use st.markdown with unsafe_allow_html
+        st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"CSS loading error: {e}")
+    
+    # Hide default Streamlit elements
+    hide_streamlit_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+    """
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
     # Mobile Hamburger Menu
     current_page = st.session_state.get('current_page', 0)

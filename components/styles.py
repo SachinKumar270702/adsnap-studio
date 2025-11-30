@@ -2,6 +2,11 @@
 GLOBAL_CSS = """
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
+/* Hide style tags if they appear as text */
+style {
+    display: none !important;
+}
+
 :root {
     --primary-color: #6366f1;
     --secondary-color: #38bdf8;
@@ -165,6 +170,10 @@ GLOBAL_CSS = """
     }
 }
 </style>
+"""
+
+# Separate header HTML - to be used only where needed
+HEADER_HTML = """
 <div class="header-container">
     <div class="logo-title-wrapper">
         <div style="background: transparent; padding: 0; display: flex; align-items: center; justify-content: center;">
