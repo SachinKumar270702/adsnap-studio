@@ -158,183 +158,183 @@ def main():
     
     # Global CSS
     st.markdown("""
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-    :root {
-        --primary-color: #6366f1;
-        --secondary-color: #38bdf8;
-        --background-color: #09090b;
-        --card-bg: rgba(30, 41, 59, 0.7);
-        --card-border: rgba(255, 255, 255, 0.1);
-        --text-color: #f8fafc;
-        --text-secondary: #94a3b8;
-        --accent-glow: 0 0 20px rgba(99, 102, 241, 0.5);
-        --glass-border: 1px solid rgba(255, 255, 255, 0.08);
-        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    }
-    
-    /* Animated Mesh Gradient Background */
-    .stApp {
-        background-color: var(--background-color);
-        background-image: 
-            radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-            radial-gradient(at 100% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
-            radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%),
-            radial-gradient(at 0% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%);
-        background-attachment: fixed;
-        color: var(--text-color);
-        font-family: 'Inter', sans-serif;
-    }
-    
-    /* Glassmorphism Classes */
-    .glass-card {
-        background: var(--card-bg);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: var(--glass-border);
-        box-shadow: var(--glass-shadow);
-        border-radius: 16px;
-    }
-    
-    .glass-panel {
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border-bottom: var(--glass-border);
-    }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --primary-color: #6366f1;
+    --secondary-color: #38bdf8;
+    --background-color: #09090b;
+    --card-bg: rgba(30, 41, 59, 0.7);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --text-color: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-glow: 0 0 20px rgba(99, 102, 241, 0.5);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
 
-    /* Keyframe Animations */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translate3d(0, 20px, 0);
-        }
-        to {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-        }
+/* Animated Mesh Gradient Background */
+.stApp {
+    background-color: var(--background-color);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%);
+    background-attachment: fixed;
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Glassmorphism Classes */
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 16px;
+}
+
+.glass-panel {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: var(--glass-border);
+}
+
+/* Keyframe Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 20px, 0);
     }
-    
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-        100% { transform: translateY(0px); }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
     }
-    
-    @keyframes shimmer {
-        0% { background-position: -1000px 0; }
-        100% { background-position: 1000px 0; }
-    }
-    
-    /* Animation Classes */
-    .animate-fade-in {
-        animation: fadeInUp 0.6s ease-out forwards;
-    }
-    
-    .animate-float {
-        animation: float 6s ease-in-out infinite;
-    }
-    
-    .stagger-1 { animation-delay: 0.1s; }
-    .stagger-2 { animation-delay: 0.2s; }
-    .stagger-3 { animation-delay: 0.3s; }
-    
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-        background: rgba(30, 41, 59, 0.5); 
-    }
-    ::-webkit-scrollbar-thumb {
-        background: rgba(71, 85, 105, 0.8); 
-        border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-        background: rgba(100, 116, 139, 1); 
-    }
-    
-    /* Header Styling */
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+/* Animation Classes */
+.animate-fade-in {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(30, 41, 59, 0.5); 
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(71, 85, 105, 0.8); 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 1); 
+}
+
+/* Header Styling */
+.header-container {
+    padding: 60px 20px 40px 20px;
+    margin-bottom: 40px;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+.logo-title-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 15px;
+}
+.logo-emoji {
+    font-size: 4.5rem;
+    line-height: 1;
+    display: block;
+    filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.4));
+    animation: float 6s ease-in-out infinite;
+}
+.main-title {
+    margin: 0;
+    font-size: 4rem;
+    font-weight: 900;
+    letter-spacing: -2px;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+}
+
+.subtitle {
+    margin: 16px 0 0 0;
+    background: linear-gradient(90deg, #6366f1 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* Mobile Responsive Header */
+@media only screen and (max-width: 768px) {
     .header-container {
-        padding: 60px 20px 40px 20px;
-        margin-bottom: 40px;
-        text-align: center;
-        position: relative;
-        z-index: 10;
+        padding: 30px 10px 15px 10px;
+        margin: -60px -20px 0 -20px;
     }
     .logo-title-wrapper {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 25px;
-        margin-bottom: 15px;
+        flex-direction: column;
+        gap: 15px;
     }
     .logo-emoji {
-        font-size: 4.5rem;
-        line-height: 1;
-        display: block;
-        filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.4));
-        animation: float 6s ease-in-out infinite;
+        font-size: 3rem;
     }
     .main-title {
-        margin: 0;
-        font-size: 4rem;
-        font-weight: 900;
-        letter-spacing: -2px;
-        line-height: 1.1;
-        background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        font-size: 2.5rem;
     }
-    
     .subtitle {
-        margin: 16px 0 0 0;
-        background: linear-gradient(90deg, #6366f1 0%, #38bdf8 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-size: 1.2rem;
-        font-weight: 600;
-        letter-spacing: 2px;
-        text-transform: uppercase;
+        font-size: 0.9rem;
     }
-    
-    /* Mobile Responsive Header */
-    @media only screen and (max-width: 768px) {
-        .header-container {
-            padding: 30px 10px 15px 10px;
-            margin: -60px -20px 0 -20px;
-        }
-        .logo-title-wrapper {
-            flex-direction: column;
-            gap: 15px;
-        }
-        .logo-emoji {
-            font-size: 3rem;
-        }
-        .main-title {
-            font-size: 2.5rem;
-        }
-        .subtitle {
-            font-size: 0.9rem;
-        }
-    }
-    </style>
-    <div class="header-container">
-        <div class="logo-title-wrapper">
-            <div style="background: transparent; padding: 0; display: flex; align-items: center; justify-content: center;">
-                <span class="logo-emoji"><i class="fas fa-layer-group"></i></span>
-            </div>
-            <div>
-                <h1 class="main-title">ADSNAP STUDIO</h1>
-                <p class="subtitle">AI-Powered Image Generation & Editing</p>
-            </div>
+}
+</style>
+<div class="header-container">
+    <div class="logo-title-wrapper">
+        <div style="background: transparent; padding: 0; display: flex; align-items: center; justify-content: center;">
+            <span class="logo-emoji"><i class="fas fa-layer-group"></i></span>
+        </div>
+        <div>
+            <h1 class="main-title">ADSNAP STUDIO</h1>
+            <p class="subtitle">AI-Powered Image Generation & Editing</p>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
     # Mobile Hamburger Menu
     current_page = st.session_state.get('current_page', 0)
@@ -349,49 +349,49 @@ def main():
     
     # Create hamburger menu HTML
     mobile_menu_html = '''
-    <button class="hamburger-btn" onclick="toggleMobileMenu()">
-        <div class="hamburger-icon">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    </button>
-    
-    <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
-    
-    <div class="mobile-menu">
-        <div class="mobile-menu-header">
-            <div class="mobile-menu-logo"><i class="fas fa-layer-group"></i></div>
-            <div class="mobile-menu-title">ADSNAP</div>
-        </div>
-        <div class="mobile-menu-items">
-    '''
+<button class="hamburger-btn" onclick="toggleMobileMenu()">
+    <div class="hamburger-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</button>
+
+<div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
+
+<div class="mobile-menu">
+    <div class="mobile-menu-header">
+        <div class="mobile-menu-logo"><i class="fas fa-layer-group"></i></div>
+        <div class="mobile-menu-title">ADSNAP</div>
+    </div>
+    <div class="mobile-menu-items">
+'''
     
     for icon, label, page_num in mobile_menu_items:
         active_class = "active" if current_page == page_num else ""
         mobile_menu_html += f'''
-        <a href="?page={page_num}" class="mobile-menu-item {active_class}">
-            <div class="mobile-menu-item-icon">{icon}</div>
-            <div class="mobile-menu-item-label">{label}</div>
-        </a>
-        '''
+    <a href="?page={page_num}" class="mobile-menu-item {active_class}">
+        <div class="mobile-menu-item-icon">{icon}</div>
+        <div class="mobile-menu-item-label">{label}</div>
+    </a>
+    '''
     
     mobile_menu_html += '''
-        </div>
-        <div class="mobile-menu-footer">
-            <div class="mobile-menu-footer-text">AI-Powered Image Generation</div>
-        </div>
     </div>
-    
-    <script>
-    function toggleMobileMenu() {
-        const menu = document.querySelector('.mobile-menu');
-        const overlay = document.querySelector('.mobile-menu-overlay');
-        menu.classList.toggle('active');
-        overlay.classList.toggle('active');
-    }
-    </script>
-    '''
+    <div class="mobile-menu-footer">
+        <div class="mobile-menu-footer-text">AI-Powered Image Generation</div>
+    </div>
+</div>
+
+<script>
+function toggleMobileMenu() {
+    const menu = document.querySelector('.mobile-menu');
+    const overlay = document.querySelector('.mobile-menu-overlay');
+    menu.classList.toggle('active');
+    overlay.classList.toggle('active');
+}
+</script>
+'''
     
     st.markdown(mobile_menu_html, unsafe_allow_html=True)
     
