@@ -10,13 +10,15 @@ from .styles import INTERACTIVE_UI_CSS
 
 def show_lottie_animation(url, height=300, key=None):
     """Embed a Lottie animation from a URL."""
+    # Note: components.html does not support the 'key' argument directly in some versions
+    # We use the key for the iframe if possible, but standard components.html might not take it.
+    # If key is needed for state, we might need a different approach, but for now removing it to fix TypeError.
     components.html(
         textwrap.dedent(f"""
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         <lottie-player src="{url}" background="transparent" speed="1" style="width: 100%; height: {height}px;" loop autoplay></lottie-player>
         """),
-        height=height,
-        key=key
+        height=height
     )
 
 def add_custom_css():
