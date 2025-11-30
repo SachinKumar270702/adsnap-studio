@@ -28,57 +28,6 @@ def show_dashboard():
             <h2 style="margin: 0; font-size: 2.5rem; background: linear-gradient(90deg, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><i class="fas fa-hand-sparkles" style="color: #fbbf24;"></i> {greeting}, {user_name}!</h2>
             <p style="margin: 0.5rem 0 0 0; color: var(--text-secondary); font-size: 1.1rem;">Ready to create some amazing ads today?</p>
         </div>
-        """), unsafe_allow_html=True)
-        
-    with col2:
-        # Welcome/Rocket animation
-        show_lottie_animation("https://assets3.lottiefiles.com/packages/lf20_puciaact.json", height=180, key="welcome_lottie")
-    
-    # Real-time statistics from database
-    show_activity_statistics()
-    
-    # Quick actions section
-    st.markdown("### <i class='fas fa-rocket'></i> Quick Actions", unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        if st.button("Generate New Image", use_container_width=True, type="primary", key="dash_quick_generate"):
-            st.session_state.active_tab = 1  # Generate Image tab
-            st.session_state.quick_action = "generate"
-            st.success("Navigating to Image Generation...")
-            st.rerun()
-    
-    with col2:
-        if st.button("Create Lifestyle Shot", use_container_width=True, key="dash_quick_lifestyle"):
-            st.session_state.active_tab = 2  # Lifestyle Shot tab
-            st.session_state.quick_action = "lifestyle"
-            st.success("Navigating to Lifestyle Shot...")
-            st.rerun()
-    
-    with col3:
-        if st.button("Enhance Image", use_container_width=True, key="dash_quick_enhance"):
-            st.session_state.active_tab = 3  # Generative Fill tab (for image enhancement)
-            st.session_state.quick_action = "enhance"
-            st.success("Navigating to Image Enhancement...")
-            st.rerun()
-    
-    # Recent activity and tips
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        show_real_time_activities()
-    
-    with col2:
-        show_daily_tip()
-        
-    # Recent images gallery
-    show_recent_images()
-
-def show_stat_card(title, value, icon, color):
-    """Display a statistics card."""
-    st.markdown(textwrap.dedent(f"""
-    <div class="metric-card animate-fade-in" style="border-left: 4px solid {color};">
         <div style="font-size: 2rem; margin-bottom: 0.5rem; color: {color};">{icon}</div>
         <div class="metric-value">{value}</div>
         <div class="metric-label">{title}</div>
