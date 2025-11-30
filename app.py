@@ -35,11 +35,8 @@ from components.interactive_ui import (
     show_welcome_dashboard,
     show_navigation_dock
 )
-from components.activity_dashboard import (
-    track_activity, 
-    show_activity_dashboard, 
-    get_user_stats
-)
+from components.activity_dashboard import track_activity
+from components.dashboard import get_user_stats
 from config.demo_config import (
     SAMPLE_PROMPTS, 
     ENHANCEMENT_PRESETS, 
