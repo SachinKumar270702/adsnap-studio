@@ -24,8 +24,8 @@ def show_dashboard():
     
     with col1:
         st.markdown(textwrap.dedent(f"""
-        <div class="glass-card animate-fade-in" style="padding: 2.5rem; height: 100%; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(56, 189, 248, 0.2) 100%); border: 1px solid rgba(255, 255, 255, 0.1);">
-            <h2 style="margin: 0; font-size: 2.5rem; background: linear-gradient(90deg, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><i class="fas fa-hand-sparkles" style="color: #fbbf24;"></i> {greeting}, {user_name}!</h2>
+        <div class="glass-card animate-fade-in shimmer-card" style="padding: 2.5rem; height: 100%; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(56, 189, 248, 0.2) 100%); border: 1px solid rgba(255, 255, 255, 0.1);">
+            <h2 class="gradient-text-animated" style="margin: 0; font-size: 2.5rem;"><i class="fas fa-hand-sparkles" style="color: #fbbf24;"></i> {greeting}, {user_name}!</h2>
             <p style="margin: 0.5rem 0 0 0; color: var(--text-secondary); font-size: 1.1rem;">Ready to create some amazing ads today?</p>
         </div>
         """), unsafe_allow_html=True)
@@ -55,7 +55,7 @@ def show_dashboard():
     for col, title, value, icon, color in metrics:
         with col:
             st.markdown(textwrap.dedent(f"""
-            <div class="metric-card animate-fade-in">
+            <div class="metric-card animate-fade-in shimmer-card">
                 <div style="font-size: 2rem; margin-bottom: 0.5rem; color: {color};">{icon}</div>
                 <div class="metric-value">{value}</div>
                 <div class="metric-label">{title}</div>

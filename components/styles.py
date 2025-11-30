@@ -606,5 +606,152 @@ INTERACTIVE_UI_CSS = """<style>
     box-shadow: 0 0 15px rgba(99, 102, 241, 0.1);
 }
 
+/* Advanced Moving Graphics */
+
+/* Floating Orbs Background */
+.floating-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    animation: floatOrb 20s infinite alternate;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.orb-1 {
+    top: -10%;
+    left: -10%;
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, var(--primary-color), transparent 70%);
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    bottom: -10%;
+    right: -10%;
+    width: 40vw;
+    height: 40vw;
+    background: radial-gradient(circle, var(--secondary-color), transparent 70%);
+    animation-delay: -5s;
+}
+
+.orb-3 {
+    top: 40%;
+    left: 40%;
+    width: 30vw;
+    height: 30vw;
+    background: radial-gradient(circle, #ec4899, transparent 70%);
+    animation-delay: -10s;
+}
+
+@keyframes floatOrb {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+/* Animated Gradient Text */
+.gradient-text-animated {
+    background: linear-gradient(
+        to right,
+        var(--primary-color),
+        var(--secondary-color),
+        #ec4899,
+        var(--primary-color)
+    );
+    background-size: 300% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: gradientFlow 5s linear infinite;
+}
+
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Shimmer Effect for Cards */
+.shimmer-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        transparent 100%
+    );
+    transform: skewX(-25deg) translateX(-150%);
+    transition: transform 0.5s;
+    pointer-events: none;
+}
+
+.shimmer-card:hover::after {
+    transform: skewX(-25deg) translateX(150%);
+    transition: transform 1s;
+}
+
+/* Neon Glow Button */
+.neon-button {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.neon-button::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), #ec4899);
+    z-index: -1;
+    border-radius: 14px;
+    filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.neon-button:hover::before {
+    opacity: 0.7;
+}
+
+/* Floating Particles (CSS Only) */
+.particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: floatUp linear infinite;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+
 </style>
 """
