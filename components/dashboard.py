@@ -19,10 +19,11 @@ def show_dashboard():
         greeting = "Good evening"
     
     st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                padding: 2rem; border-radius: 15px; color: white; margin-bottom: 2rem;">
-        <h2 style="margin: 0; font-size: 2rem;"><i class="fas fa-hand-sparkles"></i> {greeting}, {user_name}!</h2>
-        <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Ready to create some amazing ads today?</p>
+    <div style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); 
+                padding: 2.5rem; border-radius: 1.5rem; color: white; margin-bottom: 2rem; 
+                box-shadow: 0 10px 30px -10px var(--accent-glow);">
+        <h2 style="margin: 0; font-size: 2.5rem; color: white !important;"><i class="fas fa-hand-sparkles"></i> {greeting}, {user_name}!</h2>
+        <p style="margin: 0.5rem 0 0 0; opacity: 0.9; color: rgba(255,255,255,0.9) !important; font-size: 1.1rem;">Ready to create some amazing ads today?</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -69,12 +70,12 @@ def show_dashboard():
 
 def show_stat_card(title, value, icon, color):
     """Display a statistics card."""
+    # Map colors to Tailwind variables if possible, or keep inline for specific colors
     st.markdown(f"""
-    <div style="background: {color}; color: white; padding: 1.5rem; border-radius: 10px; 
-                text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-        <div style="font-size: 2rem; margin-bottom: 0.5rem;">{icon}</div>
-        <div style="font-size: 2rem; font-weight: bold; margin-bottom: 0.25rem;">{value}</div>
-        <div style="font-size: 0.9rem; opacity: 0.9;">{title}</div>
+    <div class="metric-card" style="border-left: 4px solid {color};">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: {color};">{icon}</div>
+        <div class="metric-value">{value}</div>
+        <div class="metric-label">{title}</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -107,16 +108,16 @@ def show_recent_activity():
     ]
     
     for activity, time_ago, icon, status in activities:
-        status_color = "#4ECDC4" if status == "success" else "#667eea"
+        status_color = "var(--success)" if status == "success" else "var(--accent-primary)"
         
         st.markdown(f"""
-        <div style="display: flex; align-items: center; padding: 0.75rem; margin: 0.5rem 0; 
-                    background: rgba(255,255,255,0.05); border-radius: 8px; 
-                    border-left: 3px solid {status_color};">
-            <span style="font-size: 1.5rem; margin-right: 1rem;">{icon}</span>
+        <div style="display: flex; align-items: center; padding: 1rem; margin: 0.75rem 0; 
+                    background: var(--card-bg); border-radius: 0.75rem; 
+                    border: 1px solid var(--card-border); border-left: 3px solid {status_color};">
+            <span style="font-size: 1.5rem; margin-right: 1rem; color: {status_color};">{icon}</span>
             <div style="flex: 1;">
-                <div style="font-weight: 500; margin-bottom: 0.25rem;">{activity}</div>
-                <div style="font-size: 0.85rem; color: #666;">{time_ago}</div>
+                <div style="font-weight: 600; margin-bottom: 0.25rem; color: var(--text-primary);">{activity}</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">{time_ago}</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -130,10 +131,10 @@ def show_daily_tip():
     tip = TIPS_AND_TRICKS[day_of_year % len(TIPS_AND_TRICKS)]
     
     st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #FFD93D, #FF6B6B); 
-                padding: 1.5rem; border-radius: 10px; color: white;">
-        <div style="font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem;"><i class="fas fa-lightbulb"></i> Tip of the Day</div>
-        <div style="font-size: 0.95rem; line-height: 1.4;">{tip}</div>
+    <div style="background: linear-gradient(135deg, var(--warning), var(--error)); 
+                padding: 1.5rem; border-radius: 1rem; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;"><i class="fas fa-lightbulb"></i> Tip of the Day</div>
+        <div style="font-size: 0.95rem; line-height: 1.5; opacity: 0.95;">{tip}</div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -163,15 +164,14 @@ def show_feature_tour():
         feature = FEATURE_TOUR[st.session_state.tour_step]
         
         st.markdown(f"""
-        <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); 
-                    padding: 1.5rem; border-radius: 10px; border: 1px solid rgba(102, 126, 234, 0.3);">
+        <div class="bento-card">
             <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                <span style="font-size: 2rem; margin-right: 1rem;">{feature['icon']}</span>
-                <h4 style="margin: 0; color: #667eea;">Step {st.session_state.tour_step + 1}: {feature['title']}</h4>
+                <span style="font-size: 2rem; margin-right: 1rem; color: var(--accent-primary);">{feature['icon']}</span>
+                <h4 style="margin: 0; color: var(--text-primary);">Step {st.session_state.tour_step + 1}: {feature['title']}</h4>
             </div>
-            <p style="margin-bottom: 1rem; color: #666;">{feature['description']}</p>
-            <div style="background: rgba(102, 126, 234, 0.1); padding: 0.75rem; border-radius: 5px; 
-                        font-style: italic; color: #667eea;">
+            <p style="margin-bottom: 1rem; color: var(--text-secondary);">{feature['description']}</p>
+            <div style="background: rgba(99, 102, 241, 0.1); padding: 0.75rem; border-radius: 0.5rem; 
+                        font-style: italic; color: var(--accent-primary); border: 1px solid rgba(99, 102, 241, 0.2);">
                 <i class="fas fa-lightbulb"></i> {feature['demo_action']}
             </div>
         </div>
@@ -214,18 +214,18 @@ def show_project_gallery():
     ]
     
     for project in projects:
-        status_color = "#4ECDC4" if project["status"] == "completed" else "#FFD93D"
+        status_color = "var(--success)" if project["status"] == "completed" else "var(--warning)"
         status_text = "Completed" if project["status"] == "completed" else "In Progress"
         
         st.markdown(f"""
         <div style="display: flex; justify-content: space-between; align-items: center; 
-                    padding: 1rem; margin: 0.5rem 0; background: rgba(255,255,255,0.05); 
-                    border-radius: 8px; border-left: 3px solid {status_color};">
+                    padding: 1rem; margin: 0.75rem 0; background: var(--card-bg); 
+                    border-radius: 0.75rem; border: 1px solid var(--card-border); border-left: 3px solid {status_color};">
             <div>
-                <div style="font-weight: 500; margin-bottom: 0.25rem;">{project['name']}</div>
-                <div style="font-size: 0.85rem; color: #666;">{project['images']} images • {project['created']}</div>
+                <div style="font-weight: 600; margin-bottom: 0.25rem; color: var(--text-primary);">{project['name']}</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">{project['images']} images • {project['created']}</div>
             </div>
             <div style="background: {status_color}; color: white; padding: 0.25rem 0.75rem; 
-                        border-radius: 15px; font-size: 0.8rem;">{status_text}</div>
+                        border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">{status_text}</div>
         </div>
         """, unsafe_allow_html=True)

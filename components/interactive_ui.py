@@ -9,95 +9,68 @@ def add_custom_css():
     """Add custom CSS for enhanced UI."""
     st.markdown("""
     <style>
-    /* Main theme colors */
-    :root {
-        --primary-color: #667eea;
-        --secondary-color: #764ba2;
-        --accent-color: #FF6B6B;
-        --success-color: #4ECDC4;
-        --warning-color: #FFD93D;
-        --error-color: #FF6B6B;
-        --text-primary: #ffffff;
-        --text-secondary: #e0e0e0;
-    }
-    
-    /* Improve text visibility */
-    .main .block-container {
-        color: var(--text-primary) !important;
-    }
-    
-    h1, h2, h3, h4, h5, h6 {
-        color: var(--text-primary) !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    }
-    
-    p, div, span {
-        color: var(--text-secondary) !important;
-    }
-    
     /* Enhanced buttons */
     .stButton > button {
-        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        background: linear-gradient(to right, var(--accent-primary), #4f46e5);
         border: none;
-        border-radius: 25px;
+        border-radius: 9999px;
         padding: 0.75rem 1.5rem;
-        font-weight: bold;
+        font-weight: 600;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 15px var(--accent-glow);
+        color: white !important;
     }
     
     .stButton > button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+        box-shadow: 0 6px 20px var(--accent-glow);
+        opacity: 0.9;
     }
     
     /* Primary button style */
     .primary-button > button {
-        background: linear-gradient(45deg, var(--accent-color), var(--success-color)) !important;
-        color: white !important;
-        font-size: 1.1rem !important;
+        background: linear-gradient(to right, var(--accent-secondary), var(--accent-primary)) !important;
     }
     
     /* Success button style */
     .success-button > button {
-        background: linear-gradient(45deg, #28a745, #20c997) !important;
-        color: white !important;
+        background: linear-gradient(to right, #10b981, #059669) !important;
     }
     
     /* Warning button style */
     .warning-button > button {
-        background: linear-gradient(45deg, #ffc107, #fd7e14) !important;
-        color: white !important;
+        background: linear-gradient(to right, #f59e0b, #d97706) !important;
     }
     
-    /* Enhanced cards */
+    /* Enhanced cards (Bento Style) */
     .feature-card {
-        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-        border-radius: 15px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 1rem;
         padding: 1.5rem;
         margin: 1rem 0;
-        border: 1px solid rgba(255,255,255,0.2);
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
     }
     
     .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        border-color: var(--primary-color);
+        transform: translateY(-4px);
+        border-color: var(--accent-primary);
+        box-shadow: 0 10px 40px -10px var(--accent-glow);
     }
     
     /* Progress bars */
     .progress-container {
-        background: rgba(255,255,255,0.1);
-        border-radius: 10px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 0.5rem;
         padding: 1rem;
         margin: 1rem 0;
     }
     
     .progress-bar {
-        background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+        background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
         height: 8px;
         border-radius: 4px;
         transition: width 0.5s ease;
@@ -105,7 +78,8 @@ def add_custom_css():
     
     /* Animated icons */
     .rotating-icon {
-        animation: rotate 2s linear infinite;
+        animation: rotate 3s linear infinite;
+        color: var(--accent-secondary);
     }
     
     @keyframes rotate {
@@ -114,63 +88,76 @@ def add_custom_css():
     }
     
     .pulse-icon {
-        animation: pulse 1.5s ease-in-out infinite;
+        animation: pulse 2s ease-in-out infinite;
+        color: var(--accent-primary);
     }
     
     @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
     }
     
     /* Enhanced metrics */
     .metric-card {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        color: white;
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
         padding: 1.5rem;
-        border-radius: 15px;
+        border-radius: 1rem;
         text-align: center;
         margin: 0.5rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .metric-card:hover {
+        border-color: var(--accent-secondary);
+        box-shadow: 0 0 20px var(--accent-glow);
     }
     
     .metric-value {
         font-size: 2.5rem;
-        font-weight: bold;
+        font-weight: 700;
         margin-bottom: 0.5rem;
+        background: linear-gradient(to right, #fff, #a1a1aa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
     
     .metric-label {
-        font-size: 1rem;
-        opacity: 0.9;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
     
     /* Image gallery */
     .image-gallery {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin: 1rem 0;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 1.5rem 0;
     }
     
     .image-item {
         position: relative;
-        border-radius: 10px;
+        border-radius: 1rem;
         overflow: hidden;
         transition: all 0.3s ease;
         cursor: pointer;
+        border: 1px solid var(--card-border);
     }
     
     .image-item:hover {
-        transform: scale(1.05);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        transform: scale(1.02);
+        border-color: var(--accent-primary);
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
     }
     
     /* Loading animations */
     .loading-spinner {
-        border: 4px solid rgba(255,255,255,0.3);
+        border: 3px solid var(--card-border);
         border-radius: 50%;
-        border-top: 4px solid var(--primary-color);
+        border-top: 3px solid var(--accent-primary);
         width: 40px;
         height: 40px;
         animation: spin 1s linear infinite;
@@ -185,254 +172,63 @@ def add_custom_css():
     /* Notification styles */
     .notification {
         padding: 1rem;
-        border-radius: 10px;
+        border-radius: 0.75rem;
         margin: 1rem 0;
         border-left: 4px solid;
-        animation: slideIn 0.5s ease-out;
+        animation: slideIn 0.3s ease-out;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
     }
     
     @keyframes slideIn {
-        from { transform: translateX(-100%); opacity: 0; }
+        from { transform: translateX(-20px); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
     }
     
     .notification.success {
-        background: rgba(76, 205, 196, 0.1);
-        border-color: var(--success-color);
-        color: var(--success-color);
+        border-left-color: var(--success);
     }
     
     .notification.warning {
-        background: rgba(255, 217, 61, 0.1);
-        border-color: var(--warning-color);
-        color: var(--warning-color);
+        border-left-color: var(--warning);
     }
     
     .notification.error {
-        background: rgba(255, 107, 107, 0.1);
-        border-color: var(--error-color);
-        color: var(--error-color);
+        border-left-color: var(--error);
     }
     
     /* Sidebar enhancements */
     .sidebar-section {
-        background: rgba(255,255,255,0.05);
-        border-radius: 10px;
+        background: transparent;
+        border-radius: 0.75rem;
         padding: 1rem;
-        margin: 1rem 0;
-        border: 1px solid rgba(255,255,255,0.1);
+        margin: 0.5rem 0;
+        border: 1px solid transparent;
+    }
+    
+    .sidebar-section:hover {
+        background: rgba(255,255,255,0.03);
+        border-color: var(--card-border);
     }
     
     /* Tab styling */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
+        background-color: transparent;
     }
     
     .stTabs [data-baseweb="tab"] {
-        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-        border-radius: 10px;
-        padding: 0.5rem 1rem;
-        border: 1px solid rgba(255,255,255,0.2);
+        background-color: transparent;
+        border-radius: 9999px;
+        padding: 0.5rem 1.5rem;
+        color: var(--text-secondary);
+        border: 1px solid transparent;
     }
     
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
-    }
-    
-    /* Primary button style */
-    .primary-button > button {
-        background: linear-gradient(45deg, var(--accent-color), var(--success-color)) !important;
-        color: white !important;
-        font-size: 1.1rem !important;
-    }
-    
-    /* Success button style */
-    .success-button > button {
-        background: linear-gradient(45deg, #28a745, #20c997) !important;
-        color: white !important;
-    }
-    
-    /* Warning button style */
-    .warning-button > button {
-        background: linear(45deg, #ffc107, #fd7e14) !important;
-        color: white !important;
-    }
-    
-    /* Enhanced cards */
-    .feature-card {
-        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-        border-radius: 15px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        border: 1px solid rgba(255,255,255,0.2);
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-    }
-    
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        border-color: var(--primary-color);
-    }
-    
-    /* Progress bars */
-    .progress-container {
-        background: rgba(255,255,255,0.1);
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 1rem 0;
-    }
-    
-    .progress-bar {
-        background: linear-gradient(90deg, var(--primary-color), var(--success-color));
-        height: 8px;
-        border-radius: 4px;
-        transition: width 0.5s ease;
-    }
-    
-    /* Animated icons */
-    .rotating-icon {
-        animation: rotate 2s linear infinite;
-    }
-    
-    @keyframes rotate {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-    
-    .pulse-icon {
-        animation: pulse 1.5s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-    }
-    
-    /* Enhanced metrics */
-    .metric-card {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 1.5rem;
-        border-radius: 15px;
-        text-align: center;
-        margin: 0.5rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-    
-    .metric-value {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-    
-    .metric-label {
-        font-size: 1rem;
-        opacity: 0.9;
-    }
-    
-    /* Image gallery */
-    .image-gallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin: 1rem 0;
-    }
-    
-    .image-item {
-        position: relative;
-        border-radius: 10px;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    
-    .image-item:hover {
-        transform: scale(1.05);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    }
-    
-    /* Loading animations */
-    .loading-spinner {
-        border: 4px solid rgba(255,255,255,0.3);
-        border-radius: 50%;
-        border-top: 4px solid var(--primary-color);
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        margin: 0 auto;
-    }
-    
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    /* Notification styles */
-    .notification {
-        padding: 1rem;
-        border-radius: 10px;
-        margin: 1rem 0;
-        border-left: 4px solid;
-        animation: slideIn 0.5s ease-out;
-    }
-    
-    @keyframes slideIn {
-        from { transform: translateX(-100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    
-    .notification.success {
-        background: rgba(76, 205, 196, 0.1);
-        border-color: var(--success-color);
-        color: var(--success-color);
-    }
-    
-    .notification.warning {
-        background: rgba(255, 217, 61, 0.1);
-        border-color: var(--warning-color);
-        color: var(--warning-color);
-    }
-    
-    .notification.error {
-        background: rgba(255, 107, 107, 0.1);
-        border-color: var(--error-color);
-        color: var(--error-color);
-    }
-    
-    /* Sidebar enhancements */
-    .sidebar-section {
-        background: rgba(255,255,255,0.05);
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 1rem 0;
-        border: 1px solid rgba(255,255,255,0.1);
-    }
-    
-    /* Tab styling */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-        border-radius: 10px;
-        padding: 0.5rem 1rem;
-        border: 1px solid rgba(255,255,255,0.2);
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        color: white;
+        background-color: var(--card-bg);
+        color: var(--text-primary);
+        border-color: var(--card-border);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -440,13 +236,10 @@ def add_custom_css():
 def show_animated_header(title, subtitle="", icon='<i class="fas fa-palette"></i>'):
     """Display an animated header with icon."""
     st.markdown(f"""
-    <div style="text-align: center; padding: 2rem 0;">
-        <div class="pulse-icon" style="font-size: 4rem; margin-bottom: 1rem;">{icon}</div>
-        <h1 style="color: #667eea !important; 
-                   font-size: 3rem; margin-bottom: 0.5rem; 
-                   text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-                   font-weight: bold;">{title}</h1>
-        {f'<p style="font-size: 1.2rem; color: #888; margin-top: 0; font-weight: 500;">{subtitle}</p>' if subtitle else ''}
+    <div style="text-align: center; padding: 3rem 0;">
+        <div class="pulse-icon" style="font-size: 4rem; margin-bottom: 1.5rem;">{icon}</div>
+        <h1 class="gradient-text" style="font-size: 3.5rem; margin-bottom: 1rem; font-weight: 800;">{title}</h1>
+        {f'<p style="font-size: 1.25rem; color: var(--text-secondary); margin-top: 0; max-width: 600px; margin: 0 auto;">{subtitle}</p>' if subtitle else ''}
     </div>
     """, unsafe_allow_html=True)
 
@@ -455,22 +248,22 @@ def show_feature_card(title, description, icon, action_text="Learn More", key=No
     card_html = f"""
     <div class="feature-card">
         <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-            <div style="font-size: 2rem; margin-right: 1rem;">{icon}</div>
-            <h3 style="margin: 0; color: #333;">{title}</h3>
+            <div style="font-size: 2rem; margin-right: 1rem; color: var(--accent-primary);">{icon}</div>
+            <h3 style="margin: 0; color: var(--text-primary);">{title}</h3>
         </div>
-        <p style="color: #666; margin-bottom: 1.5rem;">{description}</p>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">{description}</p>
     </div>
     """
     
     st.markdown(card_html, unsafe_allow_html=True)
     
     st.markdown(f"""
-    <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+    <div style="background: var(--bg-color); padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; border: 1px solid var(--card-border);">
         <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-            <span style="font-size: 1.5rem; margin-right: 0.5rem;"><i class="fas fa-folder"></i></span>
-            <span style="font-weight: bold;">Current Project</span>
+            <span style="font-size: 1.25rem; margin-right: 0.5rem; color: var(--accent-secondary);"><i class="fas fa-folder"></i></span>
+            <span style="font-weight: 600; color: var(--text-primary);">Current Project</span>
         </div>
-        <div style="font-size: 0.9rem; color: #888;">{st.session_state.get('current_project', 'Untitled Project')}</div>
+        <div style="font-size: 0.875rem; color: var(--text-secondary);">{st.session_state.get('current_project', 'Untitled Project')}</div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -483,10 +276,10 @@ def show_progress_bar(progress, text="Processing...", show_percentage=True):
     progress_html = f"""
     <div class="progress-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-            <span style="font-weight: bold;">{text}</span>
-            {f'<span>{int(progress * 100)}%</span>' if show_percentage else ''}
+            <span style="font-weight: 600; color: var(--text-primary);">{text}</span>
+            {f'<span style="color: var(--text-secondary);">{int(progress * 100)}%</span>' if show_percentage else ''}
         </div>
-        <div style="background: rgba(255,255,255,0.2); border-radius: 4px; height: 8px;">
+        <div style="background: var(--bg-color); border-radius: 4px; height: 8px; overflow: hidden;">
             <div class="progress-bar" style="width: {progress * 100}%;"></div>
         </div>
     </div>
@@ -512,7 +305,7 @@ def show_loading_spinner(text="Loading..."):
     st.markdown(f"""
     <div style="text-align: center; padding: 2rem;">
         <div class="loading-spinner"></div>
-        <p style="margin-top: 1rem; color: #666;">{text}</p>
+        <p style="margin-top: 1rem; color: var(--text-secondary);">{text}</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -522,7 +315,7 @@ def show_notification(message, type="info", duration=3):
     
     notification_html = f"""
     <div class="notification {type_class}">
-        <strong>{message}</strong>
+        <strong style="color: var(--text-primary);">{message}</strong>
     </div>
     """
     
@@ -568,11 +361,11 @@ def enhanced_file_uploader(label, accepted_types=None, help_text=None, key=None)
     accepted_types = accepted_types or ["png", "jpg", "jpeg"]
     
     st.markdown(f"""
-    <div style="border: 2px dashed #667eea; border-radius: 10px; padding: 2rem; 
-                text-align: center; background: rgba(102, 126, 234, 0.05); margin: 1rem 0;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;"><i class="fas fa-cloud-upload-alt"></i></div>
-        <h4 style="color: #667eea; margin-bottom: 0.5rem;">{label}</h4>
-        {f'<p style="color: #666; font-size: 0.9rem;">{help_text}</p>' if help_text else ''}
+    <div style="border: 2px dashed var(--card-border); border-radius: 1rem; padding: 2rem; 
+                text-align: center; background: var(--card-bg); margin: 1rem 0; transition: border-color 0.3s;">
+        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-primary);"><i class="fas fa-cloud-upload-alt"></i></div>
+        <h4 style="color: var(--text-primary); margin-bottom: 0.5rem;">{label}</h4>
+        {f'<p style="color: var(--text-secondary); font-size: 0.875rem;">{help_text}</p>' if help_text else ''}
     </div>
     """, unsafe_allow_html=True)
     
@@ -590,8 +383,8 @@ def show_generation_status(status_text, is_processing=False):
         with col2:
             st.markdown(f"""
             <div style="text-align: center; padding: 2rem;">
-                <div class="rotating-icon" style="font-size: 3rem; margin-bottom: 1rem;"><i class="fas fa-paint-brush"></i></div>
-                <h3 style="color: #667eea;">{status_text}</h3>
+                <div class="rotating-icon" style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-secondary);"><i class="fas fa-paint-brush"></i></div>
+                <h3 style="color: var(--text-primary);">{status_text}</h3>
                 <div class="loading-spinner" style="margin: 1rem auto;"></div>
             </div>
             """, unsafe_allow_html=True)
@@ -625,12 +418,12 @@ def create_interactive_sidebar():
         
         for activity, time_ago, icon in activities:
             st.markdown(f"""
-            <div style="display: flex; align-items: center; padding: 0.5rem 0; 
-                        border-bottom: 1px solid rgba(255,255,255,0.1);">
-                <span style="margin-right: 0.5rem;">{icon}</span>
+            <div style="display: flex; align-items: center; padding: 0.75rem 0; 
+                        border-bottom: 1px solid var(--card-border);">
+                <span style="margin-right: 0.75rem; font-size: 1.25rem;">{icon}</span>
                 <div>
-                    <div style="font-size: 0.9rem; font-weight: bold;">{activity}</div>
-                    <div style="font-size: 0.8rem; color: #666;">{time_ago}</div>
+                    <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">{activity}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">{time_ago}</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -649,9 +442,9 @@ def show_welcome_dashboard():
     with col1:
         st.markdown("""
         <div class="feature-card" style="text-align: center;">
-            <div style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"><i class="fas fa-palette"></i></div>
-            <h3>Generate Images</h3>
-            <p>Create stunning product images from text descriptions.</p>
+            <div style="font-size: 3rem; color: var(--accent-primary); margin-bottom: 1rem;"><i class="fas fa-palette"></i></div>
+            <h3 style="color: var(--text-primary);">Generate Images</h3>
+            <p style="color: var(--text-secondary);">Create stunning product images from text descriptions.</p>
         </div>
         """, unsafe_allow_html=True)
         if st.button("Start Generating", use_container_width=True, type="primary"):
@@ -662,9 +455,9 @@ def show_welcome_dashboard():
     with col2:
         st.markdown("""
         <div class="feature-card" style="text-align: center;">
-            <div style="font-size: 3rem; color: #FF6B6B; margin-bottom: 1rem;"><i class="fas fa-camera"></i></div>
-            <h3>Lifestyle Shots</h3>
-            <p>Place your products in realistic lifestyle environments.</p>
+            <div style="font-size: 3rem; color: var(--accent-secondary); margin-bottom: 1rem;"><i class="fas fa-camera"></i></div>
+            <h3 style="color: var(--text-primary);">Lifestyle Shots</h3>
+            <p style="color: var(--text-secondary);">Place your products in realistic lifestyle environments.</p>
         </div>
         """, unsafe_allow_html=True)
         if st.button("Create Lifestyle Shot", use_container_width=True):
@@ -675,9 +468,9 @@ def show_welcome_dashboard():
     with col3:
         st.markdown("""
         <div class="feature-card" style="text-align: center;">
-            <div style="font-size: 3rem; color: #4ECDC4; margin-bottom: 1rem;"><i class="fas fa-magic"></i></div>
-            <h3>AI Editing</h3>
-            <p>Remove backgrounds, add shadows, and enhance quality.</p>
+            <div style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"><i class="fas fa-magic"></i></div>
+            <h3 style="color: var(--text-primary);">AI Editing</h3>
+            <p style="color: var(--text-secondary);">Remove backgrounds, add shadows, and enhance quality.</p>
         </div>
         """, unsafe_allow_html=True)
         if st.button("Open Editor", use_container_width=True):
@@ -697,30 +490,32 @@ def show_welcome_dashboard():
     
     for i, (step, description) in enumerate(steps, 1):
         st.markdown(f"""
-        <div style="display: flex; align-items: center; padding: 1rem; margin: 0.5rem 0; 
-                    background: rgba(102, 126, 234, 0.05); border-radius: 10px; 
-                    border-left: 4px solid #667eea;">
-            <div style="background: #667eea; color: white; border-radius: 50%; 
-                        width: 30px; height: 30px; display: flex; align-items: center; 
-                        justify-content: center; margin-right: 1rem; font-weight: bold;">{i}</div>
+        <div style="display: flex; align-items: center; padding: 1.25rem; margin: 0.75rem 0; 
+                    background: var(--card-bg); border-radius: 0.75rem; 
+                    border: 1px solid var(--card-border); border-left: 4px solid var(--accent-primary);">
+            <div style="background: var(--accent-primary); color: white; border-radius: 50%; 
+                        width: 32px; height: 32px; display: flex; align-items: center; 
+                        justify-content: center; margin-right: 1.25rem; font-weight: bold;">{i}</div>
             <div>
-                <div style="font-weight: bold; margin-bottom: 0.25rem;">{step}</div>
-                <div style="color: #666; font-size: 0.9rem;">{description}</div>
+                <div style="font-weight: 600; margin-bottom: 0.25rem; color: var(--text-primary);">{step}</div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">{description}</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("""
-    <div style="margin-top: 2rem;">
-        <h4 style="color: #667eea; margin-bottom: 1rem;">System Status</h4>
-        <div style="display: flex; align-items: center; margin-bottom: 0.5rem; color: #4ECDC4;">
-            <span style="margin-right: 0.5rem;"><i class="fas fa-check-circle"></i></span> API Connected
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 0.5rem; color: #4ECDC4;">
-            <span style="margin-right: 0.5rem;"><i class="fas fa-box"></i></span> Models Loaded
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 0.5rem; color: #FFD93D;">
-            <span style="margin-right: 0.5rem;"><i class="fas fa-magic"></i></span> GPU Ready
+    <div style="margin-top: 3rem; padding: 1.5rem; background: var(--card-bg); border-radius: 1rem; border: 1px solid var(--card-border);">
+        <h4 style="color: var(--text-primary); margin-bottom: 1rem;">System Status</h4>
+        <div style="display: flex; gap: 2rem;">
+            <div style="display: flex; align-items: center; color: var(--success);">
+                <span style="margin-right: 0.5rem;"><i class="fas fa-check-circle"></i></span> API Connected
+            </div>
+            <div style="display: flex; align-items: center; color: var(--success);">
+                <span style="margin-right: 0.5rem;"><i class="fas fa-box"></i></span> Models Loaded
+            </div>
+            <div style="display: flex; align-items: center; color: var(--warning);">
+                <span style="margin-right: 0.5rem;"><i class="fas fa-bolt"></i></span> GPU Ready
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)

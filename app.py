@@ -113,28 +113,6 @@ def download_image(url):
         return response.content
     except Exception as e:
         st.error(f"Error downloading image: {str(e)}")
-        return None
-
-def main():
-    # Initialize authentication
-    init_session_state()
-    
-    # Add custom CSS
-    add_custom_css()
-    
-    # Check if user is authenticated
-    if not require_auth():
-        return
-    
-    # Show user profile in sidebar
-    show_user_profile()
-    
-    # Create interactive sidebar
-    create_interactive_sidebar()
-    
-    # Initialize app session state
-    initialize_session_state()
-    
     # Show welcome dashboard for first-time users
     if not st.session_state.get('has_used_app', False):
         show_welcome_dashboard()

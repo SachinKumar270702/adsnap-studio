@@ -17,6 +17,7 @@ def get_config():
     st.sidebar.markdown("### <i class='fas fa-cog'></i> Configuration", unsafe_allow_html=True)
     
     # Image Generation Settings
+    st.sidebar.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
     st.sidebar.markdown("#### <i class='fas fa-image'></i> Image Generation", unsafe_allow_html=True)
     config["num_results"] = st.sidebar.slider("Number of Results", 1, 4, 1)
     config["aspect_ratio"] = st.sidebar.selectbox(
@@ -24,8 +25,10 @@ def get_config():
         ["1:1", "16:9", "9:16", "4:3", "3:4"]
     )
     config["sync"] = st.sidebar.checkbox("Wait for Results", True)
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
     
     # Packshot Settings
+    st.sidebar.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
     st.sidebar.markdown("#### <i class='fas fa-box-open'></i> Packshot", unsafe_allow_html=True)
     config["create_packshot"] = st.sidebar.checkbox(
         "Create Packshot",
@@ -36,8 +39,10 @@ def get_config():
             "Background Color",
             "#FFFFFF"
         )
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
     
     # Shadow Settings
+    st.sidebar.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
     st.sidebar.markdown("#### <i class='fas fa-cloud-sun'></i> Shadow", unsafe_allow_html=True)
     config["add_shadow"] = st.sidebar.checkbox(
         "Add Shadow",
@@ -48,8 +53,10 @@ def get_config():
             "Shadow Type",
             ["Natural", "Drop"]
         ).lower()
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
     
     # Lifestyle Shot Settings
+    st.sidebar.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
     st.sidebar.markdown("#### <i class='fas fa-camera-retro'></i> Lifestyle Shot", unsafe_allow_html=True)
     config["lifestyle_shot"] = st.sidebar.checkbox(
         "Create Lifestyle Shot",
@@ -60,5 +67,6 @@ def get_config():
             "Scene Description",
             help="Describe the environment for the lifestyle shot"
         )
+    st.sidebar.markdown('</div>', unsafe_allow_html=True)
     
     return config 
