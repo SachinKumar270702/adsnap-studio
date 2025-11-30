@@ -1,6 +1,7 @@
 import streamlit as st
 from datetime import datetime, timedelta
 import random
+import textwrap
 from config.demo_config import SAMPLE_PROMPTS, ENHANCEMENT_PRESETS, FEATURE_TOUR, TIPS_AND_TRICKS
 from components.activity_dashboard import show_real_time_activities, show_activity_statistics, show_recent_images
 from components.interactive_ui import show_lottie_animation
@@ -22,14 +23,12 @@ def show_dashboard():
     col1, col2 = st.columns([3, 1])
     
     with col1:
-        st.markdown(f"""
-        <div style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); 
-                    padding: 2.5rem; border-radius: 1.5rem; color: white; margin-bottom: 2rem; 
-                    box-shadow: 0 10px 30px -10px var(--accent-glow); height: 100%; display: flex; flex-direction: column; justify-content: center;">
-            <h2 style="margin: 0; font-size: 2.5rem; color: white !important;"><i class="fas fa-hand-sparkles"></i> {greeting}, {user_name}!</h2>
-            <p style="margin: 0.5rem 0 0 0; opacity: 0.9; color: rgba(255,255,255,0.9) !important; font-size: 1.1rem;">Ready to create some amazing ads today?</p>
+        st.markdown(textwrap.dedent(f"""
+        <div class="glass-card animate-fade-in" style="padding: 2.5rem; height: 100%; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(56, 189, 248, 0.2) 100%); border: 1px solid rgba(255, 255, 255, 0.1);">
+            <h2 style="margin: 0; font-size: 2.5rem; background: linear-gradient(90deg, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><i class="fas fa-hand-sparkles" style="color: #fbbf24;"></i> {greeting}, {user_name}!</h2>
+            <p style="margin: 0.5rem 0 0 0; color: var(--text-secondary); font-size: 1.1rem;">Ready to create some amazing ads today?</p>
         </div>
-        """, unsafe_allow_html=True)
+        """), unsafe_allow_html=True)
         
     with col2:
         # Welcome/Rocket animation
@@ -78,14 +77,13 @@ def show_dashboard():
 
 def show_stat_card(title, value, icon, color):
     """Display a statistics card."""
-    # Map colors to Tailwind variables if possible, or keep inline for specific colors
-    st.markdown(f"""
-    <div class="metric-card" style="border-left: 4px solid {color};">
+    st.markdown(textwrap.dedent(f"""
+    <div class="metric-card animate-fade-in" style="border-left: 4px solid {color};">
         <div style="font-size: 2rem; margin-bottom: 0.5rem; color: {color};">{icon}</div>
         <div class="metric-value">{value}</div>
         <div class="metric-label">{title}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
 def get_user_stats():
     """Get user statistics (simulated for demo)."""
@@ -115,20 +113,19 @@ def show_recent_activity():
         ("Added shadow effect", "Yesterday", '<i class="fas fa-star"></i>', "success")
     ]
     
-    for activity, time_ago, icon, status in activities:
-        status_color = "var(--success)" if status == "success" else "var(--accent-primary)"
+    for i, (activity, time_ago, icon, status) in enumerate(activities):
+        status_color = "var(--secondary-color)" if status == "info" else "var(--primary-color)"
         
-        st.markdown(f"""
-        <div style="display: flex; align-items: center; padding: 1rem; margin: 0.75rem 0; 
-                    background: var(--card-bg); border-radius: 0.75rem; 
-                    border: 1px solid var(--card-border); border-left: 3px solid {status_color};">
+        st.markdown(textwrap.dedent(f"""
+        <div class="glass-panel animate-fade-in stagger-{min(i+1, 3)}" style="display: flex; align-items: center; padding: 1rem; margin: 0.75rem 0; 
+                    border-radius: 0.75rem; border-left: 3px solid {status_color};">
             <span style="font-size: 1.5rem; margin-right: 1rem; color: {status_color};">{icon}</span>
             <div style="flex: 1;">
-                <div style="font-weight: 600; margin-bottom: 0.25rem; color: var(--text-primary);">{activity}</div>
+                <div style="font-weight: 600; margin-bottom: 0.25rem; color: var(--text-color);">{activity}</div>
                 <div style="font-size: 0.85rem; color: var(--text-secondary);">{time_ago}</div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """), unsafe_allow_html=True)
 
 def show_daily_tip():
     """Display a daily tip."""
@@ -138,13 +135,13 @@ def show_daily_tip():
     day_of_year = datetime.now().timetuple().tm_yday
     tip = TIPS_AND_TRICKS[day_of_year % len(TIPS_AND_TRICKS)]
     
-    st.markdown(f"""
-    <div style="background: linear-gradient(135deg, var(--warning), var(--error)); 
-                padding: 1.5rem; border-radius: 1rem; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-        <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;"><i class="fas fa-lightbulb"></i> Tip of the Day</div>
-        <div style="font-size: 0.95rem; line-height: 1.5; opacity: 0.95;">{tip}</div>
+    st.markdown(textwrap.dedent(f"""
+    <div class="glass-card animate-fade-in" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1)); 
+                padding: 1.5rem; border: 1px solid rgba(245, 158, 11, 0.2);">
+        <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #f59e0b;"><i class="fas fa-lightbulb"></i> Tip of the Day</div>
+        <div style="font-size: 0.95rem; line-height: 1.5; opacity: 0.95; color: var(--text-color);">{tip}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
     
     # Quick prompt suggestions
     st.markdown("### <i class='fas fa-bullseye'></i> Quick Prompts", unsafe_allow_html=True)
@@ -171,19 +168,19 @@ def show_feature_tour():
     if st.session_state.tour_step < len(FEATURE_TOUR):
         feature = FEATURE_TOUR[st.session_state.tour_step]
         
-        st.markdown(f"""
-        <div class="bento-card">
+        st.markdown(textwrap.dedent(f"""
+        <div class="feature-card animate-fade-in">
             <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                <span style="font-size: 2rem; margin-right: 1rem; color: var(--accent-primary);">{feature['icon']}</span>
-                <h4 style="margin: 0; color: var(--text-primary);">Step {st.session_state.tour_step + 1}: {feature['title']}</h4>
+                <span style="font-size: 2rem; margin-right: 1rem; color: var(--primary-color);">{feature['icon']}</span>
+                <h4 style="margin: 0; color: var(--text-color);">Step {st.session_state.tour_step + 1}: {feature['title']}</h4>
             </div>
             <p style="margin-bottom: 1rem; color: var(--text-secondary);">{feature['description']}</p>
             <div style="background: rgba(99, 102, 241, 0.1); padding: 0.75rem; border-radius: 0.5rem; 
-                        font-style: italic; color: var(--accent-primary); border: 1px solid rgba(99, 102, 241, 0.2);">
+                        font-style: italic; color: var(--primary-color); border: 1px solid rgba(99, 102, 241, 0.2);">
                 <i class="fas fa-lightbulb"></i> {feature['demo_action']}
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """), unsafe_allow_html=True)
         
         col1, col2, col3 = st.columns([1, 1, 1])
         
@@ -221,19 +218,18 @@ def show_project_gallery():
         {"name": "Holiday Ads", "images": 6, "created": "2 weeks ago", "status": "completed"},
     ]
     
-    for project in projects:
-        status_color = "var(--success)" if project["status"] == "completed" else "var(--warning)"
+    for i, project in enumerate(projects):
+        status_color = "var(--primary-color)" if project["status"] == "completed" else "var(--secondary-color)"
         status_text = "Completed" if project["status"] == "completed" else "In Progress"
         
-        st.markdown(f"""
-        <div style="display: flex; justify-content: space-between; align-items: center; 
-                    padding: 1rem; margin: 0.75rem 0; background: var(--card-bg); 
-                    border-radius: 0.75rem; border: 1px solid var(--card-border); border-left: 3px solid {status_color};">
+        st.markdown(textwrap.dedent(f"""
+        <div class="glass-panel animate-fade-in stagger-{min(i+1, 3)}" style="display: flex; justify-content: space-between; align-items: center; 
+                    padding: 1rem; margin: 0.75rem 0; border-radius: 0.75rem; border-left: 3px solid {status_color};">
             <div>
-                <div style="font-weight: 600; margin-bottom: 0.25rem; color: var(--text-primary);">{project['name']}</div>
+                <div style="font-weight: 600; margin-bottom: 0.25rem; color: var(--text-color);">{project['name']}</div>
                 <div style="font-size: 0.85rem; color: var(--text-secondary);">{project['images']} images • {project['created']}</div>
             </div>
             <div style="background: {status_color}; color: white; padding: 0.25rem 0.75rem; 
                         border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">{status_text}</div>
         </div>
-        """, unsafe_allow_html=True)
+        """), unsafe_allow_html=True)
