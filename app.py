@@ -156,7 +156,13 @@ def track_current_activity(action, details, metadata=None):
 
 
 def main():
+    # Initialize session state
     initialize_session_state()
+    
+    # Check authentication
+    if not st.session_state.get('authenticated', False):
+        show_login_page()
+        return
 
     # Import styles and header
     from components.styles import apply_custom_css, HEADER_HTML

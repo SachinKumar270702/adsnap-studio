@@ -28,11 +28,50 @@ def show_dashboard():
             <h2 style="margin: 0; font-size: 2.5rem; background: linear-gradient(90deg, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><i class="fas fa-hand-sparkles" style="color: #fbbf24;"></i> {greeting}, {user_name}!</h2>
             <p style="margin: 0.5rem 0 0 0; color: var(--text-secondary); font-size: 1.1rem;">Ready to create some amazing ads today?</p>
         </div>
-        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: {color};">{icon}</div>
-        <div class="metric-value">{value}</div>
-        <div class="metric-label">{title}</div>
-    </div>
-    """), unsafe_allow_html=True)
+        """), unsafe_allow_html=True)
+    
+    with col2:
+        # Optional: Add a small animation or icon
+        st.markdown("""
+        <div class="glass-card animate-fade-in" style="padding: 1.5rem; text-align: center; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-rocket pulse-icon" style="font-size: 3rem; color: var(--primary-color);"></i>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Show user statistics
+    stats = get_user_stats()
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    metrics = [
+        (col1, "Images Generated", stats['images_generated'], '<i class="fas fa-images"></i>', "var(--primary-color)"),
+        (col2, "Projects", stats['projects'], '<i class="fas fa-folder"></i>', "var(--secondary-color)"),
+        (col3, "Success Rate", f"{stats['success_rate']}%", '<i class="fas fa-check-circle"></i>', "#10b981"),
+        (col4, "Time Saved", f"{stats['time_saved']}h", '<i class="fas fa-clock"></i>', "#f59e0b")
+    ]
+    
+    for col, title, value, icon, color in metrics:
+        with col:
+            st.markdown(textwrap.dedent(f"""
+            <div class="metric-card animate-fade-in">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem; color: {color};">{icon}</div>
+                <div class="metric-value">{value}</div>
+                <div class="metric-label">{title}</div>
+            </div>
+            """), unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Show recent activities and other dashboard content
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        show_real_time_activities()
+    
+    with col2:
+        show_daily_tip()
 
 def get_user_stats():
     """Get user statistics (simulated for demo)."""
