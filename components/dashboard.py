@@ -3,11 +3,12 @@ from datetime import datetime, timedelta
 import random
 from config.demo_config import SAMPLE_PROMPTS, ENHANCEMENT_PRESETS, FEATURE_TOUR, TIPS_AND_TRICKS
 from components.activity_dashboard import show_real_time_activities, show_activity_statistics, show_recent_images
+from components.interactive_ui import show_lottie_animation
 
 def show_dashboard():
     """Display the main dashboard with user stats and quick actions."""
     
-    # Welcome message
+    # Welcome message with Lottie
     user_name = st.session_state.get('user_info', {}).get('full_name', st.session_state.get('username', 'User'))
     current_hour = datetime.now().hour
     
@@ -18,14 +19,21 @@ def show_dashboard():
     else:
         greeting = "Good evening"
     
-    st.markdown(f"""
-    <div style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); 
-                padding: 2.5rem; border-radius: 1.5rem; color: white; margin-bottom: 2rem; 
-                box-shadow: 0 10px 30px -10px var(--accent-glow);">
-        <h2 style="margin: 0; font-size: 2.5rem; color: white !important;"><i class="fas fa-hand-sparkles"></i> {greeting}, {user_name}!</h2>
-        <p style="margin: 0.5rem 0 0 0; opacity: 0.9; color: rgba(255,255,255,0.9) !important; font-size: 1.1rem;">Ready to create some amazing ads today?</p>
-    </div>
-    """, unsafe_allow_html=True)
+    col1, col2 = st.columns([3, 1])
+    
+    with col1:
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); 
+                    padding: 2.5rem; border-radius: 1.5rem; color: white; margin-bottom: 2rem; 
+                    box-shadow: 0 10px 30px -10px var(--accent-glow); height: 100%; display: flex; flex-direction: column; justify-content: center;">
+            <h2 style="margin: 0; font-size: 2.5rem; color: white !important;"><i class="fas fa-hand-sparkles"></i> {greeting}, {user_name}!</h2>
+            <p style="margin: 0.5rem 0 0 0; opacity: 0.9; color: rgba(255,255,255,0.9) !important; font-size: 1.1rem;">Ready to create some amazing ads today?</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with col2:
+        # Welcome/Rocket animation
+        show_lottie_animation("https://assets3.lottiefiles.com/packages/lf20_puciaact.json", height=180, key="welcome_lottie")
     
     # Real-time statistics from database
     show_activity_statistics()
